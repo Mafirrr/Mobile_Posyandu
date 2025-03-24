@@ -1,20 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
-import 'package:posyandu_mob/screens/login_screen.dart';
-import 'package:posyandu_mob/widgets/custom_text.dart';
+import 'package:posyandu_mob/screens/login/login_screen.dart';
+import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 
-void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
-  final authViewModel = AuthViewModel();
-  await authViewModel.loadUser(); // Load user data on startup
-
+void main() {
   runApp(
     MultiProvider(
       providers: [
-        ChangeNotifierProvider(create: (_) => authViewModel),
+        ChangeNotifierProvider(create: (_) => AuthViewModel()),
       ],
-      child: MyApp(),
+      child: const MyApp(),
     ),
   );
 }
@@ -33,7 +29,7 @@ class MyApp extends StatelessWidget {
               body: Center(child: CircularProgressIndicator()),
             );
           } else if (authViewModel.user != null) {
-            return const CustomText(text: "Dashboard");
+            return const DashboardScreen();
           } else {
             return const LoginScreen();
           }

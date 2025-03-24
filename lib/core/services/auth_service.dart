@@ -9,39 +9,46 @@ class AuthService {
   final String baseUrl = "http://127.0.0.1:8000/api";
 
   // Method untuk login
-  Future<dynamic> login(String email, String password) async {
-    final url = Uri.parse("$baseUrl/login");
-    final response = await http.post(
-      url,
-      headers: {"Content-Type": "application/json"},
-      body: jsonEncode({"email": email, "password": password}),
-    );
+  Future<dynamic> login(String identifier, String password) async {
+    try {
+      final url = Uri.parse("$baseUrl/login");
+      final response = await http.post(
+        url,
+        headers: {"Content-Type": "application/json"},
+        body: jsonEncode({"identifier": identifier, "password": password}),
+      );
 
-    if (response.statusCode == 200) {
-      final data = jsonDecode(response.body);
+      if (response.statusCode == 200) {
+        print(response.body);
+        final data = jsonDecode(response.body);
 
-      if (data['success']) {
-        String role =
-            data['user']['role']; // Assuming the API returns a 'role' field
+        if (data['success'] &&
+            data.containsKey('user') &&
+            data.containsKey('role') &&
+            data.containsKey('token')) {
+          String role = data['role'];
 
-        dynamic user;
-        if (role == "admin") {
-          // user = Admin.fromJson(data['user']);
-        } else if (role == "petugas") {
-          //handle petugas
-        } else if (role == "kader") {
-          //handle kader
-        } else {
-          user = Anggota.fromJson(data['user']);
+          dynamic user;
+          if (role == "petugas") {
+            // user = Petugas.fromJson(data['user']); // Implementasi jika ada model Petugas
+            return null;
+          } else {
+            user = Anggota.fromJson(data['user']);
+          }
+
+          if (user != null) {
+            await _saveUser(user, role);
+            await _saveToken(data['token']);
+            return user;
+          }
         }
-
-        await _saveUser(user);
-        await _saveToken(data['token']);
-
-        return user; // Return the appropriate user object
       }
+
+      return null; // Jika login gagal
+    } catch (e) {
+      print("Login error: $e");
+      return null;
     }
-    return null;
   }
 
   // Method untuk logout
@@ -66,14 +73,14 @@ class AuthService {
     }
   }
 
-  // Simpan user data
-  Future<void> _saveUser(Anggota user) async {
+  Future<void> _saveUser(Anggota user, String role) async {
     final prefs = await SharedPreferences.getInstance();
     prefs.setString(
         userKey,
         jsonEncode({
           "id": user.id,
           "name": user.nama,
+          "role": role,
         }));
   }
 

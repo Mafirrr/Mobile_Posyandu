@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
+import 'package:posyandu_mob/screens/navigation/dashboard_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
@@ -79,6 +80,14 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        CustomText(
+                          text: alert ?? "",
+                          color: Colors.red,
+                          fontWeight: FontWeight.bold,
+                        ),
+                        const SizedBox(
+                          height: 16,
+                        ),
                         CustomTextField(
                           controller: _nikController,
                           label: "NIK",
@@ -128,9 +137,21 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _nikController.text.trim(),
                                   _passwordController.text.trim(),
                                 );
-                                if (!success) {
+
+                                if (mounted) {
+                                  // Tambahkan pengecekan mounted sebelum setState
                                   setState(() {
-                                    alert = "NIK atau Password salah!";
+                                    if (!success) {
+                                      alert = "NIK atau Password salah!";
+                                    } else {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DashboardScreen(),
+                                        ),
+                                      );
+                                    }
                                   });
                                 }
                               }

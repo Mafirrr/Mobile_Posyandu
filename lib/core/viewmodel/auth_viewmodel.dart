@@ -13,31 +13,32 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   dynamic get user => _user;
 
-  // Load user on app start
+  AuthViewModel() {
+    loadUser();
+  }
+
   Future<void> loadUser() async {
     _isLoading = true;
     notifyListeners();
 
     _user = await _getUser();
+
+    if (_user == null) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AuthService.userKey);
+    }
+
     _isLoading = false;
     notifyListeners();
   }
 
-  Future<dynamic?> _getUser() async {
+  Future<dynamic> _getUser() async {
     final prefs = await SharedPreferences.getInstance();
     final String? userData = prefs.getString(AuthService.userKey);
 
     if (userData != null) {
       final Map<String, dynamic> userMap = jsonDecode(userData);
-      String role = userMap["role"];
-
-      if (role == "admin") {
-        // return Admin.fromJson(userMap);
-      } else if (role == "petugas" || role == "kader") {
-        // return Petugas.fromJson(userMap);
-      } else {
-        return Anggota.fromJson(userMap);
-      }
+      return userMap;
     }
     return null;
   }
@@ -47,14 +48,16 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
 
     dynamic user = await _authService.login(email, password);
+
     if (user != null) {
       _user = user;
+      _isLoading = false; // ✅ Hentikan loading setelah login berhasil
       notifyListeners();
       return true;
     }
 
     _isLoading = false;
-    notifyListeners();
+    notifyListeners(); // Pastikan UI diupdate setelah gagal login
     return false;
   }
 
