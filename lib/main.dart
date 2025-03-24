@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
-import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
+import 'package:posyandu_mob/screens/navigation/dashboard_screen.dart';
 import 'package:provider/provider.dart';
 
 void main() {
