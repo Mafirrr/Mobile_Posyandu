@@ -19,7 +19,6 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        print(response.body);
         final data = jsonDecode(response.body);
 
         if (data['success'] &&
@@ -44,7 +43,7 @@ class AuthService {
         }
       }
 
-      return null; // Jika login gagal
+      return null;
     } catch (e) {
       print("Login error: $e");
       return null;

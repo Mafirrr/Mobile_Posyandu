@@ -1,14 +1,12 @@
 import 'dart:convert';
-
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
   bool _isLoading = false;
-  dynamic _user; // Can store Admin, Petugas, Kader, or Anggota
+  dynamic _user;
 
   bool get isLoading => _isLoading;
   dynamic get user => _user;
@@ -43,21 +41,21 @@ class AuthViewModel extends ChangeNotifier {
     return null;
   }
 
-  Future<bool> login(String email, String password) async {
+  Future<bool> login(String nik, String password) async {
     _isLoading = true;
     notifyListeners();
 
-    dynamic user = await _authService.login(email, password);
+    await Future.delayed(const Duration(seconds: 2));
+
+    dynamic user = await _authService.login(nik, password);
+    _isLoading = false;
 
     if (user != null) {
       _user = user;
-      _isLoading = false; // ✅ Hentikan loading setelah login berhasil
       notifyListeners();
       return true;
     }
-
-    _isLoading = false;
-    notifyListeners(); // Pastikan UI diupdate setelah gagal login
+    notifyListeners();
     return false;
   }
 

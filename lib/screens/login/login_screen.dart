@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
-import 'package:posyandu_mob/screens/navigation/dashboard_screen.dart';
+import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -19,6 +20,11 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool isPass = true;
   String? alert;
+
+  Future<String?> checkRole() async {
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getString("role");
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -80,10 +86,12 @@ class _LoginScreenState extends State<LoginScreen> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CustomText(
-                          text: alert ?? "",
-                          color: Colors.red,
-                          fontWeight: FontWeight.bold,
+                        Center(
+                          child: CustomText(
+                            text: alert ?? "",
+                            color: Colors.red,
+                            fontWeight: FontWeight.bold,
+                          ),
                         ),
                         const SizedBox(
                           height: 16,
@@ -138,20 +146,27 @@ class _LoginScreenState extends State<LoginScreen> {
                                   _passwordController.text.trim(),
                                 );
 
-                                if (mounted) {
-                                  // Tambahkan pengecekan mounted sebelum setState
-                                  setState(() {
-                                    if (!success) {
-                                      alert = "NIK atau Password salah!";
-                                    } else {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
+                                if (success) {
+                                  String? role = await checkRole();
+
+                                  if (role == "anggota") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
                                           builder: (context) =>
-                                              const DashboardScreen(),
-                                        ),
-                                      );
-                                    }
+                                              const NavAnggotaScreen()),
+                                    );
+                                  } else {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const LoginScreen()),
+                                    );
+                                  }
+                                } else {
+                                  setState(() {
+                                    alert = "Email atau Password salah!";
                                   });
                                 }
                               }
@@ -161,18 +176,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             height: 50,
                           ),
                         ),
-                        if (alert != null) ...[
-                          const SizedBox(height: 10),
-                          Center(
-                            child: Text(
-                              alert!,
-                              style: const TextStyle(
-                                color: Colors.red,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ),
-                        ]
                       ],
                     ),
                   ),

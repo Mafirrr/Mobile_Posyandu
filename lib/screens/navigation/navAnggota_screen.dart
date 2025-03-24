@@ -1,14 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/profil/profil_screen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
-class DashboardScreen extends StatefulWidget {
-  const DashboardScreen({Key? key}) : super(key: key);
+class NavAnggotaScreen extends StatefulWidget {
+  const NavAnggotaScreen({Key? key}) : super(key: key);
 
   @override
-  _DashboardScreenState createState() => _DashboardScreenState();
+  _NavAnggotaScreenState createState() => _NavAnggotaScreenState();
 }
 
-class _DashboardScreenState extends State<DashboardScreen> {
+class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   int _selectedIndex = 0;
 
   void _onItemTapped(int index) {
@@ -22,13 +23,13 @@ class _DashboardScreenState extends State<DashboardScreen> {
   Widget _buildScreen() {
     switch (_selectedIndex) {
       case 0:
-        return CustomText(text: "dashboard");
+        return CustomText(text: "Beranda");
       case 1:
-        return CustomText(text: "pemeriksaan");
+        return CustomText(text: "Pemeriksaan");
       case 2:
-        return CustomText(text: "edukasi");
+        return CustomText(text: "Edukasi");
       case 3:
-        return CustomText(text: "profil");
+        return const ProfilScreen();
       default:
         return const Center(child: Text("Page Not Found"));
     }
@@ -40,7 +41,7 @@ class _DashboardScreenState extends State<DashboardScreen> {
       body: _buildScreen(),
       bottomNavigationBar: BottomNavigationBar(
         items: [
-          _buildNavItem(Icons.home, "Dashboard", 0),
+          _buildNavItem(Icons.home, "Beranda", 0),
           _buildNavItem(Icons.medication, "Pemeriksaan", 1),
           _buildNavItem(Icons.article, "Edukasi", 2),
           _buildNavItem(Icons.person, "Profil", 3),

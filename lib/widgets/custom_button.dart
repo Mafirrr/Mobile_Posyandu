@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 
 class CustomButton extends StatelessWidget {
   final String text;
-  final VoidCallback onPressed;
+  final VoidCallback onPressed; // Allow async
   final bool isLoading;
   final Color backgroundColor;
   final Color textColor;
@@ -33,7 +33,7 @@ class CustomButton extends StatelessWidget {
       width: screenWidth * 0.5,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed,
+        onPressed: isLoading ? null : onPressed, // Disable when loading
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(
@@ -41,24 +41,10 @@ class CustomButton extends StatelessWidget {
           ),
         ),
         child: isLoading
-            ? const SizedBox(
-                width: 20,
-                height: 20,
-                child: CircularProgressIndicator(
-                    color: Colors.white, strokeWidth: 2),
-              )
-            : Row(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  if (icon != null) ...[
-                    icon!,
-                    const SizedBox(width: 8),
-                  ],
-                  Text(
-                    text,
-                    style: TextStyle(color: textColor, fontSize: fontSize),
-                  ),
-                ],
+            ? const CircularProgressIndicator(color: Colors.white)
+            : Text(
+                text,
+                style: TextStyle(color: textColor, fontSize: fontSize),
               ),
       ),
     );

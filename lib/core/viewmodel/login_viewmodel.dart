@@ -12,8 +12,8 @@ class LoginViewModel extends ChangeNotifier {
     _checkLoginStatus(); // Check login status on initialization
   }
 
-  void login(String email, String password) async {
-    if (email.isEmpty || password.isEmpty) return;
+  void login(String nik, String password) async {
+    if (nik.isEmpty || password.isEmpty) return;
 
     _isLoading = true;
     notifyListeners();
