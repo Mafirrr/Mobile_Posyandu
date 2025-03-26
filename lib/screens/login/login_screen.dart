@@ -1,4 +1,7 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
@@ -21,9 +24,16 @@ class _LoginScreenState extends State<LoginScreen> {
   bool isPass = true;
   String? alert;
 
-  Future<String?> checkRole() async {
+  Future<String> checkRole() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString("role");
+    final String? userData = prefs.getString(AuthService.userKey);
+
+    if (userData != null) {
+      final Map<String, dynamic> userMap = jsonDecode(userData);
+      return userMap['role'] ?? '';
+    }
+
+    return '';
   }
 
   @override

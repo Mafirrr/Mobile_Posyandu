@@ -50,7 +50,6 @@ class AuthService {
     }
   }
 
-  // Method untuk logout
   Future<void> logout() async {
     final prefs = await SharedPreferences.getInstance();
     try {
