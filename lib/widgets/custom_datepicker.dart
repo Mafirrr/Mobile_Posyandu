@@ -10,7 +10,7 @@ class CustomDatePicker extends FormField<DateTime> {
     required ValueChanged<DateTime> onDateSelected,
     FormFieldValidator<DateTime>? validator,
     String hintText = "Pilih Tanggal",
-    IconData icon = Icons.calendar_today,
+    IconData icon = Icons.calendar_today, required TextEditingController controller, required String label,
   }) : super(
           key: key,
           initialValue: initialDate,
