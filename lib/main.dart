@@ -5,6 +5,7 @@ import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/profil/Informasi_pribadi_screen.dart';
 import 'package:provider/provider.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -57,7 +58,7 @@ class MyApp extends StatelessWidget {
               return const LoginScreen();
             }
           } else {
-            return const LoginScreen();
+            return const InformasiPribadiScreen();
           }
         },
       ),
