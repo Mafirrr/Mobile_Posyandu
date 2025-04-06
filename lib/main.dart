@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
+import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:provider/provider.dart';
@@ -13,6 +14,7 @@ void main() {
     MultiProvider(
       providers: [
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
+        ChangeNotifierProvider(create: (_) => ProfilViewModel()),
       ],
       child: const MyApp(),
     ),

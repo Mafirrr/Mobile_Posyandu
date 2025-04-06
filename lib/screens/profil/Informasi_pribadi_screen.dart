@@ -1,9 +1,19 @@
+import 'dart:convert';
+import 'dart:developer';
+
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/services/auth_service.dart';
+import 'package:posyandu_mob/core/services/profil_service.dart';
+import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_datepicker.dart';
 import 'package:posyandu_mob/screens/profil/profil_screen.dart';
+import 'package:provider/provider.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
   const InformasiPribadiScreen({Key? key}) : super(key: key);
@@ -12,36 +22,79 @@ class InformasiPribadiScreen extends StatefulWidget {
   _InformasiPribadiScreenState createState() => _InformasiPribadiScreenState();
 }
 
-final TextEditingController namaController =
-    TextEditingController(text: 'Rini Rani');
-final TextEditingController nikController =
-    TextEditingController(text: '3333333333333333');
-final TextEditingController telpController =
-    TextEditingController(text: '+62812345678');
-final TextEditingController tempatLahirController =
-    TextEditingController(text: 'Bondowoso');
-final TextEditingController TanggalLahirController =
-    TextEditingController(text: '01 Januari 1999');
-final TextEditingController alamatController =
-    TextEditingController(text: 'Tapen Bondowoso');
-final TextEditingController pekerjaanController =
-    TextEditingController(text: 'Bank');
+String? id;
+String? nama;
+String? nik;
+String? no_telp;
+String? alamat;
+final TextEditingController namaController = TextEditingController();
+final TextEditingController nikController = TextEditingController();
+final TextEditingController telpController = TextEditingController();
+final TextEditingController tempatLahirController = TextEditingController();
+final TextEditingController TanggalLahirController = TextEditingController();
+final TextEditingController alamatController = TextEditingController();
+final TextEditingController pekerjaanController = TextEditingController();
 
 String selectedGolDarah = 'A+';
 final List<String> golDarahOptions = [
   'A+',
+  'A',
   'A-',
   'B+',
+  'B',
   'B-',
   'AB+',
+  'AB',
   'AB-',
   'O+',
+  'O',
   'O-'
 ];
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
+  Anggota? _anggota;
+  String? token;
+  DateTime? tanggal_lahir;
+
+  Future<void> getUser() async {
+    final ProfilService authService = ProfilService();
+
+    final result = await authService.getAnggota();
+    if (result != null) {
+      setState(() {
+        _anggota = result;
+        namaController.text = _anggota!.nama;
+        nikController.text = _anggota!.nik;
+        telpController.text = _anggota!.no_telepon ?? '';
+        tempatLahirController.text = _anggota!.tempat_lahir;
+        alamatController.text = _anggota!.alamat;
+        pekerjaanController.text = _anggota!.pekerjaan;
+        selectedGolDarah = _anggota!.golongan_darah ?? '';
+
+        final original = _anggota!.tanggal_lahir;
+        final parsed = DateTime.tryParse(original);
+        if (parsed != null) {
+          tanggal_lahir = parsed;
+        }
+      });
+    } else {
+      print("Gagal mendapatkan data anggota.");
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _initialize();
+  }
+
+  Future<void> _initialize() async {
+    await getUser();
+  }
+
   @override
   Widget build(BuildContext context) {
+    final viewModel = Provider.of<ProfilViewModel>(context, listen: false);
     return Scaffold(
       appBar: AppBar(
         title: const CustomText(
@@ -80,7 +133,10 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
               ],
             ),
             SizedBox(height: 24),
-            CustomTextField(controller: namaController, label: 'Nama Lengkap'),
+            CustomTextField(
+              controller: namaController,
+              label: 'Nama Lengkap',
+            ),
             SizedBox(height: 16),
             CustomTextField(controller: nikController, label: 'NIK'),
             const SizedBox(height: 16),
@@ -121,59 +177,73 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
             const SizedBox(height: 16),
             CustomDatePicker(
               controller: TanggalLahirController,
-              label: 'Tempat, Tanggal Lahir',
+              hintText: "Tanggal Lahir",
+              value: tanggal_lahir,
               onDateSelected: (selectedDate) {
                 setState(() {
                   TanggalLahirController.text =
-                      'Bondowoso, ${_formatTanggal(selectedDate)}';
+                      DateFormat('dd MMM yyyy').format(selectedDate);
                 });
               },
             ),
             const SizedBox(height: 16),
-            CustomTextField(controller: alamatController, label: 'Alamat'),
+            CustomTextField(
+              controller: alamatController,
+              label: 'Alamat',
+              maxLines: 3,
+            ),
             const SizedBox(height: 16),
             CustomTextField(
                 controller: pekerjaanController, label: 'Pekerjaan'),
             const SizedBox(height: 16),
             CustomButton(
               text: 'Simpan',
-              onPressed: () {
-                ScaffoldMessenger.of(context).showSnackBar(
-                  const SnackBar(
-                    content: Text('Data berhasil disimpan'),
-                    duration: Duration(seconds: 1),
-                  ),
-                );
-                Future.delayed(const Duration(seconds: 2), () {
-                  Navigator.pushReplacement(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => const ProfilScreen()),
+              onPressed: () async {
+                try {
+                  final tanggal = DateFormat('yyyy-MM-dd').format(
+                    DateFormat('dd MMM yyyy')
+                        .parse(TanggalLahirController.text),
                   );
-                });
+
+                  final updatedAnggota = Anggota(
+                    id: _anggota!.id,
+                    nama: namaController.text,
+                    nik: nikController.text,
+                    no_telepon: telpController.text,
+                    tempat_lahir: tempatLahirController.text,
+                    tanggal_lahir: tanggal,
+                    alamat: alamatController.text,
+                    pekerjaan: pekerjaanController.text,
+                    golongan_darah: selectedGolDarah,
+                  );
+
+                  final success = await viewModel.updateProfil(updatedAnggota);
+                  if (success) {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(
+                          content: Text('Profil berhasil diperbarui')),
+                    );
+                    Navigator.pushReplacement(
+                      context,
+                      MaterialPageRoute(builder: (_) => const ProfilScreen()),
+                    );
+                  } else {
+                    ScaffoldMessenger.of(context).showSnackBar(
+                      const SnackBar(content: Text('Gagal memperbarui profil')),
+                    );
+                  }
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                    SnackBar(
+                        content: Text(
+                            'Tanggal tidak valid: ${TanggalLahirController.text}')),
+                  );
+                }
               },
             ),
           ],
         ),
       ),
     );
-  }
-
-  String _formatTanggal(DateTime date) {
-    final List<String> bulan = [
-      'Januari',
-      'Februari',
-      'Maret',
-      'April',
-      'Mei',
-      'Juni',
-      'Juli',
-      'Agustus',
-      'September',
-      'Oktober',
-      'November',
-      'Desember'
-    ];
-    return '${date.day} ${bulan[date.month - 1]} ${date.year}';
   }
 }
