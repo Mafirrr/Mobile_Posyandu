@@ -17,7 +17,7 @@ class CustomButton extends StatelessWidget {
     required this.text,
     required this.onPressed,
     this.isLoading = false,
-    this.backgroundColor = Colors.blue,
+    this.backgroundColor = const Color.fromARGB(255, 29, 97, 231),
     this.textColor = Colors.white,
     this.fontSize = 18.0,
     this.borderRadius = 10.0,

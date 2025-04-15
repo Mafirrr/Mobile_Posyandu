@@ -12,8 +12,9 @@ class Anggota {
   String tempat_lahir;
   String pekerjaan;
   String alamat;
-  String no_telepon;
-  String golongan_darah;
+  String? no_telepon;
+  String? golongan_darah;
+
   Anggota({
     required this.id,
     required this.nik,
@@ -22,8 +23,8 @@ class Anggota {
     required this.tempat_lahir,
     required this.pekerjaan,
     required this.alamat,
-    required this.no_telepon,
-    required this.golongan_darah,
+    this.no_telepon,
+    this.golongan_darah,
   });
 
   factory Anggota.fromJson(Map<String, dynamic> json) =>

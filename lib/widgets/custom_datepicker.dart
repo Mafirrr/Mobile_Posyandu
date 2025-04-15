@@ -11,6 +11,8 @@ class CustomDatePicker extends FormField<DateTime> {
     FormFieldValidator<DateTime>? validator,
     String hintText = "Pilih Tanggal",
     IconData icon = Icons.calendar_today,
+    required TextEditingController controller,
+    DateTime? value,
   }) : super(
           key: key,
           initialValue: initialDate,
@@ -45,11 +47,13 @@ class CustomDatePicker extends FormField<DateTime> {
                       children: [
                         Text(
                           state.value != null
-                              ? DateFormat('dd MMM yyyy').format(state.value!)
-                              : hintText, // Customizable placeholder
+                              ? DateFormat('dd MMMM yyyy').format(state.value!)
+                              : value != null
+                                  ? DateFormat('dd MMMM yyyy').format(value)
+                                  : hintText, // Customizable placeholder
                           style: TextStyle(
                             fontSize: 16,
-                            color: state.value != null
+                            color: state.value != null || value != null
                                 ? Colors.black
                                 : Colors.grey,
                           ),
