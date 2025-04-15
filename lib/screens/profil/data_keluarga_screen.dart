@@ -39,6 +39,7 @@ class DataKeluargaScreen extends StatelessWidget {
           children: [
             const CustomText(
               text: 'Nama Lengkap',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -49,6 +50,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'NIK',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -56,6 +58,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'No. Telepon',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -63,6 +66,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'Tempat Lahir',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -71,6 +75,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'Tanggal Lahir',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -85,6 +90,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'Alamat',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
@@ -96,6 +102,7 @@ class DataKeluargaScreen extends StatelessWidget {
             const SizedBox(height: 16),
             const CustomText(
               text: 'Pekerjaan',
+              fontSize: 14,
               fontWeight: FontWeight.w600,
             ),
             const SizedBox(height: 4),
