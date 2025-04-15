@@ -109,9 +109,12 @@ class DataKeluargaScreen extends StatelessWidget {
             CustomTextField(
                 controller: pekerjaanController, label: 'Pekerjaan'),
             const SizedBox(height: 24),
-            CustomButton(
-              text: 'Simpan',
-              onPressed: () {},
+            SizedBox(
+              width: double.infinity,
+              child: CustomButton(
+                text: 'Simpan',
+                onPressed: () {},
+              ),
             ),
           ],
         ),
