@@ -88,7 +88,7 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Mulai Langkah Pertama Menuju Kehamilan Sehat\n"
                     "dengan Catatan dan Pantauan Setiap Hari!",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Colors.grey),
+                    style: TextStyle(fontSize: 14, color: Color.fromARGB(255, 52, 59, 65)),
                   ),
                   const SizedBox(height: 20),
                   Form(
@@ -147,6 +147,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         const SizedBox(height: 10),
                         Center(
                           child: CustomButton(
+                            width: double.infinity,
                             text: "Masuk",
                             isLoading: authViewModel.isLoading,
                             onPressed: () async {
