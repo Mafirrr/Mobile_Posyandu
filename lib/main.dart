@@ -5,6 +5,11 @@ import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
+import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
+import 'package:posyandu_mob/screens/login/new_password_screen.dart';
+import 'package:posyandu_mob/screens/login/password_reset_screen.dart';
+import 'package:posyandu_mob/screens/login/reset_sukses_screen.dart';
+import 'package:posyandu_mob/screens/login/verifikasi_kode_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/screens/profil/Informasi_pribadi_screen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
@@ -61,7 +66,7 @@ class MyApp extends StatelessWidget {
               return const LoginScreen();
             }
           } else {
-            return const DataKeluargaScreen();
+            return const VerifikasiKodeScreen();
           }
         },
       ),
