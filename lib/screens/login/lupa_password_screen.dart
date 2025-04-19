@@ -1,7 +1,10 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/services/auth_service.dart';
+import 'package:posyandu_mob/screens/login/verifikasi_kode_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
-import 'package:posyandu_mob/widgets/custom_textfield.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 
 class LupaPasswordScreen extends StatefulWidget {
   const LupaPasswordScreen({Key? key}) : super(key: key);
@@ -13,6 +16,42 @@ class LupaPasswordScreen extends StatefulWidget {
 class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
+  String phone = "+6283834055752";
+  String verificationId = "";
+
+  final authService = AuthService();
+
+  void sendOtp() async {
+    final prefs = await SharedPreferences.getInstance();
+    authService.sendOtp(
+      phoneNumber: phone,
+      onVerificationCompleted: (PhoneAuthCredential credential) async {
+        await FirebaseAuth.instance.signInWithCredential(credential);
+        print("Login berhasil dengan auto-verifikasi");
+      },
+      onVerificationFailed: (FirebaseAuthException e) {
+        print("Verifikasi gagal: ${e.message}");
+      },
+      onCodeSent: (String verId, int? forceResendingToken) {
+        print("Kode dikirim ke $phone");
+        prefs.setString('no_telp', phone);
+        setState(() {
+          verificationId = verId;
+        });
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+              builder: (context) => VerifikasiKodeScreen(
+                    verificationId: verId,
+                  )),
+        );
+      },
+      onCodeAutoRetrievalTimeout: (String verId) {
+        verificationId = verId;
+        print("Waktu habis, masukkan OTP manual");
+      },
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -77,7 +116,7 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            boxShadow: [
+                            boxShadow: const [
                               BoxShadow(
                                 color: Colors.black12,
                                 blurRadius: 8,
@@ -108,7 +147,9 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
                           child: CustomButton(
                             text: "Kirim Kode OTP",
                             isLoading: false,
-                            onPressed: () {},
+                            onPressed: () {
+                              sendOtp();
+                            },
                             backgroundColor: const Color(0xFF4A7EFF),
                             textColor: Colors.white,
                             height: 50,

@@ -1,10 +1,6 @@
-import 'dart:convert';
-import 'dart:developer';
-
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
-import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
@@ -13,7 +9,6 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_datepicker.dart';
 import 'package:posyandu_mob/screens/profil/profil_screen.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
   const InformasiPribadiScreen({Key? key}) : super(key: key);
@@ -38,16 +33,12 @@ final TextEditingController pekerjaanController = TextEditingController();
 String selectedGolDarah = 'A+';
 final List<String> golDarahOptions = [
   'A+',
-  'A',
   'A-',
   'B+',
-  'B',
   'B-',
   'AB+',
-  'AB',
   'AB-',
   'O+',
-  'O',
   'O-'
 ];
 

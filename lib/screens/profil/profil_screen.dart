@@ -23,7 +23,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
 
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
-    await authProvider.logout();
+    await authProvider.logout(context);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const LoginScreen()),

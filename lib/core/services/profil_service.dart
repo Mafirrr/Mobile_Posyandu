@@ -1,41 +1,48 @@
 import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilService {
   static const String userKey = "user";
   static const String tokenKey = "token";
-  final String baseUrl = "http://127.0.0.1:8000/api";
+  final Dio _dio = Dio(BaseOptions(
+    baseUrl: "http://127.0.0.1:8000/api",
+    connectTimeout: const Duration(seconds: 10),
+    receiveTimeout: const Duration(seconds: 10),
+    headers: {
+      "Accept": "application/json",
+      "Content-Type": "application/json",
+    },
+  ));
 
   Future<dynamic> getAnggota() async {
     try {
       int? id = await getID();
       String? token = await _getToken();
-      if (token == null) {
-        print("ID kosong");
+      if (token == null || id == null) {
+        print("Token atau ID kosong");
         return null;
       }
-      final response = await http.get(
-        Uri.parse("$baseUrl/user/$id"),
-        headers: {
-          "Authorization": "Bearer $token",
-          "Accept": "application/json",
-        },
+
+      final response = await _dio.get(
+        "/user/$id",
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ),
       );
 
-      if (response.statusCode == 200) {
-        final Map<String, dynamic> responseData = jsonDecode(response.body);
-        final userData = responseData['user'];
+      final responseData = response.data;
+      final userData = responseData['user'];
 
-        if (responseData['role'] == 'anggota') {
-          return Anggota.fromJson(userData);
-        } else {
-          // return Petugas.fromJson(responseData['user']);
-        }
+      if (responseData['role'] == 'anggota') {
+        return Anggota.fromJson(userData);
+      } else {
+        // return Petugas.fromJson(userData);
+        return null;
       }
-
-      return print("gagal dapat");
     } catch (e) {
       print("Error getAnggota: $e");
       return null;
@@ -43,20 +50,31 @@ class ProfilService {
   }
 
   Future<bool> updateAnggota(Anggota anggota) async {
-    final token = await _getToken(); // ambil token dari SharedPreferences
-    final response = await http.put(
-      Uri.parse('$baseUrl/profile/update'),
-      headers: {
-        'Authorization': 'Bearer $token',
-        'Content-Type': 'application/json',
-      },
-      body: jsonEncode(anggota.toJson()),
-    );
+    try {
+      final token = await _getToken();
+      if (token == null) {
+        print("Token tidak ditemukan");
+        return false;
+      }
 
-    if (response.statusCode == 200) {
-      return true;
-    } else {
-      print("Gagal update profil: ${response.body}");
+      final response = await _dio.put(
+        "/profile/update",
+        data: anggota.toJson(),
+        options: Options(
+          headers: {
+            "Authorization": "Bearer $token",
+          },
+        ),
+      );
+
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        print("Gagal update profil: ${response.data}");
+        return false;
+      }
+    } catch (e) {
+      print("Error updateAnggota: $e");
       return false;
     }
   }
@@ -67,13 +85,13 @@ class ProfilService {
 
     if (userData != null) {
       final Map<String, dynamic> userMap = jsonDecode(userData);
-      return userMap['id'] ?? null;
+      return userMap['id'];
     }
     return null;
   }
 
   Future<String?> _getToken() async {
     final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(ProfilService.tokenKey);
+    return prefs.getString(tokenKey);
   }
 }

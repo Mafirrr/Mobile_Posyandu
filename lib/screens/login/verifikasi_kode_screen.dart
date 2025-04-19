@@ -1,15 +1,103 @@
+import 'dart:async';
+
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/login/password_reset_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class VerifikasiKodeScreen extends StatefulWidget {
-  const VerifikasiKodeScreen({Key? key}) : super(key: key);
+  final String verificationId;
+  const VerifikasiKodeScreen({Key? key, required this.verificationId})
+      : super(key: key);
 
   @override
   State<VerifikasiKodeScreen> createState() => _VerifikasiKodeScreenState();
 }
 
 class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
+  final int length = 6;
+  List<TextEditingController> controllers = [];
+  String? mergedText;
+  List<FocusNode> focusNodes = [];
+  bool showResendButton = false;
+  Duration countdownDuration = const Duration(minutes: 3);
+  Timer? _resendTimer;
+  String countdownText = '';
+
+  @override
+  void initState() {
+    super.initState();
+    controllers = List.generate(length, (_) => TextEditingController());
+    focusNodes = List.generate(length, (_) => FocusNode());
+
+    startCountdown();
+  }
+
+  void onOtpChanged() {
+    mergedText = controllers.map((controller) => controller.text).join();
+  }
+
+  void verifyOtp() async {
+    final credential = PhoneAuthProvider.credential(
+      verificationId: widget.verificationId,
+      smsCode: mergedText!,
+    );
+
+    try {
+      UserCredential userCredential =
+          await FirebaseAuth.instance.signInWithCredential(credential);
+
+      if (userCredential.user != null) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PasswordResetScreen()),
+        );
+      }
+    } catch (e) {
+      // Catch errors such as incorrect OTP or network issues
+      print("OTP verification failed: $e");
+
+      // Optionally, show an error message to the user
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("OTP salah, coba lagi.")),
+      );
+    }
+  }
+
+  void startCountdown() {
+    const oneSec = Duration(seconds: 1);
+    int secondsRemaining = countdownDuration.inSeconds;
+
+    _resendTimer = Timer.periodic(oneSec, (timer) {
+      if (secondsRemaining == 0) {
+        timer.cancel();
+        setState(() {
+          showResendButton = true;
+        });
+      } else {
+        secondsRemaining--;
+        final minutes = (secondsRemaining ~/ 60).toString().padLeft(2, '0');
+        final seconds = (secondsRemaining % 60).toString().padLeft(2, '0');
+        setState(() {
+          countdownText = 'Kirim ulang dalam $minutes:$seconds';
+        });
+      }
+    });
+  }
+
+  @override
+  void dispose() {
+    _resendTimer?.cancel();
+    for (var controller in controllers) {
+      controller.dispose();
+    }
+    for (var node in focusNodes) {
+      node.dispose();
+    }
+    super.dispose();
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -67,24 +155,45 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                   const SizedBox(height: 30),
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                    children: List.generate(5, (index) {
+                    children: List.generate(6, (index) {
                       return Container(
                         width: 50,
                         height: 60,
-                        alignment: Alignment.center,
-                        decoration: BoxDecoration(
-                          color: Colors.transparent,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(
-                            color: Color.fromARGB(255, 151, 151, 151),
-                            width: 1,
-                          ),
-                        ),
-                        child: const Text(
-                          "-",
-                          style: TextStyle(
-                            fontSize: 20,
-                            fontWeight: FontWeight.bold,
+                        // alignment: Alignment.center,
+                        // decoration: BoxDecoration(
+                        //   color: Colors.transparent,
+                        //   borderRadius: BorderRadius.circular(12),
+                        //   border: Border.all(
+                        //     color: Color.fromARGB(255, 151, 151, 151),
+                        //     width: 1,
+                        //   ),
+                        // ),
+                        child: TextField(
+                          textAlign: TextAlign.center,
+                          keyboardType: TextInputType.number,
+                          controller: controllers[index],
+                          focusNode: focusNodes[index],
+                          maxLength: 1,
+                          onChanged: (value) {
+                            if (value.length == 1 && index < length - 1) {
+                              FocusScope.of(context)
+                                  .requestFocus(focusNodes[index + 1]);
+                            } else if (value.isEmpty && index > 0) {
+                              FocusScope.of(context)
+                                  .requestFocus(focusNodes[index - 1]);
+                            }
+                            onOtpChanged();
+                          },
+                          decoration: InputDecoration(
+                            counterText: '',
+                            enabledBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Colors.grey),
+                            ),
+                            focusedBorder: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(12),
+                              borderSide: const BorderSide(color: Colors.blue),
+                            ),
                           ),
                         ),
                       );
@@ -98,7 +207,10 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                       child: CustomButton(
                         text: "Kirim Kode OTP",
                         isLoading: false,
-                        onPressed: () {},
+                        onPressed: () {
+                          // Resend logic here
+                          verifyOtp();
+                        },
                         backgroundColor: const Color(0xFF4A7EFF),
                         textColor: Colors.white,
                         height: 50,
@@ -107,23 +219,37 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                   ),
                   const SizedBox(height: 20),
                   GestureDetector(
-                    onTap: () {},
-                    child: const Text.rich(
+                    onTap: showResendButton
+                        ? () {
+                            //
+                          }
+                        : null,
+                    child: Text.rich(
                       TextSpan(
                         text: 'Belum menerima kode? ',
-                        style: TextStyle(
+                        style: const TextStyle(
                           fontSize: 14,
                           color: Colors.black87,
                         ),
-                        children: [
-                          TextSpan(
-                            text: 'Kirim ulang',
-                            style: TextStyle(
-                              fontWeight: FontWeight.bold,
-                              color: Color(0xFF4A7EFF),
-                            ),
-                          ),
-                        ],
+                        children: showResendButton
+                            ? [
+                                const TextSpan(
+                                  text: 'Kirim ulang',
+                                  style: TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4A7EFF),
+                                  ),
+                                ),
+                              ]
+                            : [
+                                TextSpan(
+                                  text: countdownText,
+                                  style: const TextStyle(
+                                    fontWeight: FontWeight.bold,
+                                    color: Color(0xFF4A7EFF),
+                                  ),
+                                ),
+                              ],
                       ),
                       textAlign: TextAlign.center,
                     ),

@@ -3,6 +3,7 @@ import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
+import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
@@ -88,7 +89,8 @@ class _LoginScreenState extends State<LoginScreen> {
                     "Mulai Langkah Pertama Menuju Kehamilan Sehat\n"
                     "dengan Catatan dan Pantauan Setiap Hari!",
                     textAlign: TextAlign.center,
-                    style: TextStyle(fontSize: 14, color: Color.fromARGB(255, 52, 59, 65)),
+                    style: TextStyle(
+                        fontSize: 14, color: Color.fromARGB(255, 52, 59, 65)),
                   ),
                   const SizedBox(height: 20),
                   Form(
@@ -137,7 +139,12 @@ class _LoginScreenState extends State<LoginScreen> {
                           alignment: Alignment.centerRight,
                           child: TextButton(
                             onPressed: () {
-                              // TODO: Implement Forgot Password
+                              Navigator.pushReplacement(
+                                context,
+                                MaterialPageRoute(
+                                    builder: (context) =>
+                                        const LupaPasswordScreen()),
+                              );
                             },
                             child: const Text("Lupa Password?",
                                 style: TextStyle(

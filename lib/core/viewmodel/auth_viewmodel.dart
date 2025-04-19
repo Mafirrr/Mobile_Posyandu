@@ -10,57 +10,87 @@ class AuthViewModel extends ChangeNotifier {
 
   bool get isLoading => _isLoading;
   dynamic get user => _user;
+  bool get isLoggedIn => _user != null;
 
   AuthViewModel() {
     loadUser();
   }
 
   Future<void> loadUser() async {
-    _isLoading = true;
-    notifyListeners();
+    _setLoading(true);
 
-    _user = await _getUser();
-
-    if (_user == null) {
-      final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(AuthService.userKey);
-    }
-
-    _isLoading = false;
-    notifyListeners();
-  }
-
-  Future<dynamic> _getUser() async {
     final prefs = await SharedPreferences.getInstance();
     final String? userData = prefs.getString(AuthService.userKey);
 
     if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
-      return userMap;
+      try {
+        _user = jsonDecode(userData);
+      } catch (e) {
+        print("Gagal decode user data: $e");
+        _user = null;
+        await prefs.remove(AuthService.userKey);
+      }
+    } else {
+      _user = null;
     }
-    return null;
+
+    _setLoading(false);
   }
 
   Future<bool> login(String nik, String password) async {
-    _isLoading = true;
-    notifyListeners();
+    _setLoading(true);
 
-    await Future.delayed(const Duration(seconds: 2));
-
-    dynamic user = await _authService.login(nik, password);
-    _isLoading = false;
+    final user = await _authService.login(nik, password);
+    _setLoading(false);
 
     if (user != null) {
       _user = user;
       notifyListeners();
       return true;
     }
-    notifyListeners();
+
     return false;
   }
 
-  Future<void> logout() async {
-    await _authService.logout();
+  Future<void> logout(BuildContext context) async {
+    _setLoading(true);
+
+    final response = await _authService.logoutUser();
+
+    if (response != null && response.statusCode == 200) {
+      final prefs = await SharedPreferences.getInstance();
+      await prefs.remove(AuthService.userKey);
+      await prefs.remove(AuthService.tokenKey);
+      _user = null;
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+              response?.statusMessage ?? 'Logout failed. Please try again.'),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+    }
+
+    _setLoading(false);
+  }
+
+  void _setLoading(bool value) {
+    _isLoading = value;
     notifyListeners();
+  }
+
+  Future<bool> changePassword(String phone, String password) async {
+    _setLoading(true);
+
+    final response = await _authService.changePassword(phone, password);
+
+    _setLoading(false);
+
+    if (response != null && response.statusCode == 200) {
+      return true;
+    } else {
+      return false;
+    }
   }
 }

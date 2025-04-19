@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
-import 'package:posyandu_mob/widgets/custom_textfield.dart';
 
 class ResetSuksesScreen extends StatefulWidget {
   const ResetSuksesScreen({Key? key}) : super(key: key);
@@ -11,9 +11,6 @@ class ResetSuksesScreen extends StatefulWidget {
 }
 
 class _ResetSuksesScreenState extends State<ResetSuksesScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _phoneController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +69,13 @@ class _ResetSuksesScreenState extends State<ResetSuksesScreen> {
                     child: CustomButton(
                       text: "Selesai",
                       isLoading: false,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => const LoginScreen()),
+                        );
+                      },
                       backgroundColor: const Color(0xFF4A7EFF),
                       textColor: Colors.white,
                       height: 50,

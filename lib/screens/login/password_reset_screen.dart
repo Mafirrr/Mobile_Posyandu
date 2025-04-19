@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/login/new_password_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
-import 'package:posyandu_mob/widgets/custom_textfield.dart';
 
 class PasswordResetScreen extends StatefulWidget {
   const PasswordResetScreen({Key? key}) : super(key: key);
@@ -11,9 +11,6 @@ class PasswordResetScreen extends StatefulWidget {
 }
 
 class _PasswordResetScreenState extends State<PasswordResetScreen> {
-  final _formKey = GlobalKey<FormState>();
-  final TextEditingController _phoneController = TextEditingController();
-
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -72,7 +69,13 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                     child: CustomButton(
                       text: "Konfirmasi",
                       isLoading: false,
-                      onPressed: () {},
+                      onPressed: () {
+                        Navigator.pushReplacement(
+                          context,
+                          MaterialPageRoute(
+                              builder: (context) => NewPasswordScreen()),
+                        );
+                      },
                       backgroundColor: const Color(0xFF4A7EFF),
                       textColor: Colors.white,
                       height: 50,
