@@ -89,7 +89,9 @@ class _SplashScreenState extends State<SplashScreen>
     final String? userData = prefs.getString(AuthService.userKey);
 
     if (userData != null) {
-      return true;
+      setState(() {
+        isLoggedIn = true;
+      });
     }
     return false;
   }
@@ -133,12 +135,12 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          if (isLoggedIn == true)
-            const NavAnggotaScreen()
-          else if (isLoggedIn == false)
-            const LoginScreen()
-          else
-            const SizedBox(),
+          // if (isLoggedIn == true)
+          //   const NavAnggotaScreen()
+          // else if (isLoggedIn == false)
+          //   const LoginScreen()
+          // else
+          //   const SizedBox(),
           if (showSplash)
             FadeTransition(
               opacity: fadeOutAnimation,

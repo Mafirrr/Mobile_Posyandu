@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
-import 'package:posyandu_mob/screens/profil/Informasi_pribadi_screen.dart';
+import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -85,7 +85,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                   children: [
                     const CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage("images/logo.png"),
+                      backgroundImage: AssetImage("images/picture.jpg"),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -134,21 +134,21 @@ class _ProfileScreenState extends State<ProfilScreen> {
                             child: InfoCard(
                           "Berat Badan",
                           "50.2 kg",
-                          Icons.monitor_weight,
+                          "images/berat_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tinggi Badan",
                           "160 cm",
-                          Icons.accessibility,
+                          "images/tinggi_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tekanan Darah",
                           "120/100 mmHg",
-                          Icons.favorite,
+                          "images/tekanan_darah.png",
                         )),
                       ],
                     ),
@@ -240,7 +240,7 @@ class SingleRoundedCurveClipper extends CustomClipper<Path> {
 class InfoCard extends StatelessWidget {
   final String title;
   final String value;
-  final IconData icon;
+  final String icon;
 
   InfoCard(this.title, this.value, this.icon);
 
@@ -258,7 +258,11 @@ class InfoCard extends StatelessWidget {
           padding: EdgeInsets.all(screenWidth * 0.02),
           child: Column(
             children: [
-              Icon(icon, size: screenWidth * 0.08, color: Colors.green),
+              Image.asset(
+                icon,
+                width: screenWidth * 0.08,
+                height: screenWidth * 0.08,
+              ),
               SizedBox(height: screenWidth * 0.02),
               Text(title,
                   style: TextStyle(

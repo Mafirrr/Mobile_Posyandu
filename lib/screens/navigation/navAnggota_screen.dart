@@ -1,5 +1,5 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/screens/profil/profil_screen.dart';
+import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class NavAnggotaScreen extends StatefulWidget {
@@ -58,13 +58,6 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   BottomNavigationBarItem _buildNavItem(
       IconData icon, String label, int index) {
     bool isSelected = _selectedIndex == index;
-    Color selectedColor = _selectedIndex == 0
-        ? Color(0xff5B37B7)
-        : _selectedIndex == 1
-            ? Color(0xff28A745)
-            : _selectedIndex == 2
-                ? Color(0xffC9379D)
-                : Color(0xff1194AA);
 
     return BottomNavigationBarItem(
       icon: AnimatedContainer(
@@ -73,7 +66,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: isSelected
             ? BoxDecoration(
-                color: selectedColor,
+                color: const Color(0xff5B37B7),
                 borderRadius: BorderRadius.circular(20),
               )
             : null,

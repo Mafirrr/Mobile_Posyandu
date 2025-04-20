@@ -49,12 +49,14 @@ class ProfilService {
     }
   }
 
-  Future<bool> updateAnggota(Anggota anggota) async {
+  Future<Response> updateAnggota(Anggota anggota) async {
     try {
       final token = await _getToken();
       if (token == null) {
-        print("Token tidak ditemukan");
-        return false;
+        return Response(
+            requestOptions: RequestOptions(path: ' '),
+            statusCode: 500,
+            statusMessage: "error saat mendapatkan token");
       }
 
       final response = await _dio.put(
@@ -68,14 +70,16 @@ class ProfilService {
       );
 
       if (response.statusCode == 200) {
-        return true;
+        return response;
       } else {
-        print("Gagal update profil: ${response.data}");
-        return false;
+        return response;
       }
-    } catch (e) {
-      print("Error updateAnggota: $e");
-      return false;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ' '),
+        statusCode: 202,
+        statusMessage: "Gagal Mengupdate",
+      );
     }
   }
 
