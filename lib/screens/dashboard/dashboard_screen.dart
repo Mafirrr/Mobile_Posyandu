@@ -370,7 +370,7 @@ class _DashboardPageState extends State<DashboardPage> {
                 Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    //Card
+                    // Card Kehamilan
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -390,30 +390,57 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Kehamilan',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Text(
+                                  'Kehamilan',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Normal',
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              '120/80 mmHg',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            const SizedBox(
+                                height:
+                                    8), // Memberi jarak antara baris pertama dan berikutnya
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple,
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Text(
+                                  '120/80 mmHg',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            const Text('Normal',
-                                style: TextStyle(color: Colors.green)),
-                            const SizedBox(height: 8),
+                            const SizedBox(
+                                height:
+                                    12), // Memberi jarak antara teks dan tombol
                             ElevatedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => const GrafikPopup(
-                                      title: "Grafik Kehamilan"),
+                                    title: "Grafik Kehamilan",
+                                  ),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue),
+                                backgroundColor: Colors.blue,
+                              ),
                               child: const Text(
                                 'Lihat grafik',
                                 style: TextStyle(
@@ -429,7 +456,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
 
-                    //BB Card
+                    // Card Berat Badan
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -449,30 +476,57 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            const Text(
-                              'Berat Badan',
-                              style: TextStyle(fontWeight: FontWeight.bold),
+                            Row(
+                              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                              children: const [
+                                Text(
+                                  'Berat Badan',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                Text(
+                                  'Normal',
+                                  style: TextStyle(color: Colors.green),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            const Text(
-                              '50.2 Kg',
-                              style: TextStyle(
-                                  fontSize: 16, fontWeight: FontWeight.bold),
+                            const SizedBox(
+                                height:
+                                    8), // Memberi jarak antara baris pertama dan berikutnya
+                            Row(
+                              children: [
+                                Container(
+                                  width: 6,
+                                  height: 14,
+                                  decoration: BoxDecoration(
+                                    color: Colors.purple,
+                                    borderRadius: BorderRadius.circular(3),
+                                  ),
+                                ),
+                                const SizedBox(width: 6),
+                                const Text(
+                                  '50.2 Kg',
+                                  style: TextStyle(
+                                    fontSize: 16,
+                                    fontWeight: FontWeight.bold,
+                                  ),
+                                ),
+                              ],
                             ),
-                            const SizedBox(height: 4),
-                            const Text('Normal',
-                                style: TextStyle(color: Colors.green)),
-                            const SizedBox(height: 8),
+                            const SizedBox(
+                                height:
+                                    12), // Memberi jarak antara teks dan tombol
                             ElevatedButton(
                               onPressed: () {
                                 showDialog(
                                   context: context,
                                   builder: (context) => const GrafikPopup(
-                                      title: "Grafik Berat Badan"),
+                                    title: "Grafik Berat Badan",
+                                  ),
                                 );
                               },
                               style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.blue),
+                                backgroundColor: Colors.blue,
+                              ),
                               child: const Text(
                                 'Lihat grafik',
                                 style: TextStyle(
@@ -488,8 +542,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       ),
                     ),
                   ],
-                ),
-                const SizedBox(height: 20),
+                )
               ],
             ),
           ),
