@@ -416,7 +416,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                   backgroundColor: Colors.blue),
                               child: const Text(
                                 'Lihat grafik',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],
@@ -435,7 +440,7 @@ class _DashboardPageState extends State<DashboardPage> {
                           boxShadow: [
                             BoxShadow(
                               color: Colors.black.withOpacity(0.1),
-                              blurRadius: 8,
+                              blurRadius: 12,
                               offset: const Offset(0, 4),
                             ),
                           ],
@@ -470,7 +475,12 @@ class _DashboardPageState extends State<DashboardPage> {
                                   backgroundColor: Colors.blue),
                               child: const Text(
                                 'Lihat grafik',
-                                style: TextStyle(fontSize: 12),
+                                style: TextStyle(
+                                  color: Colors.white,
+                                  fontSize: 12,
+                                  fontFamily: 'Roboto',
+                                  fontWeight: FontWeight.w500,
+                                ),
                               ),
                             ),
                           ],
