@@ -6,6 +6,7 @@ import 'package:posyandu_mob/screens/SplashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'firebase_options.dart';
 import 'package:provider/provider.dart';
+import 'package:intl/date_symbol_data_local.dart';
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -13,6 +14,7 @@ void main() async {
     options: DefaultFirebaseOptions.currentPlatform,
   );
 
+  await initializeDateFormatting('id_ID', null);
   FirebaseAuth.instance.setLanguageCode('id');
   runApp(
     MultiProvider(
