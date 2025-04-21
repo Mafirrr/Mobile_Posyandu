@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
+import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 
 class NavAnggotaScreen extends StatefulWidget {
   const NavAnggotaScreen({Key? key}) : super(key: key);
@@ -23,7 +24,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   Widget _buildScreen() {
     switch (_selectedIndex) {
       case 0:
-        return CustomText(text: "Beranda");
+        return const DashboardPage();
       case 1:
         return CustomText(text: "Pemeriksaan");
       case 2:
