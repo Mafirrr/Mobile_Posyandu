@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
@@ -28,7 +29,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 1:
         return CustomText(text: "Pemeriksaan");
       case 2:
-        return CustomText(text: "Edukasi");
+        return Edukasi();
       case 3:
         return const ProfilScreen();
       default:
