@@ -113,7 +113,8 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                     children: [
                       const CircleAvatar(
                         radius: 55,
-                        backgroundImage: AssetImage('images/picture.jpg'),
+                        backgroundImage:
+                            AssetImage('assets/images/picture.jpg'),
                       ),
                       GestureDetector(
                         onTap: () {

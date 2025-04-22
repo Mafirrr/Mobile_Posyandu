@@ -65,9 +65,8 @@ class AuthViewModel extends ChangeNotifier {
     } else {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              response?.statusMessage ?? 'Logout failed. Please try again.'),
-          duration: const Duration(seconds: 3),
+          content: Text(response?.data ?? 'Logout failed. Please try again.'),
+          duration: const Duration(seconds: 10),
         ),
       );
     }

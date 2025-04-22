@@ -11,7 +11,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: "http://127.0.0.1:8000/api",
+    baseUrl: "http://10.0.2.2:8000/api",
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {"Content-Type": "application/json"},
@@ -95,7 +95,7 @@ class AuthService {
         'Accept': 'application/json',
       };
 
-      final response = await _dio.post('/logout');
+      final response = await _dio.get('/logout');
 
       await prefs.remove('token');
       await prefs.remove('user');
@@ -105,8 +105,7 @@ class AuthService {
       return Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 500,
-        statusMessage:
-            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+        statusMessage: 'Terjadi kesalahan saat logout: ${e.response}',
       );
     }
   }
