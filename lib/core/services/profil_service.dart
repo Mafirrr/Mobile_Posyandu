@@ -7,7 +7,7 @@ class ProfilService {
   static const String userKey = "user";
   static const String tokenKey = "token";
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: "http://127.0.0.1:8000/api",
+    baseUrl: "http://10.0.2.2:8000/api",
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
@@ -52,6 +52,7 @@ class ProfilService {
   Future<Response> updateAnggota(Anggota anggota) async {
     try {
       final token = await _getToken();
+      print(token);
       if (token == null) {
         return Response(
             requestOptions: RequestOptions(path: ' '),
@@ -78,7 +79,7 @@ class ProfilService {
       return Response(
         requestOptions: RequestOptions(path: ' '),
         statusCode: 202,
-        statusMessage: "Gagal Mengupdate",
+        statusMessage: "Gagal Mengupdate: ${e.message}",
       );
     }
   }

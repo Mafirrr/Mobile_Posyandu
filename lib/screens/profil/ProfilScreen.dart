@@ -22,12 +22,15 @@ class _ProfileScreenState extends State<ProfilScreen> {
   String? nama, role;
 
   Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
     await authProvider.logout(context);
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+    if (prefs.getString('token') == null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -85,7 +88,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                   children: [
                     const CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage("images/picture.jpg"),
+                      backgroundImage: AssetImage("assets/images/picture.jpg"),
                     ),
                     const SizedBox(width: 12),
                     Column(
