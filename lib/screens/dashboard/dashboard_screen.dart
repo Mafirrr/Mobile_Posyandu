@@ -142,7 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     const CircleAvatar(
                       radius: 24,
-                      backgroundImage: AssetImage('images/logo.png'),
+                      backgroundImage: AssetImage('assets/images/logo.png'),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -244,16 +244,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-                      Container(
-                        width: MediaQuery.of(context).size.width * 0.9,
-                        margin: const EdgeInsets.symmetric(horizontal: 8),
-                        padding: const EdgeInsets.all(12),
-                        decoration: BoxDecoration(
-                          color: Colors.blue.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                        ),
+                      SingleChildScrollView(
+                        scrollDirection: Axis.horizontal,
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                           children: generateKalender(today),
                         ),
                       ),

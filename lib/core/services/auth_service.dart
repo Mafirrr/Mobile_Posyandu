@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -26,7 +27,7 @@ class AuthService {
   }) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      timeout: const Duration(minutes: 3),
+      timeout: const Duration(seconds: 120),
       verificationCompleted: onVerificationCompleted,
       verificationFailed: onVerificationFailed,
       codeSent: onCodeSent,
@@ -132,15 +133,16 @@ class AuthService {
   }
 
   Future<void> _saveUser(Anggota user, String role) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(
-      userKey,
-      jsonEncode({
-        "id": user.id,
-        "name": user.nama,
-        "role": role,
-      }),
-    );
+    // final prefs = await SharedPreferences.getInstance();
+    // prefs.setString(
+    //   userKey,
+    //   jsonEncode({
+    //     "id": user.id,
+    //     "name": user.nama,
+    //     "role": role,
+    //   }),
+    // );
+    await UserDatabase.instance.create(user, role);
   }
 
   Future<void> _saveToken(String token) async {

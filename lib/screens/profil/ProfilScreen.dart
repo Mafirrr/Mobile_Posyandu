@@ -1,6 +1,8 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
@@ -40,16 +42,15 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   Future<void> _getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
+    // final prefs = await SharedPreferences.getInstance();
+    // final String? userData = prefs.getString(AuthService.userKey);
+    dynamic user = await UserDatabase.instance.readUser();
 
-    if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
-
+    if (user != null) {
       setState(() {
-        nama = userMap['name'] ?? '';
-        role = userMap['role'] ?? '';
-        id = userMap['id'] ?? '';
+        nama = user.anggota.nama ?? '';
+        role = user.role ?? '';
+        id = user.anggota.id ?? '';
       });
     } else {
       print("object not found");
@@ -137,21 +138,21 @@ class _ProfileScreenState extends State<ProfilScreen> {
                             child: InfoCard(
                           "Berat Badan",
                           "50.2 kg",
-                          "images/berat_badan.png",
+                          "assets/images/berat_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tinggi Badan",
                           "160 cm",
-                          "images/tinggi_badan.png",
+                          "assets/images/tinggi_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tekanan Darah",
                           "120/100 mmHg",
-                          "images/tekanan_darah.png",
+                          "assets/images/tekanan_darah.png",
                         )),
                       ],
                     ),

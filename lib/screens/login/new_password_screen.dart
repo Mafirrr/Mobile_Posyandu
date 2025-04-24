@@ -73,7 +73,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('images/logo.png', height: 60),
+                  Image.asset('assets/images/logo.png', height: 60),
                   const SizedBox(height: 10),
                   const CustomText(
                     text: "New Password",
