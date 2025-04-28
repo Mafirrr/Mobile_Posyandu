@@ -2,6 +2,7 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -11,7 +12,7 @@ class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: "http://127.0.0.1:8000/api",
+    baseUrl: "http://10.0.2.2:8000/api",
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {"Content-Type": "application/json"},
@@ -26,7 +27,7 @@ class AuthService {
   }) async {
     await _auth.verifyPhoneNumber(
       phoneNumber: phoneNumber,
-      timeout: const Duration(minutes: 3),
+      timeout: const Duration(seconds: 120),
       verificationCompleted: onVerificationCompleted,
       verificationFailed: onVerificationFailed,
       codeSent: onCodeSent,
@@ -95,7 +96,7 @@ class AuthService {
         'Accept': 'application/json',
       };
 
-      final response = await _dio.post('/logout');
+      final response = await _dio.get('/logout');
 
       await prefs.remove('token');
       await prefs.remove('user');
@@ -105,8 +106,7 @@ class AuthService {
       return Response(
         requestOptions: RequestOptions(path: ''),
         statusCode: 500,
-        statusMessage:
-            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+        statusMessage: 'Terjadi kesalahan saat logout: ${e.response}',
       );
     }
   }
@@ -133,15 +133,16 @@ class AuthService {
   }
 
   Future<void> _saveUser(Anggota user, String role) async {
-    final prefs = await SharedPreferences.getInstance();
-    prefs.setString(
-      userKey,
-      jsonEncode({
-        "id": user.id,
-        "name": user.nama,
-        "role": role,
-      }),
-    );
+    // final prefs = await SharedPreferences.getInstance();
+    // prefs.setString(
+    //   userKey,
+    //   jsonEncode({
+    //     "id": user.id,
+    //     "name": user.nama,
+    //     "role": role,
+    //   }),
+    // );
+    await UserDatabase.instance.create(user, role);
   }
 
   Future<void> _saveToken(String token) async {

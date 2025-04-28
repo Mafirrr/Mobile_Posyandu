@@ -1,10 +1,12 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
-import 'package:posyandu_mob/screens/profil/Informasi_pribadi_screen.dart';
+import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
 import 'package:shared_preferences/shared_preferences.dart';
@@ -22,12 +24,15 @@ class _ProfileScreenState extends State<ProfilScreen> {
   String? nama, role;
 
   Future<void> _logout() async {
+    final prefs = await SharedPreferences.getInstance();
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
     await authProvider.logout(context);
 
-    Navigator.of(context).pushReplacement(
-      MaterialPageRoute(builder: (context) => const LoginScreen()),
-    );
+    if (prefs.getString('token') == null) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
   }
 
   @override
@@ -37,16 +42,15 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   Future<void> _getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
+    // final prefs = await SharedPreferences.getInstance();
+    // final String? userData = prefs.getString(AuthService.userKey);
+    dynamic user = await UserDatabase.instance.readUser();
 
-    if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
-
+    if (user != null) {
       setState(() {
-        nama = userMap['name'] ?? '';
-        role = userMap['role'] ?? '';
-        id = userMap['id'] ?? '';
+        nama = user.anggota.nama ?? '';
+        role = user.role ?? '';
+        id = user.anggota.id ?? '';
       });
     } else {
       print("object not found");
@@ -85,7 +89,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                   children: [
                     const CircleAvatar(
                       radius: 40,
-                      backgroundImage: AssetImage("images/logo.png"),
+                      backgroundImage: AssetImage("assets/images/picture.jpg"),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -134,21 +138,21 @@ class _ProfileScreenState extends State<ProfilScreen> {
                             child: InfoCard(
                           "Berat Badan",
                           "50.2 kg",
-                          Icons.monitor_weight,
+                          "assets/images/berat_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tinggi Badan",
                           "160 cm",
-                          Icons.accessibility,
+                          "assets/images/tinggi_badan.png",
                         )),
                         const SizedBox(width: 8),
                         Expanded(
                             child: InfoCard(
                           "Tekanan Darah",
                           "120/100 mmHg",
-                          Icons.favorite,
+                          "assets/images/tekanan_darah.png",
                         )),
                       ],
                     ),
@@ -240,7 +244,7 @@ class SingleRoundedCurveClipper extends CustomClipper<Path> {
 class InfoCard extends StatelessWidget {
   final String title;
   final String value;
-  final IconData icon;
+  final String icon;
 
   InfoCard(this.title, this.value, this.icon);
 
@@ -258,7 +262,11 @@ class InfoCard extends StatelessWidget {
           padding: EdgeInsets.all(screenWidth * 0.02),
           child: Column(
             children: [
-              Icon(icon, size: screenWidth * 0.08, color: Colors.green),
+              Image.asset(
+                icon,
+                width: screenWidth * 0.08,
+                height: screenWidth * 0.08,
+              ),
               SizedBox(height: screenWidth * 0.02),
               Text(title,
                   style: TextStyle(

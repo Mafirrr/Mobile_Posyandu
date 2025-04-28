@@ -49,7 +49,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('images/logo.png', height: 60),
+                  Image.asset('assets/images/logo.png', height: 60),
                   const SizedBox(height: 10),
                   const CustomText(
                     text: "Password Reset",

@@ -1,6 +1,7 @@
 import 'dart:convert';
 
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
@@ -26,12 +27,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? alert;
 
   Future<String> checkRole() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
+    // final prefs = await SharedPreferences.getInstance();
+    // final String? userData = prefs.getString(AuthService.userKey);
+    dynamic user = await UserDatabase.instance.readUser();
 
-    if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
-      return userMap['role'] ?? '';
+    if (user.role != null) {
+      // final Map<String, dynamic> userMap = jsonDecode(userData);
+      return user.role ?? '';
     }
 
     return '';
@@ -77,7 +79,7 @@ class _LoginScreenState extends State<LoginScreen> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Image.asset('images/logo.png', height: 60),
+                  Image.asset('assets/images/logo.png', height: 60),
                   const SizedBox(height: 10),
                   const CustomText(
                     text: "Login",
@@ -111,7 +113,7 @@ class _LoginScreenState extends State<LoginScreen> {
                         CustomTextField(
                           controller: _nikController,
                           label: "NIK",
-                          keyboardType: TextInputType.number,
+                          keyboardType: TextInputType.text,
                           validator: (value) => (value == null || value.isEmpty)
                               ? "NIK harus diisi"
                               : null,

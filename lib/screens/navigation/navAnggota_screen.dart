@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/screens/profil/profil_screen.dart';
+import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
+import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 
@@ -28,7 +29,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 1:
         return CustomText(text: "Pemeriksaan");
       case 2:
-        return CustomText(text: "Edukasi");
+        return Edukasi();
       case 3:
         return const ProfilScreen();
       default:
@@ -40,6 +41,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildScreen(),
+      backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildNavItem(Icons.home, "Beranda", 0),
@@ -49,6 +51,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
         ],
         currentIndex: _selectedIndex,
         unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
         onTap: _onItemTapped,
         showSelectedLabels: false,
         showUnselectedLabels: false,
@@ -59,13 +62,6 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   BottomNavigationBarItem _buildNavItem(
       IconData icon, String label, int index) {
     bool isSelected = _selectedIndex == index;
-    Color selectedColor = _selectedIndex == 0
-        ? Color(0xff5B37B7)
-        : _selectedIndex == 1
-            ? Color(0xff28A745)
-            : _selectedIndex == 2
-                ? Color(0xffC9379D)
-                : Color(0xff1194AA);
 
     return BottomNavigationBarItem(
       icon: AnimatedContainer(
@@ -74,7 +70,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
         padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
         decoration: isSelected
             ? BoxDecoration(
-                color: selectedColor,
+                color: const Color(0xff5B37B7),
                 borderRadius: BorderRadius.circular(20),
               )
             : null,

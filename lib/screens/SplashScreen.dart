@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
@@ -85,11 +86,15 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<bool> checkLoginStatus() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
+    // final prefs = await SharedPreferences.getInstance();
+    // final String? userData = prefs.getString(AuthService.userKey);
 
-    if (userData != null) {
-      return true;
+    dynamic user = await UserDatabase.instance.readUser();
+
+    if (user != null) {
+      setState(() {
+        isLoggedIn = true;
+      });
     }
     return false;
   }
@@ -133,12 +138,12 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          if (isLoggedIn == true)
-            const NavAnggotaScreen()
-          else if (isLoggedIn == false)
-            const LoginScreen()
-          else
-            const SizedBox(),
+          // if (isLoggedIn == true)
+          //   const NavAnggotaScreen()
+          // else if (isLoggedIn == false)
+          //   const LoginScreen()
+          // else
+          //   const SizedBox(),
           if (showSplash)
             FadeTransition(
               opacity: fadeOutAnimation,
