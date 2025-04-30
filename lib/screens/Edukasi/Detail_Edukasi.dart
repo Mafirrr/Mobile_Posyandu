@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:posyandu_mob/core/models/Artikel.dart';
+import 'package:intl/intl.dart';
 
 class DetailEdukasi extends StatelessWidget {
-  const DetailEdukasi({super.key});
+
+  final Artikel artikel;
+
+  const DetailEdukasi({super.key, required this.artikel});
 
   @override
   Widget build(BuildContext context) {
@@ -22,19 +27,9 @@ class DetailEdukasi extends StatelessWidget {
                 const HeaderSection(),
                 const SizedBox(height: 20),
                 const SizedBox(height: 20),
-                const MainImageSection(
-                  imageUrl:
-                      "https://storage.googleapis.com/a1aa/image/30e9999e-0767-4fe3-cc41-9147c2d26c0e.jpg",
-                ),
+                MainImageSection(artikel: artikel),
                 const SizedBox(height: 12),
-                TitleAndIntroSection(inter: inter),
-                const SizedBox(height: 20),
-                const MainImageSection(
-                  imageUrl:
-                      "https://storage.googleapis.com/a1aa/image/5df10fb1-0bbe-4b27-6ac9-8c80a4391779.jpg",
-                ),
-                const SizedBox(height: 12),
-                ReasonListSection(inter: inter),
+                TitleAndIntroSection(inter: inter, artikel: artikel),
               ],
             ),
           ),
@@ -61,24 +56,32 @@ class HeaderSection extends StatelessWidget {
 }
 
 class MainImageSection extends StatelessWidget {
-  final String imageUrl;
+  final Artikel artikel;
 
-  const MainImageSection({super.key, required this.imageUrl});
+  const MainImageSection({super.key, required this.artikel});
 
   @override
   Widget build(BuildContext context) {
-    return Image.network(
-      imageUrl,
+    final screenHeight = MediaQuery.of(context).size.height;
+    return Image.asset(
+      artikel.gambar,
       width: double.infinity,
+      height: screenHeight * 0.25,
       fit: BoxFit.cover,
     );
   }
 }
 
+
 class TitleAndIntroSection extends StatelessWidget {
   final TextStyle Function({TextStyle? textStyle}) inter;
+  final Artikel artikel;
 
-  const TitleAndIntroSection({super.key, required this.inter});
+  const TitleAndIntroSection({
+    super.key,
+    required this.inter,
+    required this.artikel,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -86,7 +89,7 @@ class TitleAndIntroSection extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
-          "17 Maret 2020",
+          DateFormat('yyyy-MM-dd').format(artikel.createdAt ?? DateTime(1970)),
           style: inter().copyWith(
             fontSize: 13,
             fontWeight: FontWeight.w400,
@@ -95,7 +98,7 @@ class TitleAndIntroSection extends StatelessWidget {
         ),
         const SizedBox(height: 4),
         Text(
-          "Pentingnya Pemeriksaan Ibu Hamil: Cara Menjaga Kesehatan Ibu dan Janin",
+          artikel.judul,
           style: inter().copyWith(
             fontSize: 20,
             fontWeight: FontWeight.w700,
@@ -103,62 +106,12 @@ class TitleAndIntroSection extends StatelessWidget {
         ),
         const SizedBox(height: 12),
         Text(
-          "Pemeriksaan kehamilan adalah langkah penting untuk memastikan kesehatan ibu dan perkembangan janin tetap optimal. Melalui pemeriksaan rutin, dokter dapat memantau kondisi ibu, mendeteksi dini potensi komplikasi, serta memberikan saran terbaik untuk menjaga kehamilan yang sehat.",
+          artikel.isi,
           style: inter().copyWith(
             fontSize: 15,
             fontWeight: FontWeight.w400,
             height: 1.5,
             color: Colors.grey[600],
-          ),
-        ),
-      ],
-    );
-  }
-}
-
-class ReasonListSection extends StatelessWidget {
-  final TextStyle Function({TextStyle? textStyle}) inter;
-
-  const ReasonListSection({super.key, required this.inter});
-
-  @override
-  Widget build(BuildContext context) {
-    const bulletPoints = [
-      "Memastikan perkembangan janin sesuai usia kehamilan.",
-      "Mendeteksi dini risiko atau komplikasi seperti preeklampsia, diabetes gestasional, atau kelainan janin.",
-      "Memberikan edukasi seputar pola makan, aktivitas fisik, dan kesehatan mental ibu hamil.",
-      "Menentukan tindakan medis yang diperlukan jika ada kondisi yang memerlukan penanganan khusus.",
-    ];
-
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Text(
-          "Mengapa Pemeriksaan Kehamilan Itu Penting",
-          style: inter().copyWith(
-            fontSize: 18,
-            fontWeight: FontWeight.w700,
-          ),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          "Pemeriksaan kehamilan memiliki banyak manfaat, antara lain:",
-          style: inter().copyWith(fontSize: 15, height: 1.5),
-        ),
-        const SizedBox(height: 8),
-        Padding(
-          padding: const EdgeInsets.only(left: 20),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: List.generate(bulletPoints.length, (index) {
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 8),
-                child: Text(
-                  "${index + 1}. ${bulletPoints[index]}",
-                  style: inter().copyWith(fontSize: 15, height: 1.5),
-                ),
-              );
-            }),
           ),
         ),
       ],

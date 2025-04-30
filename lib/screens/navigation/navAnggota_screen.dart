@@ -29,7 +29,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 1:
         return CustomText(text: "Pemeriksaan");
       case 2:
-        return Edukasi();
+        return EdukasiHomePage();
       case 3:
         return const ProfilScreen();
       default:
