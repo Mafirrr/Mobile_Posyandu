@@ -1,13 +1,15 @@
 import 'dart:convert';
 import 'package:dio/dio.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilService {
   static const String userKey = "user";
   static const String tokenKey = "token";
+  final _db = UserDatabase.instance;
   final Dio _dio = Dio(BaseOptions(
-    baseUrl: "http://127.0.0.1:8000/api",
+    baseUrl: "http://10.0.2.2:8000/api",
     connectTimeout: const Duration(seconds: 10),
     receiveTimeout: const Duration(seconds: 10),
     headers: {
@@ -52,11 +54,21 @@ class ProfilService {
   Future<Response> updateAnggota(Anggota anggota) async {
     try {
       final token = await _getToken();
+
       if (token == null) {
         return Response(
             requestOptions: RequestOptions(path: ' '),
             statusCode: 500,
             statusMessage: "error saat mendapatkan token");
+      }
+
+      int localUpdateResult = await _db.update(anggota);
+      if (localUpdateResult == 0) {
+        return Response(
+          requestOptions: RequestOptions(path: ' '),
+          statusCode: 400,
+          statusMessage: "Gagal memperbarui data lokal.",
+        );
       }
 
       final response = await _dio.put(
@@ -78,18 +90,20 @@ class ProfilService {
       return Response(
         requestOptions: RequestOptions(path: ' '),
         statusCode: 202,
-        statusMessage: "Gagal Mengupdate",
+        statusMessage: "Gagal Mengupdate: ${e.message}",
       );
     }
   }
 
   Future<int?> getID() async {
-    final prefs = await SharedPreferences.getInstance();
-    String? userData = prefs.getString(userKey);
+    // final prefs = await SharedPreferences.getInstance();
+    // String? userData = prefs.getString(userKey);
+
+    final db = await UserDatabase.instance;
+    dynamic userData = await db.readUser();
 
     if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
-      return userMap['id'];
+      return userData.anggota.id;
     }
     return null;
   }

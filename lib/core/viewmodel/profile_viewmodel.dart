@@ -26,6 +26,7 @@ class ProfilViewModel extends ChangeNotifier {
       _setLoading(false);
 
       if (update.statusCode == 202) {
+        print(update.statusMessage);
         return false;
       }
       return true;

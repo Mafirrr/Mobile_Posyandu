@@ -23,7 +23,7 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? selectedJadwal;
 
   List<DateTime> jadwalPemeriksaan = [
-    DateTime(2025, 4, 27),
+    DateTime(2025, 4, 30),
   ];
 
   bool isPemeriksaan(DateTime date) {
@@ -142,7 +142,7 @@ class _DashboardPageState extends State<DashboardPage> {
                   children: [
                     const CircleAvatar(
                       radius: 24,
-                      backgroundImage: AssetImage('images/logo.png'),
+                      backgroundImage: AssetImage('assets/images/logo.png'),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -244,6 +244,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
+
                       Container(
                         width: MediaQuery.of(context).size.width * 0.9,
                         margin: const EdgeInsets.symmetric(horizontal: 8),
@@ -252,9 +253,12 @@ class _DashboardPageState extends State<DashboardPage> {
                           color: Colors.blue.shade50,
                           borderRadius: BorderRadius.circular(12),
                         ),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                          children: generateKalender(today),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                            children: generateKalender(today),
+                          ),
                         ),
                       ),
                       const SizedBox(height: 16),
@@ -368,9 +372,8 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
 
                 Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    // Card Kehamilan
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -403,9 +406,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                                height:
-                                    8), // Memberi jarak antara baris pertama dan berikutnya
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Container(
@@ -426,9 +427,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                                height:
-                                    12), // Memberi jarak antara teks dan tombol
+                            const SizedBox(height: 12),
                             ElevatedButton(
                               onPressed: () {
                                 showDialog(
@@ -455,8 +454,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ),
                     ),
-
-                    // Card Berat Badan
                     Expanded(
                       child: Container(
                         padding: const EdgeInsets.all(12),
@@ -489,9 +486,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                                height:
-                                    8), // Memberi jarak antara baris pertama dan berikutnya
+                            const SizedBox(height: 8),
                             Row(
                               children: [
                                 Container(
@@ -512,9 +507,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 ),
                               ],
                             ),
-                            const SizedBox(
-                                height:
-                                    12), // Memberi jarak antara teks dan tombol
+                            const SizedBox(height: 12),
                             ElevatedButton(
                               onPressed: () {
                                 showDialog(

@@ -1,5 +1,6 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
@@ -59,15 +60,19 @@ class AuthViewModel extends ChangeNotifier {
 
     if (response != null && response.statusCode == 200) {
       final prefs = await SharedPreferences.getInstance();
-      await prefs.remove(AuthService.userKey);
+      // await prefs.remove(AuthService.userKey);
       await prefs.remove(AuthService.tokenKey);
+
+      final db = UserDatabase.instance;
+      await db.logout();
       _user = null;
     } else {
+      final db = UserDatabase.instance;
+      await db.logout();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(
-              response?.statusMessage ?? 'Logout failed. Please try again.'),
-          duration: const Duration(seconds: 3),
+          content: Text(response?.data ?? 'Logout failed. Please try again.'),
+          duration: const Duration(seconds: 10),
         ),
       );
     }

@@ -41,6 +41,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       body: _buildScreen(),
+      backgroundColor: Colors.white,
       bottomNavigationBar: BottomNavigationBar(
         items: [
           _buildNavItem(Icons.home, "Beranda", 0),
@@ -50,6 +51,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
         ],
         currentIndex: _selectedIndex,
         unselectedItemColor: Colors.grey,
+        backgroundColor: Colors.white,
         onTap: _onItemTapped,
         showSelectedLabels: false,
         showUnselectedLabels: false,

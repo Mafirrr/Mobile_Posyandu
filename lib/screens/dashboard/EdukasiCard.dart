@@ -12,21 +12,21 @@ class EdukasiCard extends StatelessWidget {
       shape: RoundedRectangleBorder(
         borderRadius: BorderRadius.circular(12),
       ),
-      child: Padding(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          children: [
-            Text(
-              'Edukasi ${index + 1}',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.bold,
-              ),
-            ),
-            const SizedBox(height: 10),
-          ],
-        ),
+      clipBehavior: Clip.antiAlias,
+      // child: GestureDetector(
+      //   onTap: () {
+      //     Navigator.push(
+      //       context,
+      //       MaterialPageRoute(builder: (context) => const ProfilScreen()),
+      //     );
+      //   },
+      child: Image.asset(
+        'assets/images/Edu.jpg',
+        height: 150,
+        width: double.infinity,
+        fit: BoxFit.cover,
       ),
+      // ),
     );
   }
 }

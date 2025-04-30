@@ -1,6 +1,7 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/artikel_viewmodel.dart';
+import 'package:flutter/services.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/kategori_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
@@ -15,6 +16,11 @@ void main() async {
   await Firebase.initializeApp(
     options: DefaultFirebaseOptions.currentPlatform,
   );
+
+  await SystemChrome.setPreferredOrientations([
+    DeviceOrientation.portraitUp,
+    DeviceOrientation.portraitDown,
+  ]);
 
   await initializeDateFormatting('id_ID', null);
   FirebaseAuth.instance.setLanguageCode('id');
