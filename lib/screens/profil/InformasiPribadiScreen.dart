@@ -236,7 +236,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                             await viewModel.updateProfil(updatedAnggota);
                         if (success) {
                           _showSnackbar('Profil berhasil diperbarui');
-                          Navigator.pop(context);
+                          Navigator.pop(context, true);
                         } else {
                           _showSnackbar('Gagal memperbarui profil');
                         }

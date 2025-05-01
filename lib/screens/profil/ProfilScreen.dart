@@ -35,10 +35,21 @@ class _ProfileScreenState extends State<ProfilScreen> {
     }
   }
 
+  void _openEditPage() async {
+    final result = await Navigator.push(
+      context,
+      MaterialPageRoute(builder: (context) => InformasiPribadiScreen()),
+    ); // halaman edit data
+
+    if (result == true) {
+      _getUser(); // ini akan refresh data
+    }
+  }
+
   @override
   void initState() {
-    super.initState();
     _getUser();
+    super.initState();
   }
 
   Future<void> _getUser() async {
@@ -166,11 +177,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                 Icons.person,
                 "Informasi Pribadi",
                 onTap: () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                        builder: (context) => InformasiPribadiScreen()),
-                  );
+                  _openEditPage();
                 },
               ),
               MenuOption(

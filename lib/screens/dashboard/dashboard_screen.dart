@@ -1,7 +1,8 @@
 import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+
 import 'package:posyandu_mob/screens/dashboard/EdukasiCard.dart';
 import 'notification_dialog.dart';
 import 'grafik_popup.dart';
@@ -109,16 +110,14 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _getUser() async {
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
+    dynamic user = await UserDatabase.instance.readUser();
 
-    if (userData != null) {
-      final Map<String, dynamic> userMap = jsonDecode(userData);
+    if (user != null) {
       setState(() {
-        nama = userMap['name'] ?? '';
+        nama = user.anggota.nama ?? '';
       });
     } else {
-      print('User data tidak ditemukan.');
+      print("object not found");
     }
   }
 
@@ -244,7 +243,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-
                       Container(
                         width: MediaQuery.of(context).size.width * 0.9,
                         margin: const EdgeInsets.symmetric(horizontal: 8),

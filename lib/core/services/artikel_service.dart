@@ -4,7 +4,7 @@ import 'package:http/http.dart' as http;
 import '../models/Artikel.dart';
 
 class ArtikelService {
-  final String _baseUrl = 'http://127.0.0.1:8000/api';
+  final String _baseUrl = 'http://10.0.2.2:8000/api';
 
   Future<List<Artikel>> fetchArtikel() async {
     final response = await http.get(Uri.parse('$_baseUrl/artikel'));
