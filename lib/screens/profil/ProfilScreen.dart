@@ -1,15 +1,10 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
-import 'package:posyandu_mob/core/models/Anggota.dart';
-import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 class ProfilScreen extends StatefulWidget {
@@ -24,11 +19,10 @@ class _ProfileScreenState extends State<ProfilScreen> {
   String? nama, role;
 
   Future<void> _logout() async {
-    final prefs = await SharedPreferences.getInstance();
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
-    await authProvider.logout(context);
+    final result = await authProvider.logout(context);
 
-    if (prefs.getString('token') == null) {
+    if (result) {
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
@@ -38,7 +32,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
   void _openEditPage() async {
     final result = await Navigator.push(
       context,
-      MaterialPageRoute(builder: (context) => InformasiPribadiScreen()),
+      MaterialPageRoute(builder: (context) => const InformasiPribadiScreen()),
     ); // halaman edit data
 
     if (result == true) {
@@ -53,8 +47,6 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   Future<void> _getUser() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // final String? userData = prefs.getString(AuthService.userKey);
     dynamic user = await UserDatabase.instance.readUser();
 
     if (user != null) {

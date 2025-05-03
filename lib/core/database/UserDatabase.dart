@@ -51,13 +51,14 @@ class UserDatabase {
 ''');
   }
 
-  Future<Anggota> create(Anggota user, String role) async {
+  Future<Anggota> create(Anggota user, String role, String token) async {
     final db = await instance.database;
     final id = await db.insert(
       'user',
       {
         ...user.toJson(),
         'role': role,
+        'token': token,
       },
     );
 

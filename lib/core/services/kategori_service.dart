@@ -1,16 +1,15 @@
-// services/artikel_service.dart
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/models/Kategori.dart';
 
 class KategoriService {
-  final String _baseUrl = 'http://10.0.2.2:8000/api';
+  final _api = ApiClient();
 
   Future<List<Kategori>> fetchKategori() async {
-    final response = await http.get(Uri.parse('$_baseUrl/kategori'));
+    _api.clearToken();
+    final response = await _api.dio.get('/kategori');
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = response.data;
       final List kategoriList = data['kategori'];
 
       return kategoriList.map((json) => Kategori.fromJson(json)).toList();
