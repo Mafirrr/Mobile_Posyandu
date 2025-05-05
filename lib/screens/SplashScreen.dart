@@ -80,13 +80,10 @@ class _SplashScreenState extends State<SplashScreen>
       CurvedAnimation(parent: fadeOutController, curve: Curves.easeOut),
     );
 
-    runAnimation(); // Mulai animasi
+    runAnimation();
   }
 
   Future<bool> checkLoginStatus() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // final String? userData = prefs.getString(AuthService.userKey);
-
     dynamic user = await UserDatabase.instance.readUser();
 
     if (user != null) {
@@ -136,12 +133,6 @@ class _SplashScreenState extends State<SplashScreen>
     return Scaffold(
       body: Stack(
         children: [
-          // if (isLoggedIn == true)
-          //   const NavAnggotaScreen()
-          // else if (isLoggedIn == false)
-          //   const LoginScreen()
-          // else
-          //   const SizedBox(),
           if (showSplash)
             FadeTransition(
               opacity: fadeOutAnimation,

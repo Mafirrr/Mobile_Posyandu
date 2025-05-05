@@ -1,16 +1,14 @@
-// services/artikel_service.dart
-import 'dart:convert';
-import 'package:http/http.dart' as http;
+import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import '../models/Artikel.dart';
 
 class ArtikelService {
-  final String _baseUrl = 'http://127.0.0.1:8000/api';
-
+  final _api = ApiClient();
   Future<List<Artikel>> fetchArtikel() async {
-    final response = await http.get(Uri.parse('$_baseUrl/artikel'));
+    _api.clearToken();
+    final response = await _api.dio.get('/artikel');
 
     if (response.statusCode == 200) {
-      final data = json.decode(response.body);
+      final data = response.data;
       final List artikelList = data['artikel'];
 
       return artikelList.map((json) => Artikel.fromJson(json)).toList();

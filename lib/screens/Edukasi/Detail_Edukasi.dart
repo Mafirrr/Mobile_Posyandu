@@ -4,7 +4,6 @@ import 'package:posyandu_mob/core/models/Artikel.dart';
 import 'package:intl/intl.dart';
 
 class DetailEdukasi extends StatelessWidget {
-
   final Artikel artikel;
 
   const DetailEdukasi({super.key, required this.artikel});
@@ -63,7 +62,7 @@ class MainImageSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final screenHeight = MediaQuery.of(context).size.height;
-    return Image.asset(
+    return Image.network(
       artikel.gambar,
       width: double.infinity,
       height: screenHeight * 0.25,
@@ -71,7 +70,6 @@ class MainImageSection extends StatelessWidget {
     );
   }
 }
-
 
 class TitleAndIntroSection extends StatelessWidget {
   final TextStyle Function({TextStyle? textStyle}) inter;

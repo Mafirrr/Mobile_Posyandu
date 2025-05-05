@@ -6,20 +6,6 @@ import 'package:posyandu_mob/core/services/artikel_service.dart';
 import 'package:posyandu_mob/core/services/kategori_service.dart';
 import 'package:posyandu_mob/screens/Edukasi/Detail_Edukasi.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: EdukasiHomePage(),
-    );
-  }
-}
-
 class EdukasiHomePage extends StatefulWidget {
   const EdukasiHomePage({super.key});
 
@@ -60,11 +46,10 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
   void filterArtikels() {
     setState(() {
       artikels = allArtikels.where((artikel) {
-        final matchesKategori =
-            selectedKategoriId == -1 || artikel.kategoriId == selectedKategoriId;
-        final matchesSearch = artikel.judul
-            .toLowerCase()
-            .contains(searchQuery.toLowerCase());
+        final matchesKategori = selectedKategoriId == -1 ||
+            artikel.kategoriId == selectedKategoriId;
+        final matchesSearch =
+            artikel.judul.toLowerCase().contains(searchQuery.toLowerCase());
         return matchesKategori && matchesSearch;
       }).toList();
     });
@@ -182,7 +167,7 @@ class EdukasiCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(12),
           child: ClipRRect(
             borderRadius: BorderRadius.circular(12),
-            child: Image.asset(
+            child: Image.network(
               artikel.gambar,
               width: double.infinity,
               height: 200,
@@ -299,7 +284,7 @@ class LatestArticleCard extends StatelessWidget {
                 ClipRRect(
                   borderRadius:
                       const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.asset(
+                  child: Image.network(
                     artikel.gambar,
                     height: 140,
                     width: double.infinity,
@@ -342,7 +327,6 @@ class LatestArticleCard extends StatelessWidget {
     );
   }
 }
-
 
 // class TipsSection extends StatelessWidget {
 //   const TipsSection({super.key});

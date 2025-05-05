@@ -186,7 +186,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 } else {
                                   setState(() {
-                                    alert = "Email atau Password salah!";
+                                    alert = "NIK atau Password salah!";
                                   });
                                 }
                               }

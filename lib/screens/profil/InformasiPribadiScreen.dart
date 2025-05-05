@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
@@ -43,18 +45,27 @@ final List<String> golDarahOptions = [
 ];
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
+  final ProfilService _profilService = ProfilService();
   Anggota? _anggota;
   String? token;
   DateTime? tanggal_lahir;
   bool isLoading = true;
 
   Future<void> getUser() async {
-    final ProfilService authService = ProfilService();
+    final localUser = await UserDatabase.instance.readUser();
 
-    final result = await authService.getAnggota();
-    if (result != null) {
-      setState(() {
+    if (localUser != null) {
+      _anggota = localUser.anggota;
+    } else {
+      final result = await _profilService.getAnggota();
+      if (result != null) {
         _anggota = result;
+        await UserDatabase.instance.update(result);
+      }
+    }
+
+    if (_anggota != null) {
+      setState(() {
         namaController.text = _anggota!.nama;
         nikController.text = _anggota!.nik;
         telpController.text = _anggota!.no_telepon ?? '';
@@ -236,7 +247,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                             await viewModel.updateProfil(updatedAnggota);
                         if (success) {
                           _showSnackbar('Profil berhasil diperbarui');
-                          Navigator.pop(context);
+                          Navigator.pop(context, true);
                         } else {
                           _showSnackbar('Gagal memperbarui profil');
                         }
