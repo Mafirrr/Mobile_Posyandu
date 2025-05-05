@@ -23,7 +23,7 @@ class CustomTextField extends StatelessWidget {
   final void Function(String)? onChanged;
 
   const CustomTextField({
-    Key? key,
+    super.key,
     this.controller,
     required this.label,
     this.hintText,
@@ -44,7 +44,7 @@ class CustomTextField extends StatelessWidget {
     this.enabled = true,
     this.initialValue,
     this.onChanged,
-  }) : super(key: key);
+  });
 
   @override
   Widget build(BuildContext context) {

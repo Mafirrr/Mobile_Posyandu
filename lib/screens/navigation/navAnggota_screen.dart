@@ -5,7 +5,7 @@ import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 
 class NavAnggotaScreen extends StatefulWidget {
-  const NavAnggotaScreen({Key? key}) : super(key: key);
+  const NavAnggotaScreen({super.key});
 
   @override
   _NavAnggotaScreenState createState() => _NavAnggotaScreenState();
@@ -27,9 +27,9 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 0:
         return const DashboardPage();
       case 1:
-        return CustomText(text: "Pemeriksaan");
+        return const CustomText(text: "Pemeriksaan");
       case 2:
-        return EdukasiHomePage();
+        return const EdukasiHomePage();
       case 3:
         return const ProfilScreen();
       default:

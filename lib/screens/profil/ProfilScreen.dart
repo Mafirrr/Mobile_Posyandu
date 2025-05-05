@@ -13,7 +13,7 @@ import 'package:shared_preferences/shared_preferences.dart';
 import 'package:provider/provider.dart';
 
 class ProfilScreen extends StatefulWidget {
-  const ProfilScreen({Key? key}) : super(key: key);
+  const ProfilScreen({super.key});
 
   @override
   _ProfileScreenState createState() => _ProfileScreenState();
@@ -169,7 +169,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => InformasiPribadiScreen()),
+                        builder: (context) => const InformasiPribadiScreen()),
                   );
                 },
               ),
@@ -180,7 +180,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                        builder: (context) => DataKeluargaScreen()),
+                        builder: (context) => const DataKeluargaScreen()),
                   );
                 },
               ),
@@ -246,7 +246,7 @@ class InfoCard extends StatelessWidget {
   final String value;
   final String icon;
 
-  InfoCard(this.title, this.value, this.icon);
+  const InfoCard(this.title, this.value, this.icon, {super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -293,8 +293,7 @@ class MenuOption extends StatelessWidget {
   final String title;
   final VoidCallback onTap;
 
-  const MenuOption(this.icon, this.title, {required this.onTap, Key? key})
-      : super(key: key);
+  const MenuOption(this.icon, this.title, {required this.onTap, super.key});
 
   @override
   Widget build(BuildContext context) {

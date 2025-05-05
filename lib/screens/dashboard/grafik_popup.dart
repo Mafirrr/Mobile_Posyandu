@@ -4,7 +4,7 @@ import 'package:fl_chart/fl_chart.dart';
 class GrafikPopup extends StatelessWidget {
   final String title;
 
-  const GrafikPopup({Key? key, required this.title}) : super(key: key);
+  const GrafikPopup({super.key, required this.title});
 
   @override
   Widget build(BuildContext context) {
@@ -55,9 +55,9 @@ class GrafikPopup extends StatelessWidget {
                       ),
                     ),
                     rightTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                     topTitles:
-                        AxisTitles(sideTitles: SideTitles(showTitles: false)),
+                        const AxisTitles(sideTitles: SideTitles(showTitles: false)),
                   ),
                   lineBarsData: [
                     LineChartBarData(
@@ -71,7 +71,7 @@ class GrafikPopup extends StatelessWidget {
                       isCurved: true,
                       barWidth: 3,
                       color: Colors.blue,
-                      dotData: FlDotData(show: true),
+                      dotData: const FlDotData(show: true),
                     ),
                   ],
                 ),

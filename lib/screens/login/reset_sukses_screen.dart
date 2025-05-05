@@ -4,7 +4,7 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class ResetSuksesScreen extends StatefulWidget {
-  const ResetSuksesScreen({Key? key}) : super(key: key);
+  const ResetSuksesScreen({super.key});
 
   @override
   _ResetSuksesScreenState createState() => _ResetSuksesScreenState();

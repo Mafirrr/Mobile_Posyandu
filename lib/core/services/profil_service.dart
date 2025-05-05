@@ -99,7 +99,7 @@ class ProfilService {
     // final prefs = await SharedPreferences.getInstance();
     // String? userData = prefs.getString(userKey);
 
-    final db = await UserDatabase.instance;
+    final db = UserDatabase.instance;
     dynamic userData = await db.readUser();
 
     if (userData != null) {

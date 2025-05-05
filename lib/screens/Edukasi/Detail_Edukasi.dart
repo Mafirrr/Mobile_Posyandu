@@ -11,7 +11,7 @@ class DetailEdukasi extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final inter = GoogleFonts.inter;
+    const inter = GoogleFonts.inter;
 
     return Scaffold(
       backgroundColor: Colors.white,

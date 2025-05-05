@@ -11,7 +11,7 @@ import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:provider/provider.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
-  const InformasiPribadiScreen({Key? key}) : super(key: key);
+  const InformasiPribadiScreen({super.key});
 
   @override
   _InformasiPribadiScreenState createState() => _InformasiPribadiScreenState();
