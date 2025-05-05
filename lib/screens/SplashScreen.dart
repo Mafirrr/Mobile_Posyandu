@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/Pemeriksaan/list_kehamilan.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
