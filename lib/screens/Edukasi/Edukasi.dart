@@ -6,20 +6,6 @@ import 'package:posyandu_mob/core/services/artikel_service.dart';
 import 'package:posyandu_mob/core/services/kategori_service.dart';
 import 'package:posyandu_mob/screens/Edukasi/Detail_Edukasi.dart';
 
-void main() => runApp(const MyApp());
-
-class MyApp extends StatelessWidget {
-  const MyApp({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return MaterialApp(
-      debugShowCheckedModeBanner: false,
-      home: const EdukasiHomePage(),
-    );
-  }
-}
-
 class EdukasiHomePage extends StatefulWidget {
   const EdukasiHomePage({super.key});
 
