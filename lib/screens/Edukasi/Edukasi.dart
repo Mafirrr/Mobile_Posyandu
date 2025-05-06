@@ -354,14 +354,44 @@ class LatestArticleCard extends StatelessWidget {
 
 
 
-class TipsSection extends StatelessWidget {
+class TipsSection extends StatefulWidget {
   const TipsSection({super.key});
 
-  final List<Map<String, String>> tips = const [
-    {'image': 'assets/images/Edu.jpg', 'title': 'Porsi Makan dan Minum'},
-    {'image': 'assets/images/Edu.jpg', 'title': 'Pentingnya Pemeriksaan'},
-    {'image': 'assets/images/Edu.jpg', 'title': 'Tanda-Tanda Kehamilan'},
-  ];
+  @override
+  State<TipsSection> createState() => _TipsSectionState();
+}
+
+class _TipsSectionState extends State<TipsSection> {
+  List<Artikel> tipsArtikels = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTipsArtikels();
+  }
+
+  Future<void> fetchTipsArtikels() async {
+    try {
+      final fetched = await ArtikelService().fetchArtikel();
+      setState(() {
+        tipsArtikels = fetched
+            .where((artikel) => _isTipsArtikel(artikel.judul))
+            .toList();
+      });
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal memuat data tips')),
+      );
+    }
+  }
+
+  bool _isTipsArtikel(String judul) {
+    final tipsKeywords = [
+      'tips', 'panduan', 'saran', 'petunjuk', 'cara', 'informasi', 'tutorial'
+    ];
+
+    return tipsKeywords.any((keyword) => judul.toLowerCase().contains(keyword));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -377,51 +407,87 @@ class TipsSection extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child:
-              Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
+          child: Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
         ),
-        Container(
-          height: 180,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: tips.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              return Container(
-                width: 160,
-                decoration: BoxDecoration(
-                  border:
-                      Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius:
-                          const BorderRadius.vertical(top: Radius.circular(12)),
-                      child: Image.asset(
-                        tips[index]['image']!,
-                        height: 120,
-                        width: 160,
-                        fit: BoxFit.cover,
+        tipsArtikels.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Container(
+                height: 300,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: tipsArtikels.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final artikel = tipsArtikels[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailEdukasi(artikel: artikel),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: const Color(0xFFD7E6FF), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12)),
+                              child: Image.network(
+                                artikel.gambar,
+                                height: 120,
+                                width: 160,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat('yyyy-MM-dd')
+                                        .format(artikel.createdAt ??
+                                            DateTime(1970)),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    artikel.judul,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    artikel.isi,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black.withOpacity(0.7)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        tips[index]['title']!,
-                        style: const TextStyle(
-                            fontWeight: FontWeight.w600, fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ),
+              ),
       ],
     );
   }
