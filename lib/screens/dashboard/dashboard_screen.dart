@@ -139,9 +139,14 @@ class _DashboardPageState extends State<DashboardPage> {
               children: [
                 Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 24,
-                      backgroundImage: AssetImage('assets/images/logo.png'),
+                    ClipRRect(
+                      borderRadius: BorderRadius.circular(14),
+                      child: Image.asset(
+                        'assets/images/picture.jpg',
+                        width: 50,
+                        height: 50,
+                        fit: BoxFit.cover,
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -205,11 +210,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 ),
                 const SizedBox(height: 24),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Jadwal Pemeriksaan',
                         style: TextStyle(
@@ -282,11 +287,11 @@ class _DashboardPageState extends State<DashboardPage> {
                             children: [
                               Row(
                                 children: [
-                                  Expanded(
+                                  const Expanded(
                                     child: Column(
                                       crossAxisAlignment:
                                           CrossAxisAlignment.start,
-                                      children: const [
+                                      children: [
                                         Text(
                                           'Pemeriksaan Trimester 1',
                                           style: TextStyle(
@@ -347,11 +352,11 @@ class _DashboardPageState extends State<DashboardPage> {
                 const SizedBox(height: 24),
 
                 //Grafik
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                const Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 16.0),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
                         'Grafik',
                         style: TextStyle(
@@ -391,9 +396,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
+                              children: [
                                 Text(
                                   'Kehamilan',
                                   style: TextStyle(fontWeight: FontWeight.bold),
@@ -471,9 +476,9 @@ class _DashboardPageState extends State<DashboardPage> {
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            Row(
+                            const Row(
                               mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                              children: const [
+                              children: [
                                 Text(
                                   'Berat Badan',
                                   style: TextStyle(fontWeight: FontWeight.bold),

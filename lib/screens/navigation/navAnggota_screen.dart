@@ -1,11 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
+import 'package:posyandu_mob/screens/Pemeriksaan/list_kehamilan.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 
 class NavAnggotaScreen extends StatefulWidget {
-  const NavAnggotaScreen({Key? key}) : super(key: key);
+  const NavAnggotaScreen({super.key});
 
   @override
   _NavAnggotaScreenState createState() => _NavAnggotaScreenState();
@@ -27,9 +28,9 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 0:
         return const DashboardPage();
       case 1:
-        return CustomText(text: "Pemeriksaan");
+        return ListKehamilanPage();
       case 2:
-        return EdukasiHomePage();
+        return const EdukasiHomePage();
       case 3:
         return const ProfilScreen();
       default:

@@ -11,7 +11,7 @@ import 'package:posyandu_mob/widgets/custom_datepicker.dart';
 import 'package:provider/provider.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
-  const InformasiPribadiScreen({Key? key}) : super(key: key);
+  const InformasiPribadiScreen({super.key});
 
   @override
   _InformasiPribadiScreenState createState() => _InformasiPribadiScreenState();

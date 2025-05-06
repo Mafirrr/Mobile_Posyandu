@@ -6,7 +6,7 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_datepicker.dart';
 
 class DataKeluargaScreen extends StatelessWidget {
-  const DataKeluargaScreen({Key? key}) : super(key: key);
+  const DataKeluargaScreen({super.key});
 
   @override
   Widget build(BuildContext context) {

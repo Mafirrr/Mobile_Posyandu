@@ -8,8 +8,7 @@ import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class VerifikasiKodeScreen extends StatefulWidget {
   final String verificationId;
-  const VerifikasiKodeScreen({Key? key, required this.verificationId})
-      : super(key: key);
+  const VerifikasiKodeScreen({super.key, required this.verificationId});
 
   @override
   State<VerifikasiKodeScreen> createState() => _VerifikasiKodeScreenState();
@@ -60,7 +59,7 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
 
       // Optionally, show an error message to the user
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text("OTP salah, coba lagi.")),
+        const SnackBar(content: Text("OTP salah, coba lagi.")),
       );
     }
   }
@@ -156,7 +155,7 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                   Row(
                     mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: List.generate(6, (index) {
-                      return Container(
+                      return SizedBox(
                         width: 50,
                         height: 60,
                         // alignment: Alignment.center,
