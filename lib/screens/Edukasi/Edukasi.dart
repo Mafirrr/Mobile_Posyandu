@@ -20,6 +20,7 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
   int selectedKategoriId = -1;
   String searchQuery = '';
   bool isLoading = true;
+  List<Artikel> highlightArtikels = [];
 
   @override
   void initState() {
@@ -32,6 +33,7 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
       final fetched = await ArtikelService().fetchArtikel();
       setState(() {
         allArtikels = fetched;
+        highlightArtikels = fetched.length > 10 ? fetched.take(10).toList() : fetched;
         artikels = fetched;
         isLoading = false;
       });
@@ -66,6 +68,7 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    const SizedBox(height: 15),
                     HeaderSearch(
                       onSearchChanged: (value) {
                         searchQuery = value;
@@ -77,9 +80,9 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
                       height: 200,
                       child: PageView.builder(
                         controller: _pageController,
-                        itemCount: artikels.length,
+                        itemCount: highlightArtikels.length,
                         itemBuilder: (context, index) {
-                          return EdukasiCard(artikel: artikels[index]);
+                          return EdukasiCard(artikel: highlightArtikels[index]);
                         },
                       ),
                     ),
@@ -90,6 +93,9 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
                     }),
                     const SizedBox(height: 24),
                     LatestArticleCard(artikels: artikels),
+                    const SizedBox(height: 24),
+                    TipsSection(),
+                    const SizedBox(height: 15),
                   ],
                 ),
               ),
@@ -257,146 +263,166 @@ class LatestArticleCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: artikels.length,
-      itemBuilder: (context, index) {
-        final artikel = artikels[index];
-
-        return GestureDetector(
-          onTap: () {
-            Navigator.push(
-              context,
-              MaterialPageRoute(
-                builder: (_) => DetailEdukasi(artikel: artikel),
-              ),
-            );
-          },
-          child: Container(
-            margin: const EdgeInsets.all(16),
-            decoration: BoxDecoration(
-              border: Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Column(
-              children: [
-                ClipRRect(
-                  borderRadius:
-                      const BorderRadius.vertical(top: Radius.circular(12)),
-                  child: Image.network(
-                    artikel.gambar,
-                    height: 140,
-                    width: double.infinity,
-                    fit: BoxFit.cover,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        DateFormat('yyyy-MM-dd')
-                            .format(artikel.createdAt ?? DateTime(1970)),
-                        style: const TextStyle(fontSize: 13),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        artikel.judul,
-                        style: const TextStyle(
-                            fontSize: 16, fontWeight: FontWeight.w600),
-                      ),
-                      const SizedBox(height: 6),
-                      Text(
-                        artikel.isi,
-                        maxLines: 3,
-                        overflow: TextOverflow.ellipsis,
-                        style: TextStyle(
-                            fontSize: 14, color: Colors.black.withOpacity(0.7)),
-                      ),
-                      const SizedBox(height: 8),
-                    ],
-                  ),
-                ),
-              ],
+    return Container(
+      height: 300,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Text(
+              'Artikel dan edukasi untuk Ibu Hamil',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
-        );
-      },
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: artikels.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final artikel = artikels[index];
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailEdukasi(artikel: artikel),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      border: Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          child: Image.network(
+                            artikel.gambar,
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                DateFormat('yyyy-MM-dd').format(artikel.createdAt ?? DateTime(1970)),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                artikel.judul,
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                artikel.isi,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 12, color: Colors.black.withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
 
-// class TipsSection extends StatelessWidget {
-//   const TipsSection({super.key});
 
-//   final List<Map<String, String>> tips = const [
-//     {'image': 'assets/images/Edu.jpg', 'title': 'Porsi Makan dan Minum'},
-//     {'image': 'assets/images/Edu.jpg', 'title': 'Pentingnya Pemeriksaan'},
-//     {'image': 'assets/images/Edu.jpg', 'title': 'Tanda-Tanda Kehamilan'},
-//   ];
 
-//   @override
-//   Widget build(BuildContext context) {
-//     return Column(
-//       crossAxisAlignment: CrossAxisAlignment.start,
-//       children: [
-//         const Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 16),
-//           child: Text(
-//             'Tips Sehat untuk Ibu Hamil',
-//             style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-//           ),
-//         ),
-//         const Padding(
-//           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-//           child:
-//               Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
-//         ),
-//         Container(
-//           height: 180,
-//           padding: const EdgeInsets.symmetric(horizontal: 16),
-//           child: ListView.separated(
-//             scrollDirection: Axis.horizontal,
-//             itemCount: tips.length,
-//             separatorBuilder: (_, __) => const SizedBox(width: 12),
-//             itemBuilder: (context, index) {
-//               return Container(
-//                 width: 160,
-//                 decoration: BoxDecoration(
-//                   border:
-//                       Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
-//                   borderRadius: BorderRadius.circular(12),
-//                 ),
-//                 child: Column(
-//                   children: [
-//                     ClipRRect(
-//                       borderRadius:
-//                           const BorderRadius.vertical(top: Radius.circular(12)),
-//                       child: Image.asset(
-//                         tips[index]['image']!,
-//                         height: 120,
-//                         width: 160,
-//                         fit: BoxFit.cover,
-//                       ),
-//                     ),
-//                     Padding(
-//                       padding: const EdgeInsets.all(8),
-//                       child: Text(
-//                         tips[index]['title']!,
-//                         style: const TextStyle(
-//                             fontWeight: FontWeight.w600, fontSize: 14),
-//                         textAlign: TextAlign.center,
-//                       ),
-//                     ),
-//                   ],
-//                 ),
-//               );
-//             },
-//           ),
-//         ),
-//       ],
-//     );
-//   }
-// }
+class TipsSection extends StatelessWidget {
+  const TipsSection({super.key});
+
+  final List<Map<String, String>> tips = const [
+    {'image': 'assets/images/Edu.jpg', 'title': 'Porsi Makan dan Minum'},
+    {'image': 'assets/images/Edu.jpg', 'title': 'Pentingnya Pemeriksaan'},
+    {'image': 'assets/images/Edu.jpg', 'title': 'Tanda-Tanda Kehamilan'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Tips Sehat untuk Ibu Hamil',
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          ),
+        ),
+        const Padding(
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          child:
+              Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
+        ),
+        Container(
+          height: 180,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: tips.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              return Container(
+                width: 160,
+                decoration: BoxDecoration(
+                  border:
+                      Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Column(
+                  children: [
+                    ClipRRect(
+                      borderRadius:
+                          const BorderRadius.vertical(top: Radius.circular(12)),
+                      child: Image.asset(
+                        tips[index]['image']!,
+                        height: 120,
+                        width: 160,
+                        fit: BoxFit.cover,
+                      ),
+                    ),
+                    Padding(
+                      padding: const EdgeInsets.all(8),
+                      child: Text(
+                        tips[index]['title']!,
+                        style: const TextStyle(
+                            fontWeight: FontWeight.w600, fontSize: 14),
+                        textAlign: TextAlign.center,
+                      ),
+                    ),
+                  ],
+                ),
+              );
+            },
+          ),
+        ),
+      ],
+    );
+  }
+}
