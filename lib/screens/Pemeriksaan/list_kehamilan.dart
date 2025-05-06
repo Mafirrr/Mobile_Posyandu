@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 
+import 'package:posyandu_mob/screens/Pemeriksaan/detail_pemeriksaan.dart';
+
 class ListKehamilanPage extends StatefulWidget {
   const ListKehamilanPage({Key? key}) : super(key: key);
 
@@ -149,7 +151,15 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
                             ),
                           ),
                           ElevatedButton(
-                            onPressed: () {},
+                            onPressed: () {
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) =>
+                                      const DetailPemeriksaan(),
+                                ),
+                              );
+                            },
                             style: ElevatedButton.styleFrom(
                               backgroundColor: Colors.orange,
                               padding: const EdgeInsets.symmetric(
