@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/services/PemeriksaanService.dart';
 
 import 'package:posyandu_mob/screens/Pemeriksaan/detail_pemeriksaan.dart';
 
@@ -10,6 +12,41 @@ class ListKehamilanPage extends StatefulWidget {
 }
 
 class _ListKehamilanPageState extends State<ListKehamilanPage> {
+  String? nama;
+  late List<Map<String, dynamic>> kehamilanData = [];
+
+  @override
+  void initState() {
+    super.initState();
+    _getUser();
+    _loadKehamilanData();
+  }
+
+  Future<void> _loadKehamilanData() async {
+    try {
+      final pemeriksaanService = PemeriksaanService();
+      List<Map<String, dynamic>> data =
+          await pemeriksaanService.dataKehamilan();
+      setState(() {
+        kehamilanData = data;
+      });
+    } catch (e) {
+      print('Error: $e');
+    }
+  }
+
+  Future<void> _getUser() async {
+    dynamic user = await UserDatabase.instance.readUser();
+
+    if (user != null) {
+      setState(() {
+        nama = user.anggota.nama ?? '';
+      });
+    } else {
+      nama = '';
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -34,15 +71,15 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
                   const SizedBox(width: 12),
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
-                    children: const [
+                    children: [
                       Text(
-                        'SUTEYO TEO',
-                        style: TextStyle(
+                        nama ?? "nama",
+                        style: const TextStyle(
                           fontWeight: FontWeight.bold,
                           fontSize: 18,
                         ),
                       ),
-                      Text(
+                      const Text(
                         'Anggota Posyandu',
                         style: TextStyle(color: Colors.grey),
                       ),
@@ -52,28 +89,20 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: ListView(
-                  children: [
-                    _buildCard(
-                      status: 'Lahir Sehat',
-                      title: 'Kehamilan Pertama',
-                      description:
-                          'Lihat detail Pemeriksaan kehamilan pertamamu.',
-                    ),
-                    _buildCard(
-                      status: 'Keguguran',
-                      title: 'Kehamilan Kedua',
-                      description:
-                          'Lihat detail Pemeriksaan kehamilan keduamu.',
-                    ),
-                    _buildCard(
-                      status: 'Dalam Pemantauan',
-                      title: 'Kehamilan Ketiga',
-                      description:
-                          'Lihat detail Pemeriksaan kehamilan ketigamu.',
-                    ),
-                  ],
-                ),
+                child: kehamilanData.isEmpty
+                    ? const Center(child: CircularProgressIndicator())
+                    : ListView.builder(
+                        itemCount: kehamilanData.length,
+                        itemBuilder: (context, index) {
+                          var item = kehamilanData[index];
+                          return _buildCard(
+                            status: item['status'],
+                            title: item['label'],
+                            description:
+                                "Lihat detail Pemeriksaan ${item['label']}mu.",
+                          );
+                        },
+                      ),
               ),
             ],
           ),
@@ -92,7 +121,7 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
       decoration: BoxDecoration(
         color: Colors.white,
         borderRadius: BorderRadius.circular(12),
-        boxShadow: [
+        boxShadow: const [
           BoxShadow(
             blurRadius: 6,
             color: Colors.black12,
