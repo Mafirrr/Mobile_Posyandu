@@ -1,8 +1,5 @@
-import 'dart:convert';
-
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
-import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
@@ -10,7 +7,6 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LoginScreen extends StatefulWidget {
   const LoginScreen({Key? key}) : super(key: key);
@@ -27,16 +23,13 @@ class _LoginScreenState extends State<LoginScreen> {
   String? alert;
 
   Future<String> checkRole() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // final String? userData = prefs.getString(AuthService.userKey);
     dynamic user = await UserDatabase.instance.readUser();
 
     if (user.role != null) {
-      // final Map<String, dynamic> userMap = jsonDecode(userData);
       return user.role ?? '';
     }
 
-    return '';
+    return 'anggota';
   }
 
   @override
