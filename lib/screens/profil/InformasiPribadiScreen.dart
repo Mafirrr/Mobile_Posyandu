@@ -48,8 +48,7 @@ final List<String> golDarahOptions = [
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   final ProfilService _profilService = ProfilService();
-  String? imageUrl = '';
-  File? _newImage;
+  String? imageUrl;
   Anggota? _anggota;
   String? token;
   DateTime? tanggal_lahir;
@@ -85,10 +84,8 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
           tanggal_lahir = parsed;
         }
       });
-      isLoading = false;
     } else {
       _showSnackbar('Gagal Mendapatkan Data');
-      isLoading = false;
     }
   }
 
@@ -104,8 +101,9 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   }
 
   Future<void> _pickImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
     final permission =
-        Platform.isAndroid ? Permission.photos : Permission.storage;
+        Platform.isAndroid ? Permission.storage : Permission.photos;
 
     var status = await permission.request();
 
@@ -114,15 +112,21 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
       final picked = await picker.pickImage(source: ImageSource.gallery);
 
       if (picked != null) {
-        setState(() {
-          _newImage = File(picked.path);
-        });
-      } else {
-        print("User canceled image picker");
+        File newImage = File(picked.path);
+
+        final response = await authProvider.uploadImage(newImage);
+
+        if (response.isNotEmpty) {
+          setState(() {
+            imageUrl = response;
+            CachedNetworkImage.evictFromCache(imageUrl!);
+          });
+        }
       }
     } else {
-      print("Permission denied");
-      openAppSettings(); // Optional: buka pengaturan jika ditolak
+      if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
   }
 
@@ -135,6 +139,8 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   Future<void> _initialize() async {
     await getUser();
     await _checkImage();
+
+    isLoading = false;
   }
 
   @override
@@ -161,23 +167,31 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: imageUrl!,
-                        imageBuilder: (context, imageProvider) => CircleAvatar(
-                          radius: 55,
-                          backgroundImage: imageProvider,
-                        ),
-                        placeholder: (context, url) => const CircleAvatar(
-                          radius: 55,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const CircleAvatar(
-                          radius: 55,
-                          backgroundImage:
-                              AssetImage('assets/images/picture.jpg'),
-                        ),
-                      ),
+                      imageUrl != null
+                          ? CachedNetworkImage(
+                              imageUrl: imageUrl!,
+                              imageBuilder: (context, imageProvider) =>
+                                  CircleAvatar(
+                                radius: 55,
+                                backgroundImage: imageProvider,
+                              ),
+                              placeholder: (context, url) => const CircleAvatar(
+                                radius: 55,
+                                child:
+                                    CircularProgressIndicator(strokeWidth: 2),
+                              ),
+                              errorWidget: (context, url, error) =>
+                                  const CircleAvatar(
+                                radius: 55,
+                                backgroundImage:
+                                    AssetImage('assets/images/picture.jpg'),
+                              ),
+                            )
+                          : const CircleAvatar(
+                              radius: 55,
+                              backgroundImage:
+                                  AssetImage('assets/images/picture.jpg'),
+                            ),
                       GestureDetector(
                         onTap: () async {
                           await _pickImage();

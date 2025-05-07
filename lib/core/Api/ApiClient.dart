@@ -8,7 +8,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: "http://10.0.2.2:8000/api",
+      baseUrl: "http://192.168.0.3:8000/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -20,7 +20,7 @@ class ApiClient {
 
   Future<void> setToken() async {
     final user = await UserDatabase.instance.readUser();
-    print(user?.token);
+
     if (user != null && user.token.isNotEmpty) {
       dio.options.headers["Authorization"] = "Bearer ${user.token}";
     }

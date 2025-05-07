@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
@@ -23,7 +25,7 @@ class ProfilService {
         return null;
       }
     } on DioException catch (e) {
-      return null;
+      throw Exception('Error: $e');
     }
   }
 
@@ -55,6 +57,31 @@ class ProfilService {
     }
   }
 
+  Future<Response> uploadImage(File image) async {
+    try {
+      int? id = await getID();
+
+      FormData formData = FormData.fromMap({
+        "id": id,
+        "photo": await MultipartFile.fromFile(image.path,
+            filename: image.uri.pathSegments.last),
+      });
+
+      final response = await _api.dio.post(
+        '/upload-image',
+        data: formData,
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ' '),
+        statusCode: 404,
+        statusMessage: "Gagal mengupload gambar: {$e.message}",
+      );
+    }
+  }
+
   Future<Response> checkImage() async {
     try {
       final id = await getID();
@@ -70,7 +97,7 @@ class ProfilService {
       return Response(
         requestOptions: RequestOptions(path: ' '),
         statusCode: 404,
-        statusMessage: "Gambar Tidak ada",
+        statusMessage: "message: {$e.message}",
       );
     }
   }

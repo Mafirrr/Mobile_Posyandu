@@ -13,6 +13,7 @@ class ListKehamilanPage extends StatefulWidget {
 
 class _ListKehamilanPageState extends State<ListKehamilanPage> {
   String? nama;
+  bool isLoading = true;
   late List<Map<String, dynamic>> kehamilanData = [];
 
   @override
@@ -30,6 +31,7 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
       setState(() {
         kehamilanData = data;
       });
+      isLoading = false;
     } catch (e) {
       print('Error: $e');
     }
@@ -58,7 +60,6 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
             children: [
               Row(
                 children: [
-                  //image
                   ClipRRect(
                     borderRadius: BorderRadius.circular(14),
                     child: Image.asset(
@@ -89,20 +90,27 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
               ),
               const SizedBox(height: 32),
               Expanded(
-                child: kehamilanData.isEmpty
+                child: isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: kehamilanData.length,
-                        itemBuilder: (context, index) {
-                          var item = kehamilanData[index];
-                          return _buildCard(
-                            status: item['status'],
-                            title: item['label'],
-                            description:
-                                "Lihat detail Pemeriksaan ${item['label']}mu.",
-                          );
-                        },
-                      ),
+                    : kehamilanData.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Tidak ada data kehamilan',
+                              style: TextStyle(fontSize: 16), // opsional
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: kehamilanData.length,
+                            itemBuilder: (context, index) {
+                              var item = kehamilanData[index];
+                              return _buildCard(
+                                status: item['status'],
+                                title: item['label'],
+                                description:
+                                    "Lihat detail Pemeriksaan ${item['label']}mu.",
+                              );
+                            },
+                          ),
               ),
             ],
           ),
