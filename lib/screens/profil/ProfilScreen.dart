@@ -1,11 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
+import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
 import 'package:provider/provider.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
@@ -17,6 +19,18 @@ class ProfilScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfilScreen> {
   int? id;
   String? nama, role;
+  String? imageUrl = '';
+
+  Future<void> _checkImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
+    final url = await authProvider.checkImage();
+
+    if (url.isNotEmpty) {
+      setState(() {
+        imageUrl = url;
+      });
+    }
+  }
 
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
@@ -33,16 +47,17 @@ class _ProfileScreenState extends State<ProfilScreen> {
     final result = await Navigator.push(
       context,
       MaterialPageRoute(builder: (context) => const InformasiPribadiScreen()),
-    ); // halaman edit data
+    );
 
     if (result == true) {
-      _getUser(); // ini akan refresh data
+      _getUser();
     }
   }
 
   @override
   void initState() {
     _getUser();
+    _checkImage();
     super.initState();
   }
 
@@ -55,8 +70,6 @@ class _ProfileScreenState extends State<ProfilScreen> {
         role = user.role ?? '';
         id = user.anggota.id ?? '';
       });
-    } else {
-      print("object not found");
     }
   }
 
@@ -85,14 +98,26 @@ class _ProfileScreenState extends State<ProfilScreen> {
             children: [
               const SizedBox(height: 60),
 
-              // Profile Info
+              //profile
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Row(
                   children: [
-                    const CircleAvatar(
-                      radius: 40,
-                      backgroundImage: AssetImage("assets/images/picture.jpg"),
+                    CachedNetworkImage(
+                      imageUrl: imageUrl!,
+                      imageBuilder: (context, imageProvider) => CircleAvatar(
+                        radius: 40,
+                        backgroundImage: imageProvider,
+                      ),
+                      placeholder: (context, url) => const CircleAvatar(
+                        radius: 40,
+                        child: CircularProgressIndicator(strokeWidth: 2),
+                      ),
+                      errorWidget: (context, url, error) => const CircleAvatar(
+                        radius: 40,
+                        backgroundImage:
+                            AssetImage('assets/images/picture.jpg'),
+                      ),
                     ),
                     const SizedBox(width: 12),
                     Column(
@@ -118,10 +143,9 @@ class _ProfileScreenState extends State<ProfilScreen> {
                 ),
               ),
 
-              // Spacer to push the cards into the middle
               const SizedBox(height: 40),
 
-              // Info Cards Positioned in the Middle
+              //info card
               Stack(
                 alignment: Alignment.center,
                 children: [
@@ -306,7 +330,7 @@ class MenuOption extends StatelessWidget {
       ),
       trailing:
           const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-      onTap: onTap, // Execute the function when tapped
+      onTap: onTap,
     );
   }
 }

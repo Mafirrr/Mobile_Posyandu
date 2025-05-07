@@ -22,8 +22,7 @@ class ProfilService {
         // return Petugas.fromJson(userData);
         return null;
       }
-    } catch (e) {
-      print("Error getAnggota: $e");
+    } on DioException catch (e) {
       return null;
     }
   }
@@ -46,16 +45,32 @@ class ProfilService {
         data: anggota.toJson(),
       );
 
-      if (response.statusCode == 200) {
-        return response;
-      } else {
-        return response;
-      }
+      return response;
     } on DioException catch (e) {
       return Response(
         requestOptions: RequestOptions(path: ' '),
         statusCode: 202,
         statusMessage: "Gagal Mengupdate: ${e.message}",
+      );
+    }
+  }
+
+  Future<Response> checkImage() async {
+    try {
+      final id = await getID();
+      final response = await _api.dio.post(
+        '/image',
+        data: {
+          "id": id,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ' '),
+        statusCode: 404,
+        statusMessage: "Gambar Tidak ada",
       );
     }
   }
