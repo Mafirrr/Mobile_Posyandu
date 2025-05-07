@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 
@@ -19,7 +18,6 @@ class ProfilViewModel extends ChangeNotifier {
       _setLoading(false);
 
       if (update.statusCode == 202) {
-        print(update.statusMessage);
         return false;
       }
       return true;
@@ -31,5 +29,22 @@ class ProfilViewModel extends ChangeNotifier {
   void _setLoading(bool value) {
     _isLoading = value;
     notifyListeners();
+  }
+
+  Future<String> checkImage() async {
+    try {
+      _isLoading = true;
+
+      final response = await _profilService.checkImage();
+      _isLoading = false;
+
+      var data = response.data;
+      if (response.statusCode == 200) {
+        return data['url'];
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
   }
 }

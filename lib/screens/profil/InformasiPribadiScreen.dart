@@ -1,16 +1,18 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
-import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_datepicker.dart';
-import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
   const InformasiPribadiScreen({super.key});
@@ -46,6 +48,8 @@ final List<String> golDarahOptions = [
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   final ProfilService _profilService = ProfilService();
+  String? imageUrl = '';
+  File? _newImage;
   Anggota? _anggota;
   String? token;
   DateTime? tanggal_lahir;
@@ -88,6 +92,40 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
     }
   }
 
+  Future<void> _checkImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
+    final url = await authProvider.checkImage();
+
+    if (url.isNotEmpty) {
+      setState(() {
+        imageUrl = url;
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final permission =
+        Platform.isAndroid ? Permission.photos : Permission.storage;
+
+    var status = await permission.request();
+
+    if (status.isGranted) {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+
+      if (picked != null) {
+        setState(() {
+          _newImage = File(picked.path);
+        });
+      } else {
+        print("User canceled image picker");
+      }
+    } else {
+      print("Permission denied");
+      openAppSettings(); // Optional: buka pengaturan jika ditolak
+    }
+  }
+
   @override
   void initState() {
     super.initState();
@@ -96,6 +134,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
 
   Future<void> _initialize() async {
     await getUser();
+    await _checkImage();
   }
 
   @override
@@ -122,14 +161,26 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      const CircleAvatar(
-                        radius: 55,
-                        backgroundImage:
-                            AssetImage('assets/images/picture.jpg'),
+                      CachedNetworkImage(
+                        imageUrl: imageUrl!,
+                        imageBuilder: (context, imageProvider) => CircleAvatar(
+                          radius: 55,
+                          backgroundImage: imageProvider,
+                        ),
+                        placeholder: (context, url) => const CircleAvatar(
+                          radius: 55,
+                          child: CircularProgressIndicator(strokeWidth: 2),
+                        ),
+                        errorWidget: (context, url, error) =>
+                            const CircleAvatar(
+                          radius: 55,
+                          backgroundImage:
+                              AssetImage('assets/images/picture.jpg'),
+                        ),
                       ),
                       GestureDetector(
-                        onTap: () {
-                          //image
+                        onTap: () async {
+                          await _pickImage();
                         },
                         child: Container(
                           decoration: const BoxDecoration(
