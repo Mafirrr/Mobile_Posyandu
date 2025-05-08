@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/services/PemeriksaanService.dart';
 
 import 'package:posyandu_mob/screens/Pemeriksaan/detail_pemeriksaan.dart';
@@ -14,7 +15,7 @@ class ListKehamilanPage extends StatefulWidget {
 class _ListKehamilanPageState extends State<ListKehamilanPage> {
   String? nama;
   bool isLoading = true;
-  late List<Map<String, dynamic>> kehamilanData = [];
+  late List<Kehamilan> kehamilanData = [];
 
   @override
   void initState() {
@@ -26,14 +27,22 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
   Future<void> _loadKehamilanData() async {
     try {
       final pemeriksaanService = PemeriksaanService();
-      List<Map<String, dynamic>> data =
-          await pemeriksaanService.dataKehamilan();
-      setState(() {
-        kehamilanData = data;
-      });
-      isLoading = false;
+
+      List<Kehamilan> localData = await UserDatabase.instance.getAllKehamilan();
+      if (localData.isNotEmpty) {
+        setState(() {
+          kehamilanData = localData;
+          isLoading = false;
+        });
+      } else {
+        List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
+        setState(() {
+          kehamilanData = remoteData;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      print('Error: $e');
+      throw "error: $e";
     }
   }
 
@@ -104,10 +113,10 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
                             itemBuilder: (context, index) {
                               var item = kehamilanData[index];
                               return _buildCard(
-                                status: item['status'],
-                                title: item['label'],
+                                status: item.status,
+                                title: item.label,
                                 description:
-                                    "Lihat detail Pemeriksaan ${item['label']}mu.",
+                                    "Lihat detail Pemeriksaan ${item.label}mu.",
                               );
                             },
                           ),

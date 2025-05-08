@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
@@ -7,7 +8,7 @@ import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
 import 'package:provider/provider.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path_provider/path_provider.dart';
 
 class ProfilScreen extends StatefulWidget {
   const ProfilScreen({super.key});
@@ -19,16 +20,22 @@ class ProfilScreen extends StatefulWidget {
 class _ProfileScreenState extends State<ProfilScreen> {
   int? id;
   String? nama, role;
-  String? imageUrl;
+  File? localImg;
   bool isLoading = true;
 
   Future<void> _checkImage() async {
     final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
-    final url = await authProvider.checkImage();
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/profile.jpg');
 
-    if (url.isNotEmpty) {
+    if (await file.exists()) {
       setState(() {
-        imageUrl = url;
+        localImg = file;
+      });
+    } else {
+      final url = await authProvider.checkImage();
+      setState(() {
+        localImg = File(url);
       });
     }
   }
@@ -38,7 +45,6 @@ class _ProfileScreenState extends State<ProfilScreen> {
     final result = await authProvider.logout(context);
 
     if (result) {
-      CachedNetworkImage.evictFromCache(imageUrl!);
       Navigator.of(context).pushReplacement(
         MaterialPageRoute(builder: (context) => const LoginScreen()),
       );
@@ -53,6 +59,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
 
     if (result == true) {
       _getUser();
+      _checkImage();
     }
   }
 
@@ -113,32 +120,13 @@ class _ProfileScreenState extends State<ProfilScreen> {
                       padding: const EdgeInsets.symmetric(horizontal: 20),
                       child: Row(
                         children: [
-                          imageUrl != null
-                              ? CachedNetworkImage(
-                                  imageUrl: imageUrl!,
-                                  imageBuilder: (context, imageProvider) =>
-                                      CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage: imageProvider,
-                                  ),
-                                  placeholder: (context, url) =>
-                                      const CircleAvatar(
-                                    radius: 40,
-                                    child: CircularProgressIndicator(
-                                        strokeWidth: 2),
-                                  ),
-                                  errorWidget: (context, url, error) =>
-                                      const CircleAvatar(
-                                    radius: 40,
-                                    backgroundImage:
-                                        AssetImage('assets/images/picture.jpg'),
-                                  ),
-                                )
-                              : const CircleAvatar(
-                                  radius: 40,
-                                  backgroundImage:
-                                      AssetImage('assets/images/picture.jpg'),
-                                ),
+                          CircleAvatar(
+                            radius: 40,
+                            backgroundImage: (localImg != null &&
+                                    localImg!.path.isNotEmpty)
+                                ? FileImage(localImg!)
+                                : const AssetImage('assets/images/picture.jpg'),
+                          ),
                           const SizedBox(width: 12),
                           Column(
                             crossAxisAlignment: CrossAxisAlignment.start,

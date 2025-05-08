@@ -1,5 +1,6 @@
 import 'dart:io';
-
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
@@ -72,6 +73,16 @@ class ProfilService {
         data: formData,
       );
 
+      if (response.statusCode == 200) {
+        var data = response.data;
+        final Directory dir = await getApplicationDocumentsDirectory();
+        final String fullPath = path.join(dir.path, "profile_image.jpeg");
+
+        await _api.dio.download(data['url'], fullPath);
+
+        response.data['url'] = fullPath;
+      }
+
       return response;
     } on DioException catch (e) {
       return Response(
@@ -92,10 +103,20 @@ class ProfilService {
         },
       );
 
+      if (response.statusCode == 200) {
+        var data = response.data;
+        final Directory dir = await getApplicationDocumentsDirectory();
+        final String fullPath = path.join(dir.path, "profile_image.jpeg");
+
+        await _api.dio.download(data['url'], fullPath);
+
+        response.data['url'] = fullPath;
+      }
+
       return response;
     } on DioException catch (e) {
       return Response(
-        requestOptions: RequestOptions(path: ' '),
+        requestOptions: RequestOptions(path: ''),
         statusCode: 404,
         statusMessage: "message: {$e.message}",
       );
