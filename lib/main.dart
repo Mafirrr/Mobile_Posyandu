@@ -30,7 +30,7 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ProfilViewModel()),
         ChangeNotifierProvider(create: (_) => AuthViewModel()),
         ChangeNotifierProvider(create: (_) => ArtikelViewModel()..getArtikel()),
-         ChangeNotifierProvider(create: (_) => KategoriViewmodel()),
+        ChangeNotifierProvider(create: (_) => KategoriViewmodel()),
       ],
       child: const MyApp(),
     ),

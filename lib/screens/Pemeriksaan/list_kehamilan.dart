@@ -67,36 +67,36 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      'assets/images/picture.jpg',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nama ?? "nama",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const Text(
-                        'Anggota Posyandu',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     // ClipRRect(
+              //     //   borderRadius: BorderRadius.circular(14),
+              //     //   child: Image.asset(
+              //     //     'assets/images/picture.jpg',
+              //     //     width: 50,
+              //     //     height: 50,
+              //     //     fit: BoxFit.cover,
+              //     //   ),
+              //     // ),
+              //     const SizedBox(width: 12),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           nama ?? "nama",
+              //           style: const TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: 18,
+              //           ),
+              //         ),
+              //         const Text(
+              //           'Anggota Posyandu',
+              //           style: TextStyle(color: Colors.grey),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               const SizedBox(height: 32),
               Expanded(
                 child: isLoading

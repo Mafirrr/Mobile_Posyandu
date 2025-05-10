@@ -98,17 +98,17 @@ class _ProfileScreenState extends State<ProfilScreen> {
           ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
           : Stack(
               children: [
-                Positioned(
-                  top: 0,
-                  left: 0,
-                  right: 0,
-                  child: ClipPath(
-                    clipper: SingleRoundedCurveClipper(),
-                    child: Container(
-                      height: 250,
-                      color: const Color.fromARGB(51, 133, 180, 255),
-                    ),
-                  ),
+                Container(
+                  decoration: const BoxDecoration(
+                      gradient: LinearGradient(
+                    colors: [
+                      Color.fromARGB(255, 77, 129, 231),
+                      Colors.white,
+                    ],
+                    stops: [0.0, 0.3],
+                    begin: Alignment.topCenter,
+                    end: Alignment.bottomCenter,
+                  )),
                 ),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.center,
@@ -141,7 +141,8 @@ class _ProfileScreenState extends State<ProfilScreen> {
                               Text(
                                 "$role",
                                 style: TextStyle(
-                                  color: Colors.grey,
+                                  color: Colors.white,
+                                  fontWeight: FontWeight.bold,
                                   fontSize: screenWidth * 0.035,
                                 ),
                               ),
@@ -151,7 +152,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                       ),
                     ),
 
-                    const SizedBox(height: 40),
+                    const SizedBox(height: 24),
 
                     //info card
                     Stack(
@@ -239,7 +240,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                         label: const Text("Logout",
                             style: TextStyle(color: Colors.white)),
                         style: ElevatedButton.styleFrom(
-                          backgroundColor: Colors.red,
+                          backgroundColor: Color.fromARGB(255, 176, 42, 55),
                           padding: const EdgeInsets.symmetric(vertical: 14),
                           minimumSize: const Size(double.infinity, 50),
                           shape: RoundedRectangleBorder(

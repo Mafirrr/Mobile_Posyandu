@@ -33,7 +33,8 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
       final fetched = await ArtikelService().fetchArtikel();
       setState(() {
         allArtikels = fetched;
-        highlightArtikels = fetched.length > 10 ? fetched.take(10).toList() : fetched;
+        highlightArtikels =
+            fetched.length > 10 ? fetched.take(10).toList() : fetched;
         artikels = fetched;
         isLoading = false;
       });
@@ -123,10 +124,10 @@ class _HeaderSearchState extends State<HeaderSearch> {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 22,
-            backgroundImage: AssetImage('assets/images/picture.jpg'),
-          ),
+          // const CircleAvatar(
+          //   radius: 22,
+          //   backgroundImage: AssetImage('assets/images/picture.jpg'),
+          // ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
@@ -296,14 +297,16 @@ class LatestArticleCard extends StatelessWidget {
                   child: Container(
                     width: 200,
                     decoration: BoxDecoration(
-                      border: Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
+                      border: Border.all(
+                          color: const Color(0xFFD7E6FF), width: 1.5),
                       borderRadius: BorderRadius.circular(12),
                     ),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ClipRRect(
-                          borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
                           child: Image.network(
                             artikel.gambar,
                             height: 120,
@@ -317,7 +320,8 @@ class LatestArticleCard extends StatelessWidget {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               Text(
-                                DateFormat('yyyy-MM-dd').format(artikel.createdAt ?? DateTime(1970)),
+                                DateFormat('yyyy-MM-dd').format(
+                                    artikel.createdAt ?? DateTime(1970)),
                                 style: const TextStyle(fontSize: 12),
                               ),
                               const SizedBox(height: 6),
@@ -334,7 +338,8 @@ class LatestArticleCard extends StatelessWidget {
                                 maxLines: 2,
                                 overflow: TextOverflow.ellipsis,
                                 style: TextStyle(
-                                    fontSize: 12, color: Colors.black.withOpacity(0.7)),
+                                    fontSize: 12,
+                                    color: Colors.black.withOpacity(0.7)),
                               ),
                             ],
                           ),
@@ -351,8 +356,6 @@ class LatestArticleCard extends StatelessWidget {
     );
   }
 }
-
-
 
 class TipsSection extends StatefulWidget {
   const TipsSection({super.key});
@@ -374,9 +377,8 @@ class _TipsSectionState extends State<TipsSection> {
     try {
       final fetched = await ArtikelService().fetchArtikel();
       setState(() {
-        tipsArtikels = fetched
-            .where((artikel) => _isTipsArtikel(artikel.judul))
-            .toList();
+        tipsArtikels =
+            fetched.where((artikel) => _isTipsArtikel(artikel.judul)).toList();
       });
     } catch (_) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -387,7 +389,13 @@ class _TipsSectionState extends State<TipsSection> {
 
   bool _isTipsArtikel(String judul) {
     final tipsKeywords = [
-      'tips', 'panduan', 'saran', 'petunjuk', 'cara', 'informasi', 'tutorial'
+      'tips',
+      'panduan',
+      'saran',
+      'petunjuk',
+      'cara',
+      'informasi',
+      'tutorial'
     ];
 
     return tipsKeywords.any((keyword) => judul.toLowerCase().contains(keyword));
@@ -407,7 +415,8 @@ class _TipsSectionState extends State<TipsSection> {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
+          child:
+              Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
         ),
         tipsArtikels.isEmpty
             ? const Center(child: CircularProgressIndicator())
@@ -455,9 +464,8 @@ class _TipsSectionState extends State<TipsSection> {
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
                                   Text(
-                                    DateFormat('yyyy-MM-dd')
-                                        .format(artikel.createdAt ??
-                                            DateTime(1970)),
+                                    DateFormat('yyyy-MM-dd').format(
+                                        artikel.createdAt ?? DateTime(1970)),
                                     style: const TextStyle(fontSize: 12),
                                   ),
                                   const SizedBox(height: 6),
