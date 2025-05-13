@@ -21,7 +21,7 @@ class _DashboardPageState extends State<DashboardPage> {
   DateTime? selectedJadwal;
 
   List<DateTime> jadwalPemeriksaan = [
-    DateTime(2025, 4, 30),
+    DateTime(2025, 5, 17),
   ];
 
   bool isPemeriksaan(DateTime date) {
@@ -147,9 +147,10 @@ class _DashboardPageState extends State<DashboardPage> {
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(8),
+                          borderRadius: BorderRadius.circular(7),
                           child: Image.asset(
                             'assets/images/picture.jpg',
                             width: 50,
@@ -393,94 +394,11 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
 
                     Row(
-                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Expanded(
                           child: Container(
                             padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(right: 8),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                              boxShadow: [
-                                BoxShadow(
-                                  color: Colors.black.withOpacity(0.1),
-                                  blurRadius: 8,
-                                  offset: const Offset(0, 4),
-                                ),
-                              ],
-                              border: Border.all(color: Colors.grey.shade100),
-                            ),
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
-                                  children: [
-                                    Text(
-                                      'Kehamilan',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
-                                    ),
-                                    Text(
-                                      'Normal',
-                                      style: TextStyle(color: Colors.green),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 6,
-                                      height: 14,
-                                      decoration: BoxDecoration(
-                                        color: Colors.purple,
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    const Text(
-                                      '120/80 mmHg',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 12),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => const GrafikPopup(
-                                        title: "Grafik Kehamilan",
-                                      ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                  ),
-                                  child: const Text(
-                                    'Lihat grafik',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.w500,
-                                    ),
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                        Expanded(
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            margin: const EdgeInsets.only(left: 8),
+                            margin: const EdgeInsets.symmetric(horizontal: 16),
                             decoration: BoxDecoration(
                               color: Colors.white,
                               borderRadius: BorderRadius.circular(12),
@@ -497,13 +415,11 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'Berat Badan',
-                                      style: TextStyle(
-                                          fontWeight: FontWeight.bold),
+                                      style: TextStyle(fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'Normal',
@@ -532,26 +448,34 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ),
                                   ],
                                 ),
-                                const SizedBox(height: 12),
-                                ElevatedButton(
-                                  onPressed: () {
-                                    showDialog(
-                                      context: context,
-                                      builder: (context) => const GrafikPopup(
-                                        title: "Grafik Berat Badan",
+                                const SizedBox(height: 16),
+                                Center(
+                                  child: SizedBox(
+                                    width: 180, // Lebih lebar
+                                    height: 40,  // Lebih tinggi agar tidak terlihat lancip
+                                    child: ElevatedButton(
+                                      onPressed: () {
+                                        showDialog(
+                                          context: context,
+                                          builder: (context) => const GrafikPopup(
+                                            title: "Grafik Berat Badan",
+                                          ),
+                                        );
+                                      },
+                                      style: ElevatedButton.styleFrom(
+                                        backgroundColor: Colors.blue,
+                                        shape: RoundedRectangleBorder(
+                                          borderRadius: BorderRadius.circular(6), // Sedikit membulat
+                                        ),
                                       ),
-                                    );
-                                  },
-                                  style: ElevatedButton.styleFrom(
-                                    backgroundColor: Colors.blue,
-                                  ),
-                                  child: const Text(
-                                    'Lihat grafik',
-                                    style: TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 12,
-                                      fontFamily: 'Roboto',
-                                      fontWeight: FontWeight.w500,
+                                      child: const Text(
+                                        'Lihat grafik',
+                                        style: TextStyle(
+                                          color: Colors.white,
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
                                     ),
                                   ),
                                 ),
@@ -561,6 +485,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ],
                     )
+
                   ],
                 ),
               ),
