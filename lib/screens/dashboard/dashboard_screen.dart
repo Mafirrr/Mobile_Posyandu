@@ -244,7 +244,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         style: const TextStyle(fontWeight: FontWeight.bold),
                       ),
                       const SizedBox(height: 12),
-
                       Container(
                         width: MediaQuery.of(context).size.width * 0.9,
                         margin: const EdgeInsets.symmetric(horizontal: 8),
