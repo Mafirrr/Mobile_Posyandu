@@ -1,40 +1,20 @@
-import 'dart:convert';
+import 'dart:io';
+import 'package:path_provider/path_provider.dart';
+import 'package:path/path.dart' as path;
 import 'package:dio/dio.dart';
+import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class ProfilService {
-  static const String userKey = "user";
-  static const String tokenKey = "token";
   final _db = UserDatabase.instance;
-  final Dio _dio = Dio(BaseOptions(
-    baseUrl: "http://10.0.2.2:8000/api",
-    connectTimeout: const Duration(seconds: 10),
-    receiveTimeout: const Duration(seconds: 10),
-    headers: {
-      "Accept": "application/json",
-      "Content-Type": "application/json",
-    },
-  ));
+  final _api = ApiClient();
 
   Future<dynamic> getAnggota() async {
     try {
       int? id = await getID();
-      String? token = await _getToken();
-      if (token == null || id == null) {
-        print("Token atau ID kosong");
-        return null;
-      }
-
-      final response = await _dio.get(
-        "/user/$id",
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $token",
-          },
-        ),
-      );
+      await _api.setToken();
+      final response = await _api.dio.get("/user/$id");
 
       final responseData = response.data;
       final userData = responseData['user'];
@@ -45,22 +25,14 @@ class ProfilService {
         // return Petugas.fromJson(userData);
         return null;
       }
-    } catch (e) {
-      print("Error getAnggota: $e");
-      return null;
+    } on DioException catch (e) {
+      throw Exception('Error: $e');
     }
   }
 
   Future<Response> updateAnggota(Anggota anggota) async {
     try {
-      final token = await _getToken();
-
-      if (token == null) {
-        return Response(
-            requestOptions: RequestOptions(path: ' '),
-            statusCode: 500,
-            statusMessage: "error saat mendapatkan token");
-      }
+      _api.setToken();
 
       int localUpdateResult = await _db.update(anggota);
       if (localUpdateResult == 0) {
@@ -71,21 +43,12 @@ class ProfilService {
         );
       }
 
-      final response = await _dio.put(
+      final response = await _api.dio.put(
         "/profile/update",
         data: anggota.toJson(),
-        options: Options(
-          headers: {
-            "Authorization": "Bearer $token",
-          },
-        ),
       );
 
-      if (response.statusCode == 200) {
-        return response;
-      } else {
-        return response;
-      }
+      return response;
     } on DioException catch (e) {
       return Response(
         requestOptions: RequestOptions(path: ' '),
@@ -95,10 +58,72 @@ class ProfilService {
     }
   }
 
-  Future<int?> getID() async {
-    // final prefs = await SharedPreferences.getInstance();
-    // String? userData = prefs.getString(userKey);
+  Future<Response> uploadImage(File image) async {
+    try {
+      int? id = await getID();
 
+      FormData formData = FormData.fromMap({
+        "id": id,
+        "photo": await MultipartFile.fromFile(image.path,
+            filename: image.uri.pathSegments.last),
+      });
+
+      final response = await _api.dio.post(
+        '/upload-image',
+        data: formData,
+      );
+
+      if (response.statusCode == 200) {
+        var data = response.data;
+        final Directory dir = await getApplicationDocumentsDirectory();
+        final String fullPath = path.join(dir.path, "profile_image.jpeg");
+
+        await _api.dio.download(data['url'], fullPath);
+
+        response.data['url'] = fullPath;
+      }
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ' '),
+        statusCode: 404,
+        statusMessage: "Gagal mengupload gambar: {$e.message}",
+      );
+    }
+  }
+
+  Future<Response> checkImage() async {
+    try {
+      final id = await getID();
+      final response = await _api.dio.post(
+        '/image',
+        data: {
+          "id": id,
+        },
+      );
+
+      if (response.statusCode == 200) {
+        var data = response.data;
+        final Directory dir = await getApplicationDocumentsDirectory();
+        final String fullPath = path.join(dir.path, "profile_image.jpeg");
+
+        await _api.dio.download(data['url'], fullPath);
+
+        response.data['url'] = fullPath;
+      }
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 404,
+        statusMessage: "message: {$e.message}",
+      );
+    }
+  }
+
+  Future<int?> getID() async {
     final db = await UserDatabase.instance;
     dynamic userData = await db.readUser();
 
@@ -106,10 +131,5 @@ class ProfilService {
       return userData.anggota.id;
     }
     return null;
-  }
-
-  Future<String?> _getToken() async {
-    final prefs = await SharedPreferences.getInstance();
-    return prefs.getString(tokenKey);
   }
 }

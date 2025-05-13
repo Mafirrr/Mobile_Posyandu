@@ -3,20 +3,18 @@ import 'package:intl/intl.dart';
 
 class CustomDatePicker extends FormField<DateTime> {
   CustomDatePicker({
-    Key? key,
+    super.key,
     DateTime? initialDate,
     DateTime? firstDate,
     DateTime? lastDate,
     required ValueChanged<DateTime> onDateSelected,
-    FormFieldValidator<DateTime>? validator,
+    super.validator,
     String hintText = "Pilih Tanggal",
     IconData icon = Icons.calendar_today,
     required TextEditingController controller,
     DateTime? value,
   }) : super(
-          key: key,
           initialValue: initialDate,
-          validator: validator,
           builder: (FormFieldState<DateTime> state) {
             return Column(
               crossAxisAlignment: CrossAxisAlignment.start,

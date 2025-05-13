@@ -4,7 +4,7 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class PasswordResetScreen extends StatefulWidget {
-  const PasswordResetScreen({Key? key}) : super(key: key);
+  const PasswordResetScreen({super.key});
 
   @override
   _PasswordResetScreenState createState() => _PasswordResetScreenState();
@@ -73,7 +73,7 @@ class _PasswordResetScreenState extends State<PasswordResetScreen> {
                         Navigator.pushReplacement(
                           context,
                           MaterialPageRoute(
-                              builder: (context) => NewPasswordScreen()),
+                              builder: (context) => const NewPasswordScreen()),
                         );
                       },
                       backgroundColor: const Color(0xFF4A7EFF),

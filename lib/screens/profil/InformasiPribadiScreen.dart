@@ -1,5 +1,9 @@
+import 'dart:io';
+import 'package:image_picker/image_picker.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
@@ -7,11 +11,11 @@ import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_datepicker.dart';
-import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:provider/provider.dart';
+import 'package:permission_handler/permission_handler.dart';
 
 class InformasiPribadiScreen extends StatefulWidget {
-  const InformasiPribadiScreen({Key? key}) : super(key: key);
+  const InformasiPribadiScreen({super.key});
 
   @override
   _InformasiPribadiScreenState createState() => _InformasiPribadiScreenState();
@@ -43,18 +47,28 @@ final List<String> golDarahOptions = [
 ];
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
+  final ProfilService _profilService = ProfilService();
+  File? localImg;
   Anggota? _anggota;
   String? token;
   DateTime? tanggal_lahir;
   bool isLoading = true;
 
   Future<void> getUser() async {
-    final ProfilService authService = ProfilService();
+    final localUser = await UserDatabase.instance.readUser();
 
-    final result = await authService.getAnggota();
-    if (result != null) {
-      setState(() {
+    if (localUser != null) {
+      _anggota = localUser.anggota;
+    } else {
+      final result = await _profilService.getAnggota();
+      if (result != null) {
         _anggota = result;
+        await UserDatabase.instance.update(result);
+      }
+    }
+
+    if (_anggota != null) {
+      setState(() {
         namaController.text = _anggota!.nama;
         nikController.text = _anggota!.nik;
         telpController.text = _anggota!.no_telepon ?? '';
@@ -70,10 +84,54 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
           tanggal_lahir = parsed;
         }
       });
-      isLoading = false;
     } else {
       _showSnackbar('Gagal Mendapatkan Data');
-      isLoading = false;
+    }
+  }
+
+  Future<void> _checkImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/profile.jpg');
+
+    if (await file.exists()) {
+      setState(() {
+        localImg = file;
+      });
+    } else {
+      final url = await authProvider.checkImage();
+      setState(() {
+        localImg = File(url);
+      });
+    }
+  }
+
+  Future<void> _pickImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
+    final permission =
+        Platform.isAndroid ? Permission.storage : Permission.photos;
+
+    var status = await permission.request();
+
+    if (status.isGranted) {
+      final picker = ImagePicker();
+      final picked = await picker.pickImage(source: ImageSource.gallery);
+
+      if (picked != null) {
+        File newImage = File(picked.path);
+
+        final response = await authProvider.uploadImage(newImage);
+
+        if (response.isNotEmpty) {
+          setState(() {
+            localImg = File(response);
+          });
+        }
+      }
+    } else {
+      if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
   }
 
@@ -85,6 +143,9 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
 
   Future<void> _initialize() async {
     await getUser();
+    await _checkImage();
+
+    isLoading = false;
   }
 
   @override
@@ -111,25 +172,28 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      const CircleAvatar(
+                      CircleAvatar(
                         radius: 55,
                         backgroundImage:
-                            AssetImage('assets/images/picture.jpg'),
+                            (localImg != null && localImg!.path.isNotEmpty)
+                                ? FileImage(localImg!)
+                                : const AssetImage('assets/images/picture.jpg'),
                       ),
-                      GestureDetector(
-                        onTap: () {
-                          //image
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
+                      if (localImg == null || localImg!.path.isEmpty)
+                        GestureDetector(
+                          onTap: () async {
+                            await _pickImage();
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                            ),
+                            padding: const EdgeInsets.all(6.0),
+                            child: const Icon(Icons.edit,
+                                color: Colors.white, size: 18),
                           ),
-                          padding: const EdgeInsets.all(6.0),
-                          child: const Icon(Icons.edit,
-                              color: Colors.white, size: 18),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
@@ -236,7 +300,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                             await viewModel.updateProfil(updatedAnggota);
                         if (success) {
                           _showSnackbar('Profil berhasil diperbarui');
-                          Navigator.pop(context);
+                          Navigator.pop(context, true);
                         } else {
                           _showSnackbar('Gagal memperbarui profil');
                         }

@@ -1,0 +1,51 @@
+import 'package:posyandu_mob/core/Api/ApiClient.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Kehamilan.dart';
+
+class PemeriksaanService {
+  final _api = ApiClient();
+
+  Future<List<Kehamilan>> dataKehamilan() async {
+    try {
+      _api.clearToken();
+      int? id = await getID();
+      final response = await _api.dio.get('/kehamilan/$id');
+
+      if (response.statusCode == 200) {
+        var data = response.data;
+        if (data['status'] == 'success') {
+          List<dynamic> kehamilanJsonList = data['data'];
+          List<Kehamilan> kehamilanList = kehamilanJsonList
+              .map((json) => Kehamilan.fromJson(json))
+              .toList();
+
+          await _saveData(kehamilanList);
+
+          return kehamilanList;
+        } else {
+          throw Exception('Error: ${data['message']}');
+        }
+      } else {
+        throw Exception('Failed to load data');
+      }
+    } catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<void> _saveData(List<Kehamilan> dataList) async {
+    for (var kehamilan in dataList) {
+      await UserDatabase.instance.insertKehamilan(kehamilan);
+    }
+  }
+
+  Future<int?> getID() async {
+    final db = await UserDatabase.instance;
+    dynamic userData = await db.readUser();
+
+    if (userData != null) {
+      return userData.anggota.id;
+    }
+    return null;
+  }
+}

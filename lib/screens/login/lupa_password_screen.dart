@@ -7,7 +7,7 @@ import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class LupaPasswordScreen extends StatefulWidget {
-  const LupaPasswordScreen({Key? key}) : super(key: key);
+  const LupaPasswordScreen({super.key});
 
   @override
   _LupaPasswordScreenState createState() => _LupaPasswordScreenState();

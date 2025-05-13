@@ -27,7 +27,7 @@ void showNotifikasiDialog(BuildContext context) {
                     ),
                   ),
                 ),
-                Text(
+                const Text(
                   '10 mins ago',
                   style: TextStyle(color: Colors.grey, fontSize: 12),
                 ),
