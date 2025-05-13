@@ -1,10 +1,10 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
-// import 'package:shared_preferences/shared_preferences.dart';
-import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -55,12 +55,11 @@ class AuthService {
         }
 
         if (user != null) {
-          await _saveUser(user, role);
-          await _saveToken(data['token']);
+          await _saveUser(user, role, token);
 
           String? fcmToken = await FirebaseMessaging.instance.getToken();
           if (fcmToken != null) {
-            await updateFcmToken(fcmToken);
+            await updateFcmToken(fcmToken, token);
           }
 
           return user;
@@ -104,7 +103,7 @@ class AuthService {
         requestOptions: RequestOptions(path: ''),
         statusCode: 500,
         statusMessage:
-            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+        'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
       );
     }
   }
@@ -113,16 +112,11 @@ class AuthService {
     await UserDatabase.instance.create(user, role, token);
   }
 
-  Future<void> updateFcmToken(String token) async {
-    final prefs = await SharedPreferences.getInstance();
-    final authToken = prefs.getString('token');
-
-    if (authToken == null) return;
-
+  Future<void> updateFcmToken(String fcmToken, String authToken) async {
     try {
-      final response = await _dio.post(
+      final response = await _api.dio.post(
         "/update_fcm_token",
-        data: {"fcm_token": token},
+        data: {"fcm_token": fcmToken},
         options: Options(headers: {
           'Authorization': 'Bearer $authToken',
           'Content-Type': 'application/json',
@@ -130,12 +124,12 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        print("FCM token berhasil update");
+        print("FCM token berhasil diupdate");
       } else {
-        print("Gagal update ${response.data}");
+        print("Gagal update FCM token: ${response.data}");
       }
     } catch (e) {
-      print("Error saat update FCM token $e");
+      print("Error saat update FCM token: $e");
     }
   }
 }
