@@ -57,6 +57,7 @@ class AuthService {
         if (user != null) {
           await _saveUser(user, role, token);
 
+          // Ambil FCM Token
           String? fcmToken = await FirebaseMessaging.instance.getToken();
           if (fcmToken != null) {
             await updateFcmToken(fcmToken, token);
@@ -132,4 +133,4 @@ class AuthService {
       print("Error saat update FCM token: $e");
     }
   }
-}//test
+}
