@@ -3,6 +3,8 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+// import 'package:shared_preferences/shared_preferences.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -53,18 +55,21 @@ class AuthService {
         }
 
         if (user != null) {
-          await _saveUser(user, role, token);
+          await _saveUser(user, role);
+          await _saveToken(data['token']);
+
+          String? fcmToken = await FirebaseMessaging.instance.getToken();
+          if (fcmToken != null) {
+            await updateFcmToken(fcmToken);
+          }
+
           return user;
         }
       }
 
       return null;
     } on DioException catch (e) {
-      if (e.response != null) {
-        print("Dio error [${e.response?.statusCode}]: ${e.response?.data}");
-      } else {
-        print("Dio error: ${e.message}");
-      }
+      print("Dio error: ${e.response?.data ?? e.message}");
       return null;
     }
   }
@@ -106,5 +111,31 @@ class AuthService {
 
   Future<void> _saveUser(Anggota user, String role, String token) async {
     await UserDatabase.instance.create(user, role, token);
+  }
+
+  Future<void> updateFcmToken(String token) async {
+    final prefs = await SharedPreferences.getInstance();
+    final authToken = prefs.getString('token');
+
+    if (authToken == null) return;
+
+    try {
+      final response = await _dio.post(
+        "/update_fcm_token",
+        data: {"fcm_token": token},
+        options: Options(headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print("FCM token berhasil update");
+      } else {
+        print("Gagal update ${response.data}");
+      }
+    } catch (e) {
+      print("Error saat update FCM token $e");
+    }
   }
 }

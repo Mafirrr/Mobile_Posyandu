@@ -72,5 +72,4 @@ class DefaultFirebaseOptions {
     storageBucket: 'jendela-dunia-61c3a.firebasestorage.app',
     iosBundleId: 'com.example.posyanduMob',
   );
-
 }
