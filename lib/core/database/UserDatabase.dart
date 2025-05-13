@@ -1,6 +1,6 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:path/path.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/models/User.dart';
 import 'package:sqflite/sqflite.dart';
 
@@ -35,29 +35,56 @@ class UserDatabase {
 
   Future _createDB(Database db, int version) async {
     await db.execute('''
-  CREATE TABLE user (
-    id INTEGER PRIMARY KEY,
-    nik TEXT NOT NULL,
-    nama TEXT NOT NULL,
-    tanggal_lahir TEXT NOT NULL,
-    tempat_lahir TEXT NOT NULL,
-    pekerjaan TEXT NOT NULL,
-    alamat TEXT NOT NULL,
-    no_telepon TEXT,
-    golongan_darah TEXT,
-    role TEXT DEFAULT 'Anggota',
-    token Text
-  )
-''');
+      CREATE TABLE user (
+        id INTEGER PRIMARY KEY,
+        nik TEXT NOT NULL,
+        nama TEXT NOT NULL,
+        tanggal_lahir TEXT NOT NULL,
+        tempat_lahir TEXT NOT NULL,
+        pekerjaan TEXT NOT NULL,
+        alamat TEXT NOT NULL,
+        no_telepon TEXT,
+        golongan_darah TEXT,
+        role TEXT DEFAULT 'Anggota',
+        token Text
+      )
+    ''');
+
+    await db.execute('''
+      CREATE TABLE kehamilan (
+        id INTEGER PRIMARY KEY,
+        anggota_id INTEGER NOT NULL,
+        status TEXT NOT NULL,
+        tanggal_awal TEXT NOT NULL,
+        label TEXT
+      )
+    ''');
   }
 
-  Future<Anggota> create(Anggota user, String role) async {
+  Future<int> insertKehamilan(Kehamilan kehamilan) async {
+    final db = await instance.database;
+    return await db.insert(
+      'kehamilan',
+      kehamilan.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<List<Kehamilan>> getAllKehamilan() async {
+    final db = await instance.database;
+    final maps = await db.query('kehamilan', orderBy: 'tanggal_awal ASC');
+
+    return maps.map((map) => Kehamilan.fromJson(map)).toList();
+  }
+
+  Future<Anggota> create(Anggota user, String role, String token) async {
     final db = await instance.database;
     final id = await db.insert(
       'user',
       {
         ...user.toJson(),
         'role': role,
+        'token': token,
       },
     );
 
@@ -69,8 +96,8 @@ class UserDatabase {
     final result = await db.query('user', limit: 1);
     if (result.isNotEmpty) {
       Anggota anggota = Anggota.fromJson(result.first);
-      String role = result.first['role'].toString() ?? '';
-      String token = result.first['token'].toString() ?? '';
+      String role = result.first['role'].toString();
+      String token = result.first['token'].toString();
 
       return UserWithRole(anggota: anggota, role: role, token: token);
     } else {
@@ -101,6 +128,7 @@ class UserDatabase {
   Future<void> logout() async {
     final db = await UserDatabase.instance.database;
     await db.delete('user');
+    await db.delete('kehamilan');
   }
 
   Future close() async {

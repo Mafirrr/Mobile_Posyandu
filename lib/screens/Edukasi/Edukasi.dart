@@ -1,59 +1,122 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/models/Artikel.dart';
+import 'package:posyandu_mob/core/models/Kategori.dart';
+import 'package:posyandu_mob/core/services/artikel_service.dart';
+import 'package:posyandu_mob/core/services/kategori_service.dart';
+import 'package:posyandu_mob/screens/Edukasi/Detail_Edukasi.dart';
 
-void main() => runApp(const Edukasi());
-
-class Edukasi extends StatelessWidget {
-  const Edukasi({super.key});
-
-  @override
-  Widget build(BuildContext context) {
-    return const MaterialApp(
-      title: 'Edukasi Ibu Hamil',
-      home: EdukasiHomePage(),
-    );
-  }
-}
-
-class EdukasiHomePage extends StatelessWidget {
+class EdukasiHomePage extends StatefulWidget {
   const EdukasiHomePage({super.key});
 
   @override
-  Widget build(BuildContext context) {
-    final PageController _pageController = PageController();
+  State<EdukasiHomePage> createState() => _EdukasiHomePageState();
+}
 
+class _EdukasiHomePageState extends State<EdukasiHomePage> {
+  final PageController _pageController = PageController();
+  List<Artikel> artikels = [];
+  List<Artikel> allArtikels = [];
+  int selectedKategoriId = -1;
+  String searchQuery = '';
+  bool isLoading = true;
+  List<Artikel> highlightArtikels = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchArtikels();
+  }
+
+  Future<void> fetchArtikels() async {
+    try {
+      final fetched = await ArtikelService().fetchArtikel();
+      setState(() {
+        allArtikels = fetched;
+        highlightArtikels =
+            fetched.length > 10 ? fetched.take(10).toList() : fetched;
+        artikels = fetched;
+        isLoading = false;
+      });
+    } catch (_) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal memuat data artikel')),
+      );
+    }
+  }
+
+  void filterArtikels() {
+    setState(() {
+      artikels = allArtikels.where((artikel) {
+        final matchesKategori = selectedKategoriId == -1 ||
+            artikel.kategoriId == selectedKategoriId;
+        final matchesSearch =
+            artikel.judul.toLowerCase().contains(searchQuery.toLowerCase());
+        return matchesKategori && matchesSearch;
+      }).toList();
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: Colors.white,
       body: SafeArea(
-        child: SingleChildScrollView(
-          child: Column(
-            children: [
-              const HeaderSearch(),
-              const SizedBox(height: 16),
-              SizedBox(
-                height: 200,
-                child: PageView.builder(
-                  controller: _pageController,
-                  itemCount: 4,
-                  itemBuilder: (context, index) {
-                    return EdukasiCard(index: index);
-                  },
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : SingleChildScrollView(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    const SizedBox(height: 15),
+                    HeaderSearch(
+                      onSearchChanged: (value) {
+                        searchQuery = value;
+                        filterArtikels();
+                      },
+                    ),
+                    const SizedBox(height: 24),
+                    SizedBox(
+                      height: 200,
+                      child: PageView.builder(
+                        controller: _pageController,
+                        itemCount: highlightArtikels.length,
+                        itemBuilder: (context, index) {
+                          return EdukasiCard(artikel: highlightArtikels[index]);
+                        },
+                      ),
+                    ),
+                    const SizedBox(height: 24),
+                    CategoryButtons(onKategoriSelected: (id) {
+                      selectedKategoriId = id;
+                      filterArtikels();
+                    }),
+                    const SizedBox(height: 24),
+                    LatestArticleCard(artikels: artikels),
+                    const SizedBox(height: 24),
+                    TipsSection(),
+                    const SizedBox(height: 15),
+                  ],
                 ),
               ),
-              const SizedBox(height: 8),
-              const CategoryButtons(),
-              const LatestArticleCard(),
-              const TipsSection(),
-              const SizedBox(height: 80), // Space for bottom nav
-            ],
-          ),
-        ),
       ),
     );
   }
 }
 
-class HeaderSearch extends StatelessWidget {
-  const HeaderSearch({super.key});
+// ---------------------- WIDGETS --------------------------
+
+class HeaderSearch extends StatefulWidget {
+  final Function(String) onSearchChanged;
+  const HeaderSearch({super.key, required this.onSearchChanged});
+
+  @override
+  State<HeaderSearch> createState() => _HeaderSearchState();
+}
+
+class _HeaderSearchState extends State<HeaderSearch> {
+  final TextEditingController _controller = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -61,22 +124,23 @@ class HeaderSearch extends StatelessWidget {
       padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
       child: Row(
         children: [
-          const CircleAvatar(
-            radius: 22,
-            backgroundImage: AssetImage(
-              'assets/images/picture.jpg',
-            ),
-          ),
+          // const CircleAvatar(
+          //   radius: 22,
+          //   backgroundImage: AssetImage('assets/images/picture.jpg'),
+          // ),
           const SizedBox(width: 12),
           Expanded(
             child: TextField(
+              controller: _controller,
+              onChanged: widget.onSearchChanged,
               decoration: InputDecoration(
                 hintText: 'Cari...',
                 prefixIcon: const Icon(Icons.search, color: Colors.grey),
                 contentPadding: const EdgeInsets.symmetric(vertical: 0),
                 border: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide: BorderSide(color: Colors.grey.shade300, width: 1.5),
+                  borderSide:
+                      BorderSide(color: Colors.grey.shade300, width: 1.5),
                 ),
               ),
             ),
@@ -88,22 +152,34 @@ class HeaderSearch extends StatelessWidget {
 }
 
 class EdukasiCard extends StatelessWidget {
-  final int index;
-  const EdukasiCard({super.key, required this.index});
+  final Artikel artikel;
+
+  const EdukasiCard({super.key, required this.artikel});
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: Container(
-        decoration: BoxDecoration(
-          color: const Color(0xFFE3F2FD),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (_) => DetailEdukasi(artikel: artikel),
+              ),
+            );
+          },
           borderRadius: BorderRadius.circular(12),
-        ),
-        child: Center(
-          child: Text(
-            'Edukasi ${index + 1}',
-            style: const TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(12),
+            child: Image.network(
+              artikel.gambar,
+              width: double.infinity,
+              height: 200,
+              fit: BoxFit.cover,
+            ),
           ),
         ),
       ),
@@ -111,94 +187,168 @@ class EdukasiCard extends StatelessWidget {
   }
 }
 
-class CategoryButtons extends StatelessWidget {
-  const CategoryButtons({super.key});
+class CategoryButtons extends StatefulWidget {
+  final Function(int kategoriId) onKategoriSelected;
 
-  final List<String> categories = const [
-    "Semua",
-    "Makanan Sehat",
-    "Aktivitas Fisik",
-    "Perawatan",
-  ];
+  const CategoryButtons({super.key, required this.onKategoriSelected});
+
+  @override
+  State<CategoryButtons> createState() => _CategoryButtonsState();
+}
+
+class _CategoryButtonsState extends State<CategoryButtons> {
+  int selectedKategoriId = -1;
+
+  Future<List<Kategori>> _loadKategories() async {
+    final data = await KategoriService().fetchKategori();
+    return [Kategori(id: -1, nama: 'Semua', deskripsi: ''), ...data];
+  }
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      height: 40,
-      padding: const EdgeInsets.symmetric(horizontal: 16),
-      child: ListView.separated(
-        scrollDirection: Axis.horizontal,
-        itemCount: categories.length,
-        separatorBuilder: (_, __) => const SizedBox(width: 12),
-        itemBuilder: (context, index) {
-          final isActive = index == 0;
-          return OutlinedButton(
-            onPressed: () {},
-            style: OutlinedButton.styleFrom(
-              backgroundColor: isActive ? const Color(0xFF1a3ea8) : Colors.white,
-              side: const BorderSide(color: Color(0xFF1a3ea8), width: 1.5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-            child: Text(
-              categories[index],
-              style: TextStyle(
-                color: isActive ? Colors.white : const Color(0xFF1a3ea8),
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          );
-        },
-      ),
+    return FutureBuilder<List<Kategori>>(
+      future: _loadKategories(),
+      builder: (context, snapshot) {
+        if (snapshot.hasError || !snapshot.hasData) {
+          return const Center(child: Text("Gagal memuat kategori"));
+        }
+
+        final categories = snapshot.data!;
+
+        return Container(
+          height: 40,
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: ListView.separated(
+            scrollDirection: Axis.horizontal,
+            itemCount: categories.length,
+            separatorBuilder: (_, __) => const SizedBox(width: 12),
+            itemBuilder: (context, index) {
+              final kategori = categories[index];
+              final isActive = kategori.id == selectedKategoriId;
+
+              return OutlinedButton(
+                onPressed: () {
+                  setState(() {
+                    selectedKategoriId = kategori.id;
+                  });
+                  widget.onKategoriSelected(kategori.id);
+                },
+                style: OutlinedButton.styleFrom(
+                  backgroundColor:
+                      isActive ? const Color(0xFF1a3ea8) : Colors.white,
+                  side: const BorderSide(color: Color(0xFF1a3ea8), width: 1.5),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                ),
+                child: Text(
+                  kategori.nama,
+                  style: TextStyle(
+                    color: isActive ? Colors.white : const Color(0xFF1a3ea8),
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              );
+            },
+          ),
+        );
+      },
     );
   }
 }
 
 class LatestArticleCard extends StatelessWidget {
-  const LatestArticleCard({super.key});
+  final List<Artikel> artikels;
+
+  const LatestArticleCard({super.key, required this.artikels});
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        border: Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
-        borderRadius: BorderRadius.circular(12),
-      ),
+      height: 300,
       child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          ClipRRect(
-            borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-            child: Image.asset(
-              'assets/images/Edu.jpg',
-              height: 140,
-              width: double.infinity,
-              fit: BoxFit.cover,
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16, vertical: 10),
+            child: Text(
+              'Artikel dan edukasi untuk Ibu Hamil',
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
-          Padding(
-            padding: const EdgeInsets.all(16),
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                const Text('17 Maret 2020', style: TextStyle(fontSize: 13, color: Colors.black87)),
-                const SizedBox(height: 6),
-                const Text(
-                  'Manfaat Yoga untuk Ibu Hamil: Menjaga Kesehatan Fisik dan Mental',
-                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
-                ),
-                const SizedBox(height: 6),
-                Text(
-                  'Yoga untuk ibu hamil atau yoga prenatal adalah salah satu bentuk latihan...',
-                  style: TextStyle(fontSize: 14, color: Colors.black.withOpacity(0.7)),
-                ),
-                const SizedBox(height: 8),
-                const Text(
-                  'Baca Sekarang',
-                  style: TextStyle(color: Color(0xFF1a3ea8), fontWeight: FontWeight.w600),
-                ),
-              ],
+          Expanded(
+            child: ListView.separated(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              scrollDirection: Axis.horizontal,
+              itemCount: artikels.length,
+              separatorBuilder: (_, __) => const SizedBox(width: 12),
+              itemBuilder: (context, index) {
+                final artikel = artikels[index];
+
+                return GestureDetector(
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (_) => DetailEdukasi(artikel: artikel),
+                      ),
+                    );
+                  },
+                  child: Container(
+                    width: 200,
+                    decoration: BoxDecoration(
+                      border: Border.all(
+                          color: const Color(0xFFD7E6FF), width: 1.5),
+                      borderRadius: BorderRadius.circular(12),
+                    ),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        ClipRRect(
+                          borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12)),
+                          child: Image.network(
+                            artikel.gambar,
+                            height: 120,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                        Padding(
+                          padding: const EdgeInsets.all(12),
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                DateFormat('yyyy-MM-dd').format(
+                                    artikel.createdAt ?? DateTime(1970)),
+                                style: const TextStyle(fontSize: 12),
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                artikel.judul,
+                                style: const TextStyle(
+                                    fontSize: 14, fontWeight: FontWeight.w600),
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                              const SizedBox(height: 6),
+                              Text(
+                                artikel.isi,
+                                maxLines: 2,
+                                overflow: TextOverflow.ellipsis,
+                                style: TextStyle(
+                                    fontSize: 12,
+                                    color: Colors.black.withOpacity(0.7)),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                );
+              },
             ),
           ),
         ],
@@ -207,23 +357,49 @@ class LatestArticleCard extends StatelessWidget {
   }
 }
 
-class TipsSection extends StatelessWidget {
+class TipsSection extends StatefulWidget {
   const TipsSection({super.key});
 
-  final List<Map<String, String>> tips = const [
-    {
-      'image': 'assets/images/Edu.jpg',
-      'title': 'Porsi Makan dan Minum',
-    },
-    {
-      'image': 'assets/images/Edu.jpg',
-      'title': 'Pentingnya Pemeriksaan',
-    },
-    {
-      'image': 'assets/images/Edu.jpg',
-      'title': 'Tanda-Tanda Kehamilan',
-    },
-  ];
+  @override
+  State<TipsSection> createState() => _TipsSectionState();
+}
+
+class _TipsSectionState extends State<TipsSection> {
+  List<Artikel> tipsArtikels = [];
+
+  @override
+  void initState() {
+    super.initState();
+    fetchTipsArtikels();
+  }
+
+  Future<void> fetchTipsArtikels() async {
+    try {
+      final fetched = await ArtikelService().fetchArtikel();
+      setState(() {
+        tipsArtikels =
+            fetched.where((artikel) => _isTipsArtikel(artikel.judul)).toList();
+      });
+    } catch (_) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal memuat data tips')),
+      );
+    }
+  }
+
+  bool _isTipsArtikel(String judul) {
+    final tipsKeywords = [
+      'tips',
+      'panduan',
+      'saran',
+      'petunjuk',
+      'cara',
+      'informasi',
+      'tutorial'
+    ];
+
+    return tipsKeywords.any((keyword) => judul.toLowerCase().contains(keyword));
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -239,47 +415,87 @@ class TipsSection extends StatelessWidget {
         ),
         const Padding(
           padding: EdgeInsets.symmetric(horizontal: 16, vertical: 4),
-          child: Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
+          child:
+              Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
         ),
-        Container(
-          height: 180,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: tips.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              return Container(
-                width: 160,
-                decoration: BoxDecoration(
-                  border: Border.all(color: const Color(0xFFD7E6FF), width: 1.5),
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Column(
-                  children: [
-                    ClipRRect(
-                      borderRadius: const BorderRadius.vertical(top: Radius.circular(12)),
-                      child: Image.asset(
-                        tips[index]['image']!,
-                        height: 120,
-                        width: 160,
-                        fit: BoxFit.cover,
+        tipsArtikels.isEmpty
+            ? const Center(child: CircularProgressIndicator())
+            : Container(
+                height: 300,
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: ListView.separated(
+                  scrollDirection: Axis.horizontal,
+                  itemCount: tipsArtikels.length,
+                  separatorBuilder: (_, __) => const SizedBox(width: 12),
+                  itemBuilder: (context, index) {
+                    final artikel = tipsArtikels[index];
+
+                    return GestureDetector(
+                      onTap: () {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (_) => DetailEdukasi(artikel: artikel),
+                          ),
+                        );
+                      },
+                      child: Container(
+                        width: 200,
+                        decoration: BoxDecoration(
+                          border: Border.all(
+                              color: const Color(0xFFD7E6FF), width: 1.5),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        child: Column(
+                          children: [
+                            ClipRRect(
+                              borderRadius: const BorderRadius.vertical(
+                                  top: Radius.circular(12)),
+                              child: Image.network(
+                                artikel.gambar,
+                                height: 120,
+                                width: 160,
+                                fit: BoxFit.cover,
+                              ),
+                            ),
+                            Padding(
+                              padding: const EdgeInsets.all(8),
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    DateFormat('yyyy-MM-dd').format(
+                                        artikel.createdAt ?? DateTime(1970)),
+                                    style: const TextStyle(fontSize: 12),
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    artikel.judul,
+                                    style: const TextStyle(
+                                        fontSize: 14,
+                                        fontWeight: FontWeight.w600),
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                  const SizedBox(height: 6),
+                                  Text(
+                                    artikel.isi,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                        fontSize: 12,
+                                        color: Colors.black.withOpacity(0.7)),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
-                    ),
-                    Padding(
-                      padding: const EdgeInsets.all(8),
-                      child: Text(
-                        tips[index]['title']!,
-                        style: const TextStyle(fontWeight: FontWeight.w600, fontSize: 14),
-                        textAlign: TextAlign.center,
-                      ),
-                    ),
-                  ],
+                    );
+                  },
                 ),
-              );
-            },
-          ),
-        ),
+              ),
       ],
     );
   }

@@ -1,8 +1,6 @@
-import 'dart:convert';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class AuthViewModel extends ChangeNotifier {
   final AuthService _authService = AuthService();
@@ -12,31 +10,6 @@ class AuthViewModel extends ChangeNotifier {
   bool get isLoading => _isLoading;
   dynamic get user => _user;
   bool get isLoggedIn => _user != null;
-
-  AuthViewModel() {
-    loadUser();
-  }
-
-  Future<void> loadUser() async {
-    _setLoading(true);
-
-    final prefs = await SharedPreferences.getInstance();
-    final String? userData = prefs.getString(AuthService.userKey);
-
-    if (userData != null) {
-      try {
-        _user = jsonDecode(userData);
-      } catch (e) {
-        print("Gagal decode user data: $e");
-        _user = null;
-        await prefs.remove(AuthService.userKey);
-      }
-    } else {
-      _user = null;
-    }
-
-    _setLoading(false);
-  }
 
   Future<bool> login(String nik, String password) async {
     _setLoading(true);
@@ -53,31 +26,28 @@ class AuthViewModel extends ChangeNotifier {
     return false;
   }
 
-  Future<void> logout(BuildContext context) async {
+  Future<bool> logout(BuildContext context) async {
     _setLoading(true);
-
+    final db = UserDatabase.instance;
     final response = await _authService.logoutUser();
 
-    if (response != null && response.statusCode == 200) {
-      final prefs = await SharedPreferences.getInstance();
-      // await prefs.remove(AuthService.userKey);
-      await prefs.remove(AuthService.tokenKey);
+    await db.logout();
+    _user = null;
 
-      final db = UserDatabase.instance;
-      await db.logout();
-      _user = null;
+    if (response != null && response.statusCode == 200) {
+      _setLoading(false);
+      return true;
     } else {
-      final db = UserDatabase.instance;
-      await db.logout();
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(response?.data ?? 'Logout failed. Please try again.'),
+          content: Text(
+              response?.data.toString() ?? 'Logout failed. Please try again.'),
           duration: const Duration(seconds: 10),
         ),
       );
+      _setLoading(false);
+      return false;
     }
-
-    _setLoading(false);
   }
 
   void _setLoading(bool value) {
