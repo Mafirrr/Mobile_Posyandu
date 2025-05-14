@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "599344240437",
+    "project_id": "jendela-dunia-61c3a",
+    "storage_bucket": "jendela-dunia-61c3a.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599344240437:android:8f5e979055489e40fd1e7c",
+        "android_client_info": {
+          "package_name": "com.example.posyandu_mob"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh5ExcFlDxyIS4mZB9DkygoqmpMZY2w1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:599344240437:android:f260ede55f79d9aafd1e7c",
+        "android_client_info": {
+          "package_name": "com.example.test_app"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAh5ExcFlDxyIS4mZB9DkygoqmpMZY2w1c"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

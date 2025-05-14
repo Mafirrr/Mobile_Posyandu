@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/services/PemeriksaanService.dart';
 
 import 'package:posyandu_mob/screens/Pemeriksaan/detail_pemeriksaan.dart';
@@ -13,7 +14,8 @@ class ListKehamilanPage extends StatefulWidget {
 
 class _ListKehamilanPageState extends State<ListKehamilanPage> {
   String? nama;
-  late List<Map<String, dynamic>> kehamilanData = [];
+  bool isLoading = true;
+  late List<Kehamilan> kehamilanData = [];
 
   @override
   void initState() {
@@ -25,13 +27,22 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
   Future<void> _loadKehamilanData() async {
     try {
       final pemeriksaanService = PemeriksaanService();
-      List<Map<String, dynamic>> data =
-          await pemeriksaanService.dataKehamilan();
-      setState(() {
-        kehamilanData = data;
-      });
+
+      List<Kehamilan> localData = await UserDatabase.instance.getAllKehamilan();
+      if (localData.isNotEmpty) {
+        setState(() {
+          kehamilanData = localData;
+          isLoading = false;
+        });
+      } else {
+        List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
+        setState(() {
+          kehamilanData = remoteData;
+          isLoading = false;
+        });
+      }
     } catch (e) {
-      print('Error: $e');
+      throw "error: $e";
     }
   }
 
@@ -56,53 +67,59 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Row(
-                children: [
-                  //image
-                  ClipRRect(
-                    borderRadius: BorderRadius.circular(14),
-                    child: Image.asset(
-                      'assets/images/picture.jpg',
-                      width: 50,
-                      height: 50,
-                      fit: BoxFit.cover,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text(
-                        nama ?? "nama",
-                        style: const TextStyle(
-                          fontWeight: FontWeight.bold,
-                          fontSize: 18,
-                        ),
-                      ),
-                      const Text(
-                        'Anggota Posyandu',
-                        style: TextStyle(color: Colors.grey),
-                      ),
-                    ],
-                  ),
-                ],
-              ),
+              // Row(
+              //   children: [
+              //     // ClipRRect(
+              //     //   borderRadius: BorderRadius.circular(14),
+              //     //   child: Image.asset(
+              //     //     'assets/images/picture.jpg',
+              //     //     width: 50,
+              //     //     height: 50,
+              //     //     fit: BoxFit.cover,
+              //     //   ),
+              //     // ),
+              //     const SizedBox(width: 12),
+              //     Column(
+              //       crossAxisAlignment: CrossAxisAlignment.start,
+              //       children: [
+              //         Text(
+              //           nama ?? "nama",
+              //           style: const TextStyle(
+              //             fontWeight: FontWeight.bold,
+              //             fontSize: 18,
+              //           ),
+              //         ),
+              //         const Text(
+              //           'Anggota Posyandu',
+              //           style: TextStyle(color: Colors.grey),
+              //         ),
+              //       ],
+              //     ),
+              //   ],
+              // ),
               const SizedBox(height: 32),
               Expanded(
-                child: kehamilanData.isEmpty
+                child: isLoading
                     ? const Center(child: CircularProgressIndicator())
-                    : ListView.builder(
-                        itemCount: kehamilanData.length,
-                        itemBuilder: (context, index) {
-                          var item = kehamilanData[index];
-                          return _buildCard(
-                            status: item['status'],
-                            title: item['label'],
-                            description:
-                                "Lihat detail Pemeriksaan ${item['label']}mu.",
-                          );
-                        },
-                      ),
+                    : kehamilanData.isEmpty
+                        ? const Center(
+                            child: Text(
+                              'Tidak ada data kehamilan',
+                              style: TextStyle(fontSize: 16), // opsional
+                            ),
+                          )
+                        : ListView.builder(
+                            itemCount: kehamilanData.length,
+                            itemBuilder: (context, index) {
+                              var item = kehamilanData[index];
+                              return _buildCard(
+                                status: item.status,
+                                title: item.label,
+                                description:
+                                    "Lihat detail Pemeriksaan ${item.label}mu.",
+                              );
+                            },
+                          ),
               ),
             ],
           ),
