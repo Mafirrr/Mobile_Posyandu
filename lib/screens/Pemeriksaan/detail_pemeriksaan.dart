@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 
 class DetailPemeriksaan extends StatelessWidget {
-  const DetailPemeriksaan ({super.key});
+  const DetailPemeriksaan({super.key});
 
   @override
   Widget build(BuildContext context) {
@@ -45,7 +45,8 @@ class _ProfileSection extends StatelessWidget {
       children: [
         const CircleAvatar(
           radius: 30,
-            backgroundImage: AssetImage('assets/images/picture.jpg'), // Ganti dengan path gambar kamu
+          backgroundImage: AssetImage(
+              'assets/images/picture.jpg'), // Ganti dengan path gambar kamu
         ),
         const SizedBox(width: 12),
         Column(
@@ -111,7 +112,6 @@ class _ResultTable extends StatelessWidget {
     'Konseling': '-',
     'Skrining Dokter': '-',
     'Tablet Tambah Darah': '-',
-    'Skrining Dokter': '-',
   };
 
   @override

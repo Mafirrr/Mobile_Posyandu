@@ -1,6 +1,6 @@
 import 'dart:io';
 import 'package:image_picker/image_picker.dart';
-import 'package:cached_network_image/cached_network_image.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
@@ -48,8 +48,7 @@ final List<String> golDarahOptions = [
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   final ProfilService _profilService = ProfilService();
-  String? imageUrl = '';
-  File? _newImage;
+  File? localImg;
   Anggota? _anggota;
   String? token;
   DateTime? tanggal_lahir;
@@ -85,27 +84,32 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
           tanggal_lahir = parsed;
         }
       });
-      isLoading = false;
     } else {
       _showSnackbar('Gagal Mendapatkan Data');
-      isLoading = false;
     }
   }
 
   Future<void> _checkImage() async {
     final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
-    final url = await authProvider.checkImage();
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/profile.jpg');
 
-    if (url.isNotEmpty) {
+    if (await file.exists()) {
       setState(() {
-        imageUrl = url;
+        localImg = file;
+      });
+    } else {
+      final url = await authProvider.checkImage();
+      setState(() {
+        localImg = File(url);
       });
     }
   }
 
   Future<void> _pickImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
     final permission =
-        Platform.isAndroid ? Permission.photos : Permission.storage;
+        Platform.isAndroid ? Permission.storage : Permission.photos;
 
     var status = await permission.request();
 
@@ -114,15 +118,20 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
       final picked = await picker.pickImage(source: ImageSource.gallery);
 
       if (picked != null) {
-        setState(() {
-          _newImage = File(picked.path);
-        });
-      } else {
-        print("User canceled image picker");
+        File newImage = File(picked.path);
+
+        final response = await authProvider.uploadImage(newImage);
+
+        if (response.isNotEmpty) {
+          setState(() {
+            localImg = File(response);
+          });
+        }
       }
     } else {
-      print("Permission denied");
-      openAppSettings(); // Optional: buka pengaturan jika ditolak
+      if (status.isPermanentlyDenied) {
+        openAppSettings();
+      }
     }
   }
 
@@ -135,6 +144,8 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   Future<void> _initialize() async {
     await getUser();
     await _checkImage();
+
+    isLoading = false;
   }
 
   @override
@@ -161,37 +172,28 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                   Stack(
                     alignment: Alignment.bottomRight,
                     children: [
-                      CachedNetworkImage(
-                        imageUrl: imageUrl!,
-                        imageBuilder: (context, imageProvider) => CircleAvatar(
-                          radius: 55,
-                          backgroundImage: imageProvider,
-                        ),
-                        placeholder: (context, url) => const CircleAvatar(
-                          radius: 55,
-                          child: CircularProgressIndicator(strokeWidth: 2),
-                        ),
-                        errorWidget: (context, url, error) =>
-                            const CircleAvatar(
-                          radius: 55,
-                          backgroundImage:
-                              AssetImage('assets/images/picture.jpg'),
-                        ),
+                      CircleAvatar(
+                        radius: 55,
+                        backgroundImage:
+                            (localImg != null && localImg!.path.isNotEmpty)
+                                ? FileImage(localImg!)
+                                : const AssetImage('assets/images/picture.jpg'),
                       ),
-                      GestureDetector(
-                        onTap: () async {
-                          await _pickImage();
-                        },
-                        child: Container(
-                          decoration: const BoxDecoration(
-                            shape: BoxShape.circle,
-                            color: Colors.black,
+                      if (localImg == null || localImg!.path.isEmpty)
+                        GestureDetector(
+                          onTap: () async {
+                            await _pickImage();
+                          },
+                          child: Container(
+                            decoration: const BoxDecoration(
+                              shape: BoxShape.circle,
+                              color: Colors.black,
+                            ),
+                            padding: const EdgeInsets.all(6.0),
+                            child: const Icon(Icons.edit,
+                                color: Colors.white, size: 18),
                           ),
-                          padding: const EdgeInsets.all(6.0),
-                          child: const Icon(Icons.edit,
-                              color: Colors.white, size: 18),
                         ),
-                      ),
                     ],
                   ),
                   const SizedBox(height: 24),
