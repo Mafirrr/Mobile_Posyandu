@@ -1,9 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/models/Artikel.dart';
-import 'package:posyandu_mob/core/models/Kategori.dart';
 import 'package:posyandu_mob/core/services/artikel_service.dart';
-import 'package:posyandu_mob/core/services/kategori_service.dart';
 import 'package:posyandu_mob/screens/Edukasi/Detail_Edukasi.dart';
 
 class EdukasiHomePage extends StatefulWidget {
@@ -17,7 +15,7 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
   final PageController _pageController = PageController();
   List<Artikel> artikels = [];
   List<Artikel> allArtikels = [];
-  int selectedKategoriId = -1;
+  String selectedKategori = 'Semua';
   String searchQuery = '';
   bool isLoading = true;
   List<Artikel> highlightArtikels = [];
@@ -49,8 +47,8 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
   void filterArtikels() {
     setState(() {
       artikels = allArtikels.where((artikel) {
-        final matchesKategori = selectedKategoriId == -1 ||
-            artikel.kategoriId == selectedKategoriId;
+        final matchesKategori = selectedKategori == 'Semua' ||
+            artikel.kategoriEdukasi == selectedKategori;
         final matchesSearch =
             artikel.judul.toLowerCase().contains(searchQuery.toLowerCase());
         return matchesKategori && matchesSearch;
@@ -65,41 +63,66 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
       body: SafeArea(
         child: isLoading
             ? const Center(child: CircularProgressIndicator())
-            : SingleChildScrollView(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    const SizedBox(height: 15),
-                    HeaderSearch(
-                      onSearchChanged: (value) {
-                        searchQuery = value;
-                        filterArtikels();
-                      },
-                    ),
-                    const SizedBox(height: 24),
-                    SizedBox(
-                      height: 200,
-                      child: PageView.builder(
-                        controller: _pageController,
-                        itemCount: highlightArtikels.length,
-                        itemBuilder: (context, index) {
-                          return EdukasiCard(artikel: highlightArtikels[index]);
-                        },
+            : allArtikels.isEmpty
+                ? const Center(
+                    child: Padding(
+                      padding: EdgeInsets.symmetric(vertical: 100),
+                      child: Text(
+                        'Tidak ada data artikel',
+                        style: TextStyle(fontSize: 18, color: Colors.grey),
                       ),
                     ),
-                    const SizedBox(height: 24),
-                    CategoryButtons(onKategoriSelected: (id) {
-                      selectedKategoriId = id;
-                      filterArtikels();
-                    }),
-                    const SizedBox(height: 24),
-                    LatestArticleCard(artikels: artikels),
-                    const SizedBox(height: 24),
-                    TipsSection(),
-                    const SizedBox(height: 15),
-                  ],
-                ),
-              ),
+                  )
+                : SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const SizedBox(height: 15),
+                        HeaderSearch(
+                          onSearchChanged: (value) {
+                            searchQuery = value;
+                            filterArtikels();
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        SizedBox(
+                          height: 200,
+                          child: PageView.builder(
+                            controller: _pageController,
+                            itemCount: highlightArtikels.length,
+                            itemBuilder: (context, index) {
+                              return EdukasiCard(
+                                  artikel: highlightArtikels[index]);
+                            },
+                          ),
+                        ),
+                        const SizedBox(height: 24),
+                        CategoryButtons(
+                          allArtikels: allArtikels,
+                          onKategoriSelected: (kategori) {
+                            selectedKategori = kategori;
+                            filterArtikels();
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        artikels.isEmpty
+                            ? const Padding(
+                                padding: EdgeInsets.symmetric(vertical: 80),
+                                child: Center(
+                                  child: Text(
+                                    'Tidak ada artikel',
+                                    style: TextStyle(
+                                        fontSize: 16, color: Colors.grey),
+                                  ),
+                                ),
+                              )
+                            : LatestArticleCard(artikels: artikels),
+                        const SizedBox(height: 24),
+                        TipsSection(),
+                        const SizedBox(height: 15),
+                      ],
+                    ),
+                  ),
       ),
     );
   }
@@ -179,6 +202,12 @@ class EdukasiCard extends StatelessWidget {
               width: double.infinity,
               height: 200,
               fit: BoxFit.cover,
+              errorBuilder: (context, error, stackTrace) =>
+                  Icon(Icons.broken_image),
+              loadingBuilder: (context, child, loadingProgress) {
+                if (loadingProgress == null) return child;
+                return Center(child: CircularProgressIndicator());
+              },
             ),
           ),
         ),
@@ -188,71 +217,68 @@ class EdukasiCard extends StatelessWidget {
 }
 
 class CategoryButtons extends StatefulWidget {
-  final Function(int kategoriId) onKategoriSelected;
+  final List<Artikel> allArtikels;
+  final Function(String kategori) onKategoriSelected;
 
-  const CategoryButtons({super.key, required this.onKategoriSelected});
+  const CategoryButtons({
+    super.key,
+    required this.allArtikels,
+    required this.onKategoriSelected,
+  });
 
   @override
   State<CategoryButtons> createState() => _CategoryButtonsState();
 }
 
 class _CategoryButtonsState extends State<CategoryButtons> {
-  int selectedKategoriId = -1;
-
-  Future<List<Kategori>> _loadKategories() async {
-    final data = await KategoriService().fetchKategori();
-    return [Kategori(id: -1, nama: 'Semua', deskripsi: ''), ...data];
-  }
+  String selectedKategori = 'Semua';
 
   @override
   Widget build(BuildContext context) {
-    return FutureBuilder<List<Kategori>>(
-      future: _loadKategories(),
-      builder: (context, snapshot) {
-        if (snapshot.hasError || !snapshot.hasData) {
-          return const Center(child: Text("Gagal memuat kategori"));
-        }
+    final uniqueKategories = [
+      'Semua',
+      ...{
+        for (var artikel in widget.allArtikels)
+          if (artikel.kategoriEdukasi.isNotEmpty) artikel.kategoriEdukasi
+      }.toList()
+    ];
 
-        final categories = snapshot.data!;
+    return Container(
+      height: 40,
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: ListView.separated(
+        scrollDirection: Axis.horizontal,
+        itemCount: uniqueKategories.length,
+        separatorBuilder: (_, __) => const SizedBox(width: 12),
+        itemBuilder: (context, index) {
+          final kategori = uniqueKategories[index];
+          final isActive = kategori == selectedKategori;
 
-        return Container(
-          height: 40,
-          padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: ListView.separated(
-            scrollDirection: Axis.horizontal,
-            itemCount: categories.length,
-            separatorBuilder: (_, __) => const SizedBox(width: 12),
-            itemBuilder: (context, index) {
-              final kategori = categories[index];
-              final isActive = kategori.id == selectedKategoriId;
-
-              return OutlinedButton(
-                onPressed: () {
-                  setState(() {
-                    selectedKategoriId = kategori.id;
-                  });
-                  widget.onKategoriSelected(kategori.id);
-                },
-                style: OutlinedButton.styleFrom(
-                  backgroundColor:
-                      isActive ? const Color(0xFF1a3ea8) : Colors.white,
-                  side: const BorderSide(color: Color(0xFF1a3ea8), width: 1.5),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
-                child: Text(
-                  kategori.nama,
-                  style: TextStyle(
-                    color: isActive ? Colors.white : const Color(0xFF1a3ea8),
-                    fontWeight: FontWeight.w500,
-                  ),
-                ),
-              );
+          return OutlinedButton(
+            onPressed: () {
+              setState(() {
+                selectedKategori = kategori;
+              });
+              widget.onKategoriSelected(kategori);
             },
-          ),
-        );
-      },
+            style: OutlinedButton.styleFrom(
+              backgroundColor:
+                  isActive ? const Color(0xFF1a3ea8) : Colors.white,
+              side: const BorderSide(color: Color(0xFF1a3ea8), width: 1.5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+            child: Text(
+              kategori,
+              style: TextStyle(
+                color: isActive ? Colors.white : const Color(0xFF1a3ea8),
+                fontWeight: FontWeight.w500,
+              ),
+            ),
+          );
+        },
+      ),
     );
   }
 }
@@ -312,6 +338,12 @@ class LatestArticleCard extends StatelessWidget {
                             height: 120,
                             width: double.infinity,
                             fit: BoxFit.cover,
+                            errorBuilder: (context, error, stackTrace) =>
+                                Icon(Icons.broken_image),
+                            loadingBuilder: (context, child, loadingProgress) {
+                              if (loadingProgress == null) return child;
+                              return Center(child: CircularProgressIndicator());
+                            },
                           ),
                         ),
                         Padding(
@@ -419,7 +451,15 @@ class _TipsSectionState extends State<TipsSection> {
               Text('Perhatikan hal-hal ini!', style: TextStyle(fontSize: 14)),
         ),
         tipsArtikels.isEmpty
-            ? const Center(child: CircularProgressIndicator())
+            ? const Padding(
+                padding: EdgeInsets.symmetric(vertical: 80),
+                child: Center(
+                  child: Text(
+                    'Tidak ada artikel tips',
+                    style: TextStyle(fontSize: 16, color: Colors.grey),
+                  ),
+                ),
+              )
             : Container(
                 height: 300,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
@@ -454,8 +494,16 @@ class _TipsSectionState extends State<TipsSection> {
                               child: Image.network(
                                 artikel.gambar,
                                 height: 120,
-                                width: 160,
+                                width: double.infinity,
                                 fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) =>
+                                    Icon(Icons.broken_image),
+                                loadingBuilder:
+                                    (context, child, loadingProgress) {
+                                  if (loadingProgress == null) return child;
+                                  return Center(
+                                      child: CircularProgressIndicator());
+                                },
                               ),
                             ),
                             Padding(

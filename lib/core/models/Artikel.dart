@@ -9,9 +9,9 @@ class Artikel {
   final String slug;
   final String isi;
   final String gambar;
-  
-  @JsonKey(name: 'kategori_id')
-  final int kategoriId;
+
+  @JsonKey(name: 'kategori_edukasi')
+  final String kategoriEdukasi;
 
   @JsonKey(name: 'created_at')
   final DateTime? createdAt;
@@ -28,7 +28,7 @@ class Artikel {
     required this.slug,
     required this.isi,
     required this.gambar,
-    required this.kategoriId,
+    required this.kategoriEdukasi,
     this.createdAt,
     this.updatedAt,
     this.deletedAt,
