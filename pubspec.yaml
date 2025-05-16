@@ -47,9 +47,12 @@ dependencies:
   google_fonts: ^6.1.0
   sqflite: ^2.4.2
   path: ^1.9.1
+  firebase_messaging: ^15.2.5
+  flutter_local_notifications: ^17.0.0
   cached_network_image: ^3.4.1
   image_picker: ^1.1.2
   permission_handler: ^12.0.0+1
+  path_provider: ^2.1.5
 
 
 dev_dependencies:
@@ -98,3 +101,4 @@ flutter:
   #
   # For details regarding fonts from package dependencies,
   # see https://flutter.dev/to/font-from-package
+

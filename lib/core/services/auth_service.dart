@@ -1,5 +1,7 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
@@ -54,17 +56,20 @@ class AuthService {
 
         if (user != null) {
           await _saveUser(user, role, token);
+
+          // Ambil FCM Token
+          String? fcmToken = await FirebaseMessaging.instance.getToken();
+          if (fcmToken != null) {
+            await updateFcmToken(fcmToken, token);
+          }
+
           return user;
         }
       }
 
       return null;
     } on DioException catch (e) {
-      if (e.response != null) {
-        print("Dio error [${e.response?.statusCode}]: ${e.response?.data}");
-      } else {
-        print("Dio error: ${e.message}");
-      }
+      print("Dio error: ${e.response?.data ?? e.message}");
       return null;
     }
   }
@@ -99,12 +104,33 @@ class AuthService {
         requestOptions: RequestOptions(path: ''),
         statusCode: 500,
         statusMessage:
-            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+        'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
       );
     }
   }
 
   Future<void> _saveUser(Anggota user, String role, String token) async {
     await UserDatabase.instance.create(user, role, token);
+  }
+
+  Future<void> updateFcmToken(String fcmToken, String authToken) async {
+    try {
+      final response = await _api.dio.post(
+        "/update_fcm_token",
+        data: {"fcm_token": fcmToken},
+        options: Options(headers: {
+          'Authorization': 'Bearer $authToken',
+          'Content-Type': 'application/json',
+        }),
+      );
+
+      if (response.statusCode == 200) {
+        print("FCM token berhasil diupdate");
+      } else {
+        print("Gagal update FCM token: ${response.data}");
+      }
+    } catch (e) {
+      print("Error saat update FCM token: $e");
+    }
   }
 }

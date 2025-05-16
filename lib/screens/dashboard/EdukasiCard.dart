@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
 
 class EdukasiCard extends StatelessWidget {
   final int index;
@@ -7,26 +8,25 @@ class EdukasiCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Card(
-      elevation: 4,
-      shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.circular(12),
-      ),
-      clipBehavior: Clip.antiAlias,
-      // child: GestureDetector(
-      //   onTap: () {
-      //     Navigator.push(
-      //       context,
-      //       MaterialPageRoute(builder: (context) => const ProfilScreen()),
-      //     );
-      //   },
-      child: Image.asset(
-        'assets/images/Edu.jpg',
-        height: 150,
-        width: double.infinity,
-        fit: BoxFit.cover,
-      ),
-      // ),
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        return GestureDetector(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(builder: (context) => const EdukasiHomePage()),
+            );
+          },
+          child: Container(
+            width: constraints.maxWidth,
+            height: constraints.maxHeight,
+            child: Image.asset(
+              'assets/images/edus.png',
+              fit: BoxFit.cover,
+            ),
+          ),
+        );
+      },
     );
   }
 }

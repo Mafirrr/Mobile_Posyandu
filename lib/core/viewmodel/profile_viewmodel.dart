@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
@@ -40,6 +41,23 @@ class ProfilViewModel extends ChangeNotifier {
 
       var data = response.data;
       if (response.statusCode == 200) {
+        return data['url'];
+      }
+      return '';
+    } catch (e) {
+      return '';
+    }
+  }
+
+  Future<String> uploadImage(File image) async {
+    try {
+      _isLoading = true;
+
+      final response = await _profilService.uploadImage(image);
+      _isLoading = false;
+
+      if (response.statusCode == 200) {
+        var data = response.data;
         return data['url'];
       }
       return '';
