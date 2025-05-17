@@ -67,6 +67,11 @@ class MainImageSection extends StatelessWidget {
       width: double.infinity,
       height: screenHeight * 0.25,
       fit: BoxFit.cover,
+      errorBuilder: (context, error, stackTrace) => Icon(Icons.broken_image),
+      loadingBuilder: (context, child, loadingProgress) {
+        if (loadingProgress == null) return child;
+        return Center(child: CircularProgressIndicator());
+      },
     );
   }
 }
