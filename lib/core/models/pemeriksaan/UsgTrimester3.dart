@@ -6,72 +6,81 @@ part 'UsgTrimester3.g.dart';
 class UsgTrimester3 {
   @JsonKey(name: "id")
   int id;
-  @JsonKey(name: "hpht")
-  dynamic hpht;
-  @JsonKey(name: "keteraturan_haid")
-  String keteraturanHaid;
-  @JsonKey(name: "umur_kehamilan_berdasar_hpht")
-  int umurKehamilanBerdasarHpht;
-  @JsonKey(name: "umur_kehamilan_berdasarkan_usg")
-  int umurKehamilanBerdasarkanUsg;
-  @JsonKey(name: "hpl_berdasarkan_hpht")
-  String hplBerdasarkanHpht;
-  @JsonKey(name: "hpl_berdasarkan_usg")
-  String hplBerdasarkanUsg;
+  @JsonKey(name: "usg_trimester3")
+  String? usgTrimester3;
+  @JsonKey(name: "umur_kehamilan_usg_trimester_3")
+  int? umurKehamilanUsgTrimester3;
+  @JsonKey(name: "selisih_uk_usg_1_hpht_dengan_trimester_3")
+  String? selisihUkUsg1HphtDenganTrimester3;
   @JsonKey(name: "jumlah_bayi")
-  String jumlahBayi;
-  @JsonKey(name: "jumlah_gs")
-  String jumlahGs;
-  @JsonKey(name: "diametes_gs")
-  int diametesGs;
-  @JsonKey(name: "gs_hari")
-  int gsHari;
-  @JsonKey(name: "gs_minggu")
-  int gsMinggu;
-  @JsonKey(name: "crl")
-  int crl;
-  @JsonKey(name: "crl_hari")
-  int crlHari;
-  @JsonKey(name: "crl_minggu")
-  int crlMinggu;
-  @JsonKey(name: "letak_produk_kehamilan")
-  String letakProdukKehamilan;
-  @JsonKey(name: "pulsasi_jantung")
-  String pulsasiJantung;
+  String? jumlahBayi;
+  @JsonKey(name: "letak_bayi")
+  String? letakBayi;
+  @JsonKey(name: "presentasi_bayi")
+  String? presentasiBayi;
+  @JsonKey(name: "keadaan_bayi")
+  String? keadaanBayi;
+  @JsonKey(name: "djj_status")
+  String? djjStatus;
+  @JsonKey(name: "lokasi_plasenta")
+  String? lokasiPlasenta;
+  @JsonKey(name: "jumlah_cairan_ketuban")
+  String? jumlahCairanKetuban;
+  @JsonKey(name: "BPD")
+  int? bpd;
+  @JsonKey(name: "HC")
+  int? hc;
+  @JsonKey(name: "AC")
+  int? ac;
+  @JsonKey(name: "FL")
+  int? fl;
+  @JsonKey(name: "EFW")
+  int? efw;
+  @JsonKey(name: "HC_Sesuai_Minggu")
+  int? hcSesuaiMinggu;
+  @JsonKey(name: "BPD_Sesuai_Minggu")
+  int? bpdSesuaiMinggu;
+  @JsonKey(name: "AC_Sesuai_Minggu")
+  int? acSesuaiMinggu;
+  @JsonKey(name: "FL_Sesuai_Minggu")
+  int? flSesuaiMinggu;
+  @JsonKey(name: "EFW_Sesuai_Minggu")
+  int? efwSesuaiMinggu;
   @JsonKey(name: "kecurigaan_temuan_abnormal")
-  String kecurigaanTemuanAbnormal;
+  String? kecurigaanTemuanAbnormal;
   @JsonKey(name: "keterangan")
-  String keterangan;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? keterangan;
+  @JsonKey(name: "djj")
+  int? djj;
+  @JsonKey(name: "sdp")
+  int? sdp;
 
   UsgTrimester3({
     required this.id,
-    required this.hpht,
-    required this.keteraturanHaid,
-    required this.umurKehamilanBerdasarHpht,
-    required this.umurKehamilanBerdasarkanUsg,
-    required this.hplBerdasarkanHpht,
-    required this.hplBerdasarkanUsg,
+    required this.usgTrimester3,
+    required this.umurKehamilanUsgTrimester3,
+    required this.selisihUkUsg1HphtDenganTrimester3,
     required this.jumlahBayi,
-    required this.jumlahGs,
-    required this.diametesGs,
-    required this.gsHari,
-    required this.gsMinggu,
-    required this.crl,
-    required this.crlHari,
-    required this.crlMinggu,
-    required this.letakProdukKehamilan,
-    required this.pulsasiJantung,
+    required this.letakBayi,
+    required this.presentasiBayi,
+    required this.keadaanBayi,
+    required this.djjStatus,
+    required this.lokasiPlasenta,
+    required this.jumlahCairanKetuban,
+    required this.bpd,
+    required this.hc,
+    required this.ac,
+    required this.fl,
+    required this.efw,
+    required this.hcSesuaiMinggu,
+    required this.bpdSesuaiMinggu,
+    required this.acSesuaiMinggu,
+    required this.flSesuaiMinggu,
+    required this.efwSesuaiMinggu,
     required this.kecurigaanTemuanAbnormal,
     required this.keterangan,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    required this.djj,
+    required this.sdp,
   });
 
   factory UsgTrimester3.fromJson(Map<String, dynamic> json) =>

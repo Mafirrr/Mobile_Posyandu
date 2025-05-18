@@ -16,8 +16,6 @@ Trimester3 _$Trimester3FromJson(Map<String, dynamic> json) => Trimester3(
           json['skrining_kesehatan'] as Map<String, dynamic>),
       pemeriksaanFisik: PemeriksaanFisik.fromJson(
           json['pemeriksaan_fisik'] as Map<String, dynamic>),
-      trimester3LabTrimester3: (json['lab_trimester_3'] as num).toInt(),
-      trimester3UsgTrimester3: (json['usg_trimester_3'] as num).toInt(),
       rencanaKonsultasi: RencanaKonsultasi.fromJson(
           json['rencana_konsultasi'] as Map<String, dynamic>),
       labTrimester3: LabTrimester3.fromJson(
@@ -34,8 +32,6 @@ Map<String, dynamic> _$Trimester3ToJson(Trimester3 instance) =>
       'pemeriksaan_rutin': instance.pemeriksaanRutin,
       'skrining_kesehatan': instance.skriningKesehatan,
       'pemeriksaan_fisik': instance.pemeriksaanFisik,
-      'lab_trimester_3': instance.trimester3LabTrimester3,
-      'usg_trimester_3': instance.trimester3UsgTrimester3,
       'rencana_konsultasi': instance.rencanaKonsultasi,
       'lab_trimester3': instance.labTrimester3,
       'usg_trimester3': instance.usgTrimester3,

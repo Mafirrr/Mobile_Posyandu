@@ -5,6 +5,7 @@ import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/models/dataAnggota.dart';
 
 class ProfilService {
   final _db = UserDatabase();
@@ -89,6 +90,48 @@ class ProfilService {
         requestOptions: RequestOptions(path: ' '),
         statusCode: 404,
         statusMessage: "Gagal mengupload gambar: {$e.message}",
+      );
+    }
+  }
+
+  Future<dynamic> getKeluarga() async {
+    try {
+      int? id = await getID();
+      await _api.setToken();
+      final response = await _api.dio.get("/user/keluarga/$id");
+
+      final responseData = response.data;
+      final userData = responseData['data'];
+
+      return DataAnggota.fromJson(userData);
+    } on DioException catch (e) {
+      throw Exception('Error: $e');
+    }
+  }
+
+  Future<Response> updateKeluarga(DataAnggota data) async {
+    try {
+      _api.setToken();
+      int localUpdateResult = await _db.updateKeluarga(data);
+      if (localUpdateResult == 0) {
+        return Response(
+          requestOptions: RequestOptions(path: ' '),
+          statusCode: 400,
+          statusMessage: "Gagal memperbarui data lokal.",
+        );
+      }
+
+      final response = await _api.dio.put(
+        "/user/keluarga",
+        data: data.toJson(),
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ' '),
+        statusCode: 202,
+        statusMessage: "Gagal Mengupdate: ${e.message}",
       );
     }
   }

@@ -7,47 +7,38 @@ class PemeriksaanFisik {
   @JsonKey(name: "id")
   int id;
   @JsonKey(name: "konjungtiva")
-  String konjungtiva;
+  String? konjungtiva;
   @JsonKey(name: "sklera")
-  String sklera;
+  String? sklera;
   @JsonKey(name: "leher")
-  String leher;
+  String? leher;
   @JsonKey(name: "kulit")
-  String kulit;
+  String? kulit;
   @JsonKey(name: "gigi_mulut")
-  String gigiMulut;
+  String? gigiMulut;
   @JsonKey(name: "tht")
-  String tht;
+  String? tht;
   @JsonKey(name: "jantung")
-  String jantung;
+  String? jantung;
   @JsonKey(name: "paru")
-  String paru;
+  String? paru;
   @JsonKey(name: "perut")
-  String perut;
+  String? perut;
   @JsonKey(name: "tungkai")
-  String tungkai;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? tungkai;
 
   PemeriksaanFisik({
     required this.id,
-    required this.konjungtiva,
-    required this.sklera,
-    required this.leher,
-    required this.kulit,
-    required this.gigiMulut,
-    required this.tht,
-    required this.jantung,
-    required this.paru,
-    required this.perut,
-    required this.tungkai,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.konjungtiva,
+    this.sklera,
+    this.leher,
+    this.kulit,
+    this.gigiMulut,
+    this.tht,
+    this.jantung,
+    this.paru,
+    this.perut,
+    this.tungkai,
   });
 
   factory PemeriksaanFisik.fromJson(Map<String, dynamic> json) =>

@@ -1,6 +1,8 @@
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
+import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Pemeriksaan.dart';
 
 class KehamilanService {
   final _api = ApiClient();
@@ -21,6 +23,10 @@ class KehamilanService {
 
           await _saveData(kehamilanList);
 
+          for (var kehamilan in kehamilanList) {
+            await _fetchAndSavePemeriksaan(kehamilan.id, id!);
+          }
+
           return kehamilanList;
         } else {
           throw Exception('Error: ${data['message']}');
@@ -36,6 +42,27 @@ class KehamilanService {
   Future<void> _saveData(List<Kehamilan> dataList) async {
     for (var kehamilan in dataList) {
       await UserDatabase().insertKehamilan(kehamilan);
+    }
+  }
+
+  Future<void> _fetchAndSavePemeriksaan(int kehamilanId, int id) async {
+    try {
+      final response = await _api.dio.get('/kehamilan/$id', queryParameters: {
+        'detail': kehamilanId,
+      });
+
+      if (response.statusCode == 200) {
+        var data = response.data;
+        if (data['status'] == 'success') {
+          final pemeriksaanData = Pemeriksaan.fromJson(data['data']);
+
+          await Pemeriksaandatabase().insertPemeriksaan(pemeriksaanData);
+        }
+      }
+    } catch (e, stackTrace) {
+      print(
+          'Gagal ambil/simpan pemeriksaan untuk kehamilanId $kehamilanId: $e');
+      print('StackTrace:\n$stackTrace');
     }
   }
 

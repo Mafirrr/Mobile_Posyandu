@@ -46,19 +46,38 @@ class DatabaseProvider {
     ''');
 
     await db.execute('''
+      CREATE TABLE keluarga (
+        id INTEGER PRIMARY KEY,
+        anggota_id TEXT NOT NULL,
+        nik TEXT NOT NULL,
+        nama TEXT NOT NULL,
+        no_jkn TEXT NOT NULL,
+        faskes_tk1 TEXT,
+        faskes_rujukan TEXT,
+        tanggal_lahir TEXT NOT NULL,
+        tempat_lahir TEXT NOT NULL,
+        pekerjaan TEXT NOT NULL,
+        alamat TEXT NOT NULL,
+        no_telepon TEXT
+      )
+    ''');
+
+    await db.execute('''
       CREATE TABLE kehamilan (
         id INTEGER PRIMARY KEY,
         anggota_id INTEGER NOT NULL,
         status TEXT NOT NULL,
-        label TEXT
-        proses TEXT
-        penolong TEXT
+        label TEXT,
+        tahun TEXT,
+        berat_badan_bayi TEXT,
+        proses_melahirkan TEXT,
+        penolong TEXT,
         masalah TEXT
       )
     ''');
 
     await db.execute('''
-  CREATE TABLE skrining_kesehatan_jiwa (
+  CREATE TABLE skrining_kesehatan (
     id INTEGER PRIMARY KEY,
     skrining_jiwa TEXT,
     tindak_lanjut_jiwa TEXT,
@@ -91,6 +110,12 @@ class DatabaseProvider {
     tekanan_darah_diastol INTEGER,
     letak_dan_denyut_nadi_bayi TEXT,
     lingkar_lengan_atas REAL,
+    protein_urin Text,
+    tinggi_rahim Text,
+    tablet_tambah_darah Text,
+    konseling Text,
+    skrining_dokter Text,
+    tes_lab_gula_darah Text,
     created_at Text
   )
 ''');
@@ -112,7 +137,7 @@ class DatabaseProvider {
     id INTEGER PRIMARY KEY,
     tinggi_badan REAL,
     golongan_darah TEXT,
-    status_imunisasi TEXT,
+    status_imunisasi_td TEXT,
     hemoglobin REAL,
     gula_darah_puasa REAL,
     riwayat_kesehatan_ibu_sekarang TEXT,
@@ -122,9 +147,21 @@ class DatabaseProvider {
 ''');
 
     await db.execute('''
+  CREATE TABLE pemeriksaan_kehamilan (
+  id INTEGER PRIMARY KEY,
+  kehamilan_id INTEGER,
+  petugas_id INTEGER,
+  tanggal_pemeriksaan Text,
+  tempat_pemeriksaan Text,
+  jenis_pemeriksaan Text
+  )
+''');
+
+    await db.execute('''
   CREATE TABLE trimester_1 (
     id INTEGER PRIMARY KEY,
     pemeriksaan_id INTEGER UNIQUE,
+    pemeriksaan_rutin INTEGER,
     skrining_kesehatan INTEGER,
     pemeriksaan_fisik INTEGER,
     pemeriksaan_awal INTEGER,
@@ -139,6 +176,7 @@ class DatabaseProvider {
   CREATE TABLE trimester_3 (
     id INTEGER PRIMARY KEY,
     pemeriksaan_id INTEGER UNIQUE,
+    pemeriksaan_rutin INTEGER,
     skrining_kesehatan INTEGER,
     pemeriksaan_fisik INTEGER,
     lab_trimester_3 INTEGER,
@@ -151,6 +189,7 @@ class DatabaseProvider {
     await db.execute('''
   CREATE TABLE usg_trimester_1 (
     id INTEGER PRIMARY KEY,
+    hpht Text,
     keteraturan_haid TEXT,
     umur_kehamilan_berdasar_hpht INTEGER,
     umur_kehamilan_berdasarkan_usg INTEGER,
@@ -177,6 +216,9 @@ class DatabaseProvider {
     hemoglobin REAL,
     golongan_darah_dan_rhesus TEXT,
     gula_darah REAL,
+    hemoglobin_rtl Text,
+    rhesus_rtl TEXT,
+    gula_darah_rtl REAL,
     hiv TEXT,
     sifilis TEXT,
     hepatitis_b TEXT
@@ -194,7 +236,9 @@ class DatabaseProvider {
     presentasi_bayi TEXT,
     keadaan_bayi TEXT,
     djj TEXT,
+    djj_status TEXT,
     lokasi_plasenta TEXT,
+    sdp TEXT,
     jumlah_cairan_ketuban TEXT,
     BPD REAL,
     HC REAL,
@@ -216,7 +260,10 @@ class DatabaseProvider {
     id INTEGER PRIMARY KEY,
     Hemoglobin REAL,
     Protein_urin REAL,
-    urin_reduksi TEXT
+    urin_reduksi TEXT,
+    hemoglobin_rtl Text,
+    protein_urin_rtl Text,
+    urin_reduksi_rtl TEXT
   )
 ''');
 
@@ -232,7 +279,7 @@ class DatabaseProvider {
   }
 
   Future _onUpgrade(Database db, int oldVersion, int newVersion) async {
-    // Upgrade DB logic
+    //upgrade
   }
 
   Future close() async {

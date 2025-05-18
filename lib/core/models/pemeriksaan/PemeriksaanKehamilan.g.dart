@@ -9,21 +9,21 @@ part of 'PemeriksaanKehamilan.dart';
 PemeriksaanKehamilan _$PemeriksaanKehamilanFromJson(
         Map<String, dynamic> json) =>
     PemeriksaanKehamilan(
-      trimester1: (json['trimester1'] as List<dynamic>)
-          .map((e) => Trimestr1.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      trimester2: (json['trimester2'] as List<dynamic>)
-          .map((e) => PemeriksaanRutin.fromJson(e as Map<String, dynamic>))
-          .toList(),
-      trimester3: (json['trimester3'] as List<dynamic>)
-          .map((e) => Trimester3.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      id: (json['id'] as num).toInt(),
+      kehamilanId: (json['kehamilan_id'] as num).toInt(),
+      petugasId: (json['petugas_id'] as num).toInt(),
+      tanggalPemeriksaan: DateTime.parse(json['tanggal_pemeriksaan'] as String),
+      tempatPemeriksaan: json['tempat_pemeriksaan'] as String,
+      jenisPemeriksaan: json['jenis_pemeriksaan'] as String,
     );
 
 Map<String, dynamic> _$PemeriksaanKehamilanToJson(
         PemeriksaanKehamilan instance) =>
     <String, dynamic>{
-      'trimester1': instance.trimester1,
-      'trimester2': instance.trimester2,
-      'trimester3': instance.trimester3,
+      'id': instance.id,
+      'kehamilan_id': instance.kehamilanId,
+      'petugas_id': instance.petugasId,
+      'tanggal_pemeriksaan': instance.tanggalPemeriksaan.toIso8601String(),
+      'tempat_pemeriksaan': instance.tempatPemeriksaan,
+      'jenis_pemeriksaan': instance.jenisPemeriksaan,
     };

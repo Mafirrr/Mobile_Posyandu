@@ -22,10 +22,6 @@ class Trimester3 {
   SkriningKesehatan skriningKesehatan;
   @JsonKey(name: "pemeriksaan_fisik")
   PemeriksaanFisik pemeriksaanFisik;
-  @JsonKey(name: "lab_trimester_3")
-  int trimester3LabTrimester3;
-  @JsonKey(name: "usg_trimester_3")
-  int trimester3UsgTrimester3;
   @JsonKey(name: "rencana_konsultasi")
   RencanaKonsultasi rencanaKonsultasi;
   @JsonKey(name: "lab_trimester3")
@@ -40,8 +36,6 @@ class Trimester3 {
     required this.pemeriksaanRutin,
     required this.skriningKesehatan,
     required this.pemeriksaanFisik,
-    required this.trimester3LabTrimester3,
-    required this.trimester3UsgTrimester3,
     required this.rencanaKonsultasi,
     required this.labTrimester3,
     required this.usgTrimester3,

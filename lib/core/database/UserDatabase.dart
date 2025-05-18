@@ -2,6 +2,7 @@ import 'package:posyandu_mob/core/database/DatabaseProvider.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/models/User.dart';
+import 'package:posyandu_mob/core/models/dataAnggota.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDatabase {
@@ -19,7 +20,7 @@ class UserDatabase {
 
   Future<List<Kehamilan>> getAllKehamilan() async {
     final db = await instance.database;
-    final maps = await db.query('kehamilan', orderBy: 'tanggal_awal ASC');
+    final maps = await db.query('kehamilan', orderBy: 'id ASC');
 
     return maps.map((map) => Kehamilan.fromJson(map)).toList();
   }
@@ -73,9 +74,62 @@ class UserDatabase {
     );
   }
 
+  Future<int> upsert(DataAnggota keluarga) async {
+    final db = await instance.database;
+    return await db.insert(
+      'keluarga',
+      keluarga.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
+  Future<int> updateKeluarga(DataAnggota keluarga) async {
+    final db = await instance.database;
+    return await db.update(
+      'keluarga',
+      keluarga.toJson(),
+      where: 'id = ?',
+      whereArgs: [keluarga.id],
+    );
+  }
+
+  Future<DataAnggota?> getKeluargaById(int id) async {
+    final db = await instance.database;
+    final result = await db.query(
+      'keluarga',
+      where: 'anggota_id = ?',
+      whereArgs: [id],
+      limit: 1,
+    );
+    if (result.isNotEmpty) {
+      return DataAnggota.fromJson(result.first);
+    }
+    return null;
+  }
+
   Future<void> logout() async {
     final db = await instance.database;
-    await db.delete('user');
-    await db.delete('kehamilan');
+    final tables = [
+      'user',
+      'keluarga',
+      'kehamilan',
+      'pemeriksaan_kehamilan',
+      'skrining_kesehatan_jiwa',
+      'pemeriksaan_fisik',
+      'pemeriksaan_rutin',
+      'pemeriksaan_khusus',
+      'pemeriksaan_awal',
+      'lab_trimester_1',
+      'usg_trimester_1',
+      'trimester_1',
+      'lab_trimester_3',
+      'usg_trimester_3',
+      'trimester_3',
+      'rencana_konsultasi'
+    ];
+
+    for (final table in tables) {
+      await db.delete(table);
+    }
   }
 }

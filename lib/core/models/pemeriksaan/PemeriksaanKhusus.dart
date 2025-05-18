@@ -7,35 +7,26 @@ class PemeriksaanKhusus {
   @JsonKey(name: "id")
   int id;
   @JsonKey(name: "porsio")
-  String porsio;
+  String? porsio;
   @JsonKey(name: "uretra")
-  String uretra;
+  String? uretra;
   @JsonKey(name: "vagina")
-  String vagina;
+  String? vagina;
   @JsonKey(name: "vulva")
-  String vulva;
+  String? vulva;
   @JsonKey(name: "fluksus")
-  String fluksus;
+  String? fluksus;
   @JsonKey(name: "fluor")
-  String fluor;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? fluor;
 
   PemeriksaanKhusus({
     required this.id,
-    required this.porsio,
-    required this.uretra,
-    required this.vagina,
-    required this.vulva,
-    required this.fluksus,
-    required this.fluor,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.porsio,
+    this.uretra,
+    this.vagina,
+    this.vulva,
+    this.fluksus,
+    this.fluor,
   });
 
   factory PemeriksaanKhusus.fromJson(Map<String, dynamic> json) =>

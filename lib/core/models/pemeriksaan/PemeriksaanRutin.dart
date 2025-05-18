@@ -7,27 +7,27 @@ class PemeriksaanRutin {
   @JsonKey(name: "id")
   int id;
   @JsonKey(name: "pemeriksaan_id")
-  int pemeriksaanId;
+  int? pemeriksaanId;
   @JsonKey(name: "berat_badan")
-  int beratBadan;
+  int? beratBadan;
   @JsonKey(name: "tinggi_rahim")
-  String tinggiRahim;
+  String? tinggiRahim;
   @JsonKey(name: "tekanan_darah_sistol")
-  int tekananDarahSistol;
+  int? tekananDarahSistol;
   @JsonKey(name: "tekanan_darah_diastol")
-  int tekananDarahDiastol;
+  int? tekananDarahDiastol;
   @JsonKey(name: "letak_dan_denyut_nadi_bayi")
-  String letakDanDenyutNadiBayi;
+  String? letakDanDenyutNadiBayi;
   @JsonKey(name: "lingkar_lengan_atas")
-  int lingkarLenganAtas;
+  int? lingkarLenganAtas;
   @JsonKey(name: "protein_urin")
   dynamic proteinUrin;
   @JsonKey(name: "tablet_tambah_darah")
-  String tabletTambahDarah;
+  String? tabletTambahDarah;
   @JsonKey(name: "konseling")
-  String konseling;
+  String? konseling;
   @JsonKey(name: "skrining_dokter")
-  String skriningDokter;
+  String? skriningDokter;
   @JsonKey(name: "tes_lab_gula_darah")
   dynamic tesLabGulaDarah;
   @JsonKey(name: "created_at")
@@ -35,18 +35,18 @@ class PemeriksaanRutin {
 
   PemeriksaanRutin({
     required this.id,
-    required this.pemeriksaanId,
-    required this.beratBadan,
-    required this.tinggiRahim,
-    required this.tekananDarahSistol,
-    required this.tekananDarahDiastol,
-    required this.letakDanDenyutNadiBayi,
-    required this.lingkarLenganAtas,
-    required this.proteinUrin,
-    required this.tabletTambahDarah,
-    required this.konseling,
-    required this.skriningDokter,
-    required this.tesLabGulaDarah,
+    this.pemeriksaanId,
+    this.beratBadan,
+    this.tinggiRahim,
+    this.tekananDarahSistol,
+    this.tekananDarahDiastol,
+    this.letakDanDenyutNadiBayi,
+    this.lingkarLenganAtas,
+    this.proteinUrin,
+    this.tabletTambahDarah,
+    this.konseling,
+    this.skriningDokter,
+    this.tesLabGulaDarah,
     this.created_at,
   });
 

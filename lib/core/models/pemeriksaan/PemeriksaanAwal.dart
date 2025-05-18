@@ -1,3 +1,4 @@
+import 'dart:convert';
 import 'package:json_annotation/json_annotation.dart';
 
 part 'PemeriksaanAwal.g.dart';
@@ -6,43 +7,64 @@ part 'PemeriksaanAwal.g.dart';
 class PemeriksaanAwal {
   @JsonKey(name: "id")
   int id;
+
   @JsonKey(name: "tinggi_badan")
-  int tinggiBadan;
+  int? tinggiBadan;
+
   @JsonKey(name: "golongan_darah")
-  String golonganDarah;
+  String? golonganDarah;
+
   @JsonKey(name: "status_imunisasi_td")
-  String statusImunisasiTd;
+  String? statusImunisasiTd;
+
   @JsonKey(name: "hemoglobin")
-  int hemoglobin;
-  @JsonKey(name: "riwayat_kesehatan_ibu_sekarang")
-  List<String> riwayatKesehatanIbuSekarang;
-  @JsonKey(name: "riwayat_perilaku")
-  List<String> riwayatPerilaku;
-  @JsonKey(name: "riwayat_penyakit_keluarga")
-  List<String> riwayatPenyakitKeluarga;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  int? hemoglobin;
+
+  @JsonKey(
+    name: "riwayat_kesehatan_ibu_sekarang",
+    fromJson: stringToList,
+    toJson: listToString,
+  )
+  List<String>? riwayatKesehatanIbuSekarang;
+
+  @JsonKey(
+    name: "riwayat_perilaku",
+    fromJson: stringToList,
+    toJson: listToString,
+  )
+  List<String>? riwayatPerilaku;
+
+  @JsonKey(
+    name: "riwayat_penyakit_keluarga",
+    fromJson: stringToList,
+    toJson: listToString,
+  )
+  List<String>? riwayatPenyakitKeluarga;
 
   PemeriksaanAwal({
     required this.id,
-    required this.tinggiBadan,
-    required this.golonganDarah,
-    required this.statusImunisasiTd,
-    required this.hemoglobin,
-    required this.riwayatKesehatanIbuSekarang,
-    required this.riwayatPerilaku,
-    required this.riwayatPenyakitKeluarga,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.tinggiBadan,
+    this.golonganDarah,
+    this.statusImunisasiTd,
+    this.hemoglobin,
+    this.riwayatKesehatanIbuSekarang,
+    this.riwayatPerilaku,
+    this.riwayatPenyakitKeluarga,
   });
 
   factory PemeriksaanAwal.fromJson(Map<String, dynamic> json) =>
       _$PemeriksaanAwalFromJson(json);
 
   Map<String, dynamic> toJson() => _$PemeriksaanAwalToJson(this);
+}
+
+List<String> stringToList(dynamic input) {
+  if (input == null) return [];
+  if (input is List) return input.cast<String>();
+  if (input is String) return List<String>.from(jsonDecode(input));
+  return [];
+}
+
+String listToString(List<String>? input) {
+  return jsonEncode(input ?? []);
 }

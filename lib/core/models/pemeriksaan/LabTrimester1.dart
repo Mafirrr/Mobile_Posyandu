@@ -5,46 +5,37 @@ part 'LabTrimester1.g.dart';
 @JsonSerializable()
 class LabTrimester1 {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "hemoglobin")
-  int hemoglobin;
+  int? hemoglobin;
   @JsonKey(name: "golongan_darah_dan_rhesus")
-  String golonganDarahDanRhesus;
+  String? golonganDarahDanRhesus;
   @JsonKey(name: "gula_darah")
-  int gulaDarah;
+  int? gulaDarah;
   @JsonKey(name: "hemoglobin_rtl")
   dynamic hemoglobinRtl;
   @JsonKey(name: "rhesus_rtl")
   dynamic rhesusRtl;
   @JsonKey(name: "gula_darah_rtl")
-  String gulaDarahRtl;
+  String? gulaDarahRtl;
   @JsonKey(name: "hiv")
-  String hiv;
+  String? hiv;
   @JsonKey(name: "sifilis")
-  String sifilis;
+  String? sifilis;
   @JsonKey(name: "hepatitis_b")
-  String hepatitisB;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? hepatitisB;
 
   LabTrimester1({
-    required this.id,
-    required this.hemoglobin,
-    required this.golonganDarahDanRhesus,
-    required this.gulaDarah,
-    required this.hemoglobinRtl,
-    required this.rhesusRtl,
-    required this.gulaDarahRtl,
-    required this.hiv,
-    required this.sifilis,
-    required this.hepatitisB,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.id,
+    this.hemoglobin,
+    this.golonganDarahDanRhesus,
+    this.gulaDarah,
+    this.hemoglobinRtl,
+    this.rhesusRtl,
+    this.gulaDarahRtl,
+    this.hiv,
+    this.sifilis,
+    this.hepatitisB,
   });
 
   factory LabTrimester1.fromJson(Map<String, dynamic> json) =>

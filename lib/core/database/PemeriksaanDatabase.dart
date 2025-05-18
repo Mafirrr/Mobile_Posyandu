@@ -1,4 +1,5 @@
 import 'package:posyandu_mob/core/database/DatabaseProvider.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Pemeriksaan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
@@ -8,20 +9,34 @@ import 'package:sqflite/sqflite.dart';
 class Pemeriksaandatabase {
   final instance = DatabaseProvider.instance;
 
-  Future<PemeriksaanKehamilan> insertPemeriksaan(
-      PemeriksaanKehamilan pemeriksaan) async {
-    for (var item in pemeriksaan.trimester1) {
+  Future<Pemeriksaan> insertPemeriksaan(Pemeriksaan hasil) async {
+    for (var item in hasil.pemeriksaan) {
+      await _insertPemeriksaan(item);
+    }
+
+    for (var item in hasil.trimester1) {
       await _insertTrimester1(item);
     }
 
-    for (var item in pemeriksaan.trimester2) {
+    for (var item in hasil.trimester2) {
       await _insertTrimester2(item);
     }
 
-    for (var item in pemeriksaan.trimester3) {
+    for (var item in hasil.trimester3) {
       await _insertTrimester3(item);
     }
-    return pemeriksaan;
+    return hasil;
+  }
+
+  Future<PemeriksaanKehamilan> _insertPemeriksaan(
+      PemeriksaanKehamilan pemeriksaanKehamilan) async {
+    final db = await instance.database;
+    await db.insert(
+      'pemeriksaan_kehamilan',
+      pemeriksaanKehamilan.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+    return pemeriksaanKehamilan;
   }
 
   Future<Trimestr1> _insertTrimester1(Trimestr1 trimester1) async {
@@ -71,8 +86,8 @@ class Pemeriksaandatabase {
       'pemeriksaan_fisik': fisikId,
       'pemeriksaan_awal': awalId,
       'pemeriksaan_khusus': khususId,
-      'lab_trimester1': labId,
-      'usg_trimester1': usgId,
+      'lab_trimester_1': labId,
+      'usg_trimester_1': usgId,
       'created_at': trimester1.created_at,
     });
 
@@ -129,7 +144,7 @@ class Pemeriksaandatabase {
       'skrining_kesehatan': skriningId,
       'pemeriksaan_fisik': fisikId,
       'lab_trimester_3': labId,
-      'usg_trimester-3': usgId,
+      'usg_trimester_3': usgId,
       'rencana_konsultasi': rencanaId,
       'created_at': trimester3.created_at,
     });

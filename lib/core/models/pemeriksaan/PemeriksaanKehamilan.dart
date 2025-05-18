@@ -1,25 +1,29 @@
 import 'package:json_annotation/json_annotation.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/Trimestr1.dart';
 
 part 'PemeriksaanKehamilan.g.dart';
 
 @JsonSerializable()
 class PemeriksaanKehamilan {
-  @JsonKey(name: "trimester1")
-  List<Trimestr1> trimester1;
-
-  @JsonKey(name: "trimester2")
-  List<PemeriksaanRutin> trimester2;
-
-  @JsonKey(name: "trimester3")
-  List<Trimester3> trimester3;
+  @JsonKey(name: "id")
+  int id;
+  @JsonKey(name: "kehamilan_id")
+  int kehamilanId;
+  @JsonKey(name: "petugas_id")
+  int petugasId;
+  @JsonKey(name: "tanggal_pemeriksaan")
+  DateTime tanggalPemeriksaan;
+  @JsonKey(name: "tempat_pemeriksaan")
+  String tempatPemeriksaan;
+  @JsonKey(name: "jenis_pemeriksaan")
+  String jenisPemeriksaan;
 
   PemeriksaanKehamilan({
-    required this.trimester1,
-    required this.trimester2,
-    required this.trimester3,
+    required this.id,
+    required this.kehamilanId,
+    required this.petugasId,
+    required this.tanggalPemeriksaan,
+    required this.tempatPemeriksaan,
+    required this.jenisPemeriksaan,
   });
 
   factory PemeriksaanKehamilan.fromJson(Map<String, dynamic> json) =>

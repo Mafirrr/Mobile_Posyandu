@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:json_annotation/json_annotation.dart';
 
 part 'RencanaKonsultasi.g.dart';
@@ -6,34 +8,40 @@ part 'RencanaKonsultasi.g.dart';
 class RencanaKonsultasi {
   @JsonKey(name: "id")
   int id;
-  @JsonKey(name: "rencana_konsultasi_lanjut")
-  List<String> rencanaKonsultasiLanjut;
+  @JsonKey(
+    name: "rencana_konsultasi_lanjut",
+    fromJson: stringToList,
+    toJson: listToString,
+  )
+  List<String>? rencanaKonsultasiLanjut;
   @JsonKey(name: "rencana_proses_melahirkan")
-  String rencanaProsesMelahirkan;
+  String? rencanaProsesMelahirkan;
   @JsonKey(name: "pilihan_kontrasepsi")
-  String pilihanKontrasepsi;
+  String? pilihanKontrasepsi;
   @JsonKey(name: "kebutuhan_konseling")
-  String kebutuhanKonseling;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? kebutuhanKonseling;
 
   RencanaKonsultasi({
     required this.id,
-    required this.rencanaKonsultasiLanjut,
-    required this.rencanaProsesMelahirkan,
-    required this.pilihanKontrasepsi,
-    required this.kebutuhanKonseling,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.rencanaKonsultasiLanjut,
+    this.rencanaProsesMelahirkan,
+    this.pilihanKontrasepsi,
+    this.kebutuhanKonseling,
   });
 
   factory RencanaKonsultasi.fromJson(Map<String, dynamic> json) =>
       _$RencanaKonsultasiFromJson(json);
 
   Map<String, dynamic> toJson() => _$RencanaKonsultasiToJson(this);
+}
+
+List<String> stringToList(dynamic input) {
+  if (input == null) return [];
+  if (input is List) return input.cast<String>();
+  if (input is String) return List<String>.from(jsonDecode(input));
+  return [];
+}
+
+String listToString(List<String>? input) {
+  return jsonEncode(input ?? []);
 }

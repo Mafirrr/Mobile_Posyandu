@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/models/dataAnggota.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 
 class ProfilViewModel extends ChangeNotifier {
@@ -16,6 +17,22 @@ class ProfilViewModel extends ChangeNotifier {
       _setLoading(true);
 
       final update = await _profilService.updateAnggota(anggota);
+      _setLoading(false);
+
+      if (update.statusCode == 202) {
+        return false;
+      }
+      return true;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<bool> updateKeluarga(DataAnggota data) async {
+    try {
+      _setLoading(true);
+
+      final update = await _profilService.updateKeluarga(data);
       _setLoading(false);
 
       if (update.statusCode == 202) {

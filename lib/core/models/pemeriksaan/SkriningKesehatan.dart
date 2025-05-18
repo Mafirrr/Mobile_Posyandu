@@ -7,26 +7,17 @@ class SkriningKesehatan {
   @JsonKey(name: "id")
   int id;
   @JsonKey(name: "skrining_jiwa")
-  String skriningJiwa;
+  String? skriningJiwa;
   @JsonKey(name: "tindak_lanjut_jiwa")
-  String tindakLanjutJiwa;
+  String? tindakLanjutJiwa;
   @JsonKey(name: "perlu_rujukan")
-  String perluRujukan;
-  @JsonKey(name: "created_at")
-  DateTime createdAt;
-  @JsonKey(name: "updated_at")
-  DateTime updatedAt;
-  @JsonKey(name: "deleted_at")
-  dynamic deletedAt;
+  String? perluRujukan;
 
   SkriningKesehatan({
     required this.id,
-    required this.skriningJiwa,
-    required this.tindakLanjutJiwa,
-    required this.perluRujukan,
-    required this.createdAt,
-    required this.updatedAt,
-    required this.deletedAt,
+    this.skriningJiwa,
+    this.tindakLanjutJiwa,
+    this.perluRujukan,
   });
 
   factory SkriningKesehatan.fromJson(Map<String, dynamic> json) =>
