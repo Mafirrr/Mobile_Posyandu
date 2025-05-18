@@ -6,6 +6,8 @@ import 'package:posyandu_mob/core/services/artikel_service.dart';
 import 'notification_dialog.dart';
 import 'grafik_popup.dart';
 import 'package:posyandu_mob/core/models/Artikel.dart';
+import 'package:posyandu_mob/core/services/jadwal_service.dart';
+import 'package:posyandu_mob/core/models/Jadwal.dart';
 
 
 
@@ -22,21 +24,29 @@ class _DashboardPageState extends State<DashboardPage> {
   List<Artikel> highlightArtikels = [];
   List<Artikel> allArtikels = [];
   List<Artikel> artikels = [];
+  List<Jadwal> jadwalPemeriksaan = [];
   int selectedKategoriId = 0;
   bool isLoading = true;
   bool _isExpanded = false;
   String? nama;
   DateTime? selectedJadwal;
 
-  List<DateTime> jadwalPemeriksaan = [
-    DateTime(2025, 5, 17),
-  ];
+  String formatJamMenit(String jam) {
+    try {
+      DateTime time = DateFormat("HH:mm:ss").parse(jam);
+      return DateFormat("HH:mm").format(time);
+    } catch (e) {
+      return jam;
+    }
+  }
+
 
   bool isPemeriksaan(DateTime date) {
     for (var jadwal in jadwalPemeriksaan) {
-      if (jadwal.year == date.year &&
-          jadwal.month == date.month &&
-          jadwal.day == date.day) {
+      DateTime jadwalDate = DateTime.parse(jadwal.tanggal);
+      if (jadwalDate.year == date.year &&
+          jadwalDate.month == date.month &&
+          jadwalDate.day == date.day) {
         return true;
       }
     }
@@ -113,6 +123,7 @@ class _DashboardPageState extends State<DashboardPage> {
     });
     _getUser();
     fetchArtikels();
+    fetchJadwal();
   }
 
   Future<void> _getUser() async {
@@ -142,6 +153,17 @@ class _DashboardPageState extends State<DashboardPage> {
       ScaffoldMessenger.of(context).showSnackBar(
         const SnackBar(content: Text('Gagal memuat data artikel')),
       );
+    }
+  }
+
+  Future<void> fetchJadwal() async {
+    try {
+      List<Jadwal> fetchedJadwal = await JadwalService().fetchJadwal();
+      setState(() {
+        jadwalPemeriksaan = fetchedJadwal;
+      });
+    } catch (e) {
+      print("Error fetching jadwal: $e");
     }
   }
 
@@ -312,7 +334,7 @@ class _DashboardPageState extends State<DashboardPage> {
                               setState(() {
                                 _isExpanded = !_isExpanded;
                                 selectedJadwal = jadwalPemeriksaan.isNotEmpty
-                                    ? jadwalPemeriksaan[0]
+                                    ? DateTime.parse(jadwalPemeriksaan[0].tanggal)
                                     : null;
                               });
                             },
@@ -329,21 +351,22 @@ class _DashboardPageState extends State<DashboardPage> {
                                 children: [
                                   Row(
                                     children: [
-                                      const Expanded(
+                                      Expanded(
                                         child: Column(
-                                          crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          crossAxisAlignment: CrossAxisAlignment.start,
                                           children: [
                                             Text(
-                                              'Pemeriksaan Trimester 1',
-                                              style: TextStyle(
-                                                  fontWeight: FontWeight.bold),
+                                              jadwalPemeriksaan.isNotEmpty
+                                                  ? jadwalPemeriksaan[0].judul
+                                                  : 'Tidak ada jadwal',
+                                              style: TextStyle(fontWeight: FontWeight.bold),
                                             ),
                                             SizedBox(height: 4),
                                             Text(
-                                              '09.00 - 12.00 WIB',
-                                              style:
-                                                  TextStyle(color: Colors.grey),
+                                              jadwalPemeriksaan.isNotEmpty
+                                                  ? '${formatJamMenit(jadwalPemeriksaan[0].jam_mulai)} - ${formatJamMenit(jadwalPemeriksaan[0].jam_selesai)} WIB'
+                                                  : '-',
+                                              style: TextStyle(color: Colors.grey),
                                             ),
                                           ],
                                         ),
@@ -356,36 +379,30 @@ class _DashboardPageState extends State<DashboardPage> {
                                     ],
                                   ),
                                   AnimatedCrossFade(
-                                    firstChild: const SizedBox.shrink(),
+                                    firstChild: SizedBox.shrink(),
                                     secondChild: Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Column(
-                                        crossAxisAlignment:
-                                            CrossAxisAlignment.start,
+                                        crossAxisAlignment: CrossAxisAlignment.start,
                                         children: [
-                                          const Text(
-                                            'Posyandu Tapen, Pos 5',
-                                            style:
-                                                TextStyle(color: Colors.grey),
+                                          Text(
+                                            jadwalPemeriksaan.isNotEmpty
+                                                ? jadwalPemeriksaan[0].lokasi
+                                                : 'Lokasi tidak tersedia',
+                                            style: TextStyle(color: Colors.grey),
                                           ),
-                                          const SizedBox(height: 4),
+                                          SizedBox(height: 4),
                                           Text(
                                             selectedJadwal != null
-                                                ? DateFormat(
-                                                        'EEEE, dd MMMM yyyy',
-                                                        'id_ID')
-                                                    .format(selectedJadwal!)
+                                                ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(selectedJadwal!)
                                                 : 'Tanggal belum tersedia',
-                                            style: const TextStyle(
-                                                color: Colors.grey),
+                                            style: TextStyle(color: Colors.grey),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    crossFadeState: _isExpanded
-                                        ? CrossFadeState.showSecond
-                                        : CrossFadeState.showFirst,
-                                    duration: const Duration(milliseconds: 300),
+                                    crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                                    duration: Duration(milliseconds: 300),
                                   ),
                                 ],
                               ),
