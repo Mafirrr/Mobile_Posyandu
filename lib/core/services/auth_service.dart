@@ -1,7 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
@@ -104,7 +103,7 @@ class AuthService {
         requestOptions: RequestOptions(path: ''),
         statusCode: 500,
         statusMessage:
-        'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
       );
     }
   }

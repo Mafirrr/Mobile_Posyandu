@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
-import 'package:posyandu_mob/screens/Pemeriksaan/list_kehamilan.dart';
+import 'package:posyandu_mob/screens/Kehamilan/listKehamilan.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
-import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
 
 class NavAnggotaScreen extends StatefulWidget {

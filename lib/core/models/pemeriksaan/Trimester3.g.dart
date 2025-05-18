@@ -1,0 +1,37 @@
+// GENERATED CODE - DO NOT MODIFY BY HAND
+
+part of 'Trimester3.dart';
+
+// **************************************************************************
+// JsonSerializableGenerator
+// **************************************************************************
+
+Trimester3 _$Trimester3FromJson(Map<String, dynamic> json) => Trimester3(
+      id: (json['id'] as num).toInt(),
+      pemeriksaanId: (json['pemeriksaan_id'] as num).toInt(),
+      skriningKesehatan: SkriningKesehatan.fromJson(
+          json['skrining_kesehatan'] as Map<String, dynamic>),
+      pemeriksaanFisik: PemeriksaanFisik.fromJson(
+          json['pemeriksaan_fisik'] as Map<String, dynamic>),
+      trimester3LabTrimester3: (json['lab_trimester_3'] as num).toInt(),
+      trimester3UsgTrimester3: (json['usg_trimester_3'] as num).toInt(),
+      rencanaKonsultasi: RencanaKonsultasi.fromJson(
+          json['rencana_konsultasi'] as Map<String, dynamic>),
+      labTrimester3: LabTrimester3.fromJson(
+          json['lab_trimester3'] as Map<String, dynamic>),
+      usgTrimester3: UsgTrimester3.fromJson(
+          json['usg_trimester3'] as Map<String, dynamic>),
+    );
+
+Map<String, dynamic> _$Trimester3ToJson(Trimester3 instance) =>
+    <String, dynamic>{
+      'id': instance.id,
+      'pemeriksaan_id': instance.pemeriksaanId,
+      'skrining_kesehatan': instance.skriningKesehatan,
+      'pemeriksaan_fisik': instance.pemeriksaanFisik,
+      'lab_trimester_3': instance.trimester3LabTrimester3,
+      'usg_trimester_3': instance.trimester3UsgTrimester3,
+      'rencana_konsultasi': instance.rencanaKonsultasi,
+      'lab_trimester3': instance.labTrimester3,
+      'usg_trimester3': instance.usgTrimester3,
+    };

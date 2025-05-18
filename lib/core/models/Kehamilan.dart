@@ -10,8 +10,6 @@ class Kehamilan {
   int anggotaId;
   @JsonKey(name: "status")
   String status;
-  @JsonKey(name: "tanggal_awal")
-  DateTime tanggalAwal;
   @JsonKey(name: "label")
   String label;
 
@@ -19,7 +17,6 @@ class Kehamilan {
     required this.id,
     required this.anggotaId,
     required this.status,
-    required this.tanggalAwal,
     required this.label,
   });
 
