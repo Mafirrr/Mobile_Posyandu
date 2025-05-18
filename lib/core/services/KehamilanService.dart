@@ -2,7 +2,7 @@ import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
 
-class PemeriksaanService {
+class KehamilanService {
   final _api = ApiClient();
 
   Future<List<Kehamilan>> dataKehamilan() async {
