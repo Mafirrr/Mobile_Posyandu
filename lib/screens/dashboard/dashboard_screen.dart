@@ -2,8 +2,12 @@ import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/screens/dashboard/EdukasiCard.dart';
+import 'package:posyandu_mob/core/services/artikel_service.dart';
 import 'notification_dialog.dart';
 import 'grafik_popup.dart';
+import 'package:posyandu_mob/core/models/Artikel.dart';
+
+
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -15,7 +19,11 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
-  int _currentIndex = 0;
+  List<Artikel> highlightArtikels = [];
+  List<Artikel> allArtikels = [];
+  List<Artikel> artikels = [];
+  int selectedKategoriId = 0;
+  bool isLoading = true;
   bool _isExpanded = false;
   String? nama;
   DateTime? selectedJadwal;
@@ -97,13 +105,14 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _pageController.addListener(() {
       int currentPage = _pageController.page?.toInt() ?? 0;
-      if (_currentIndex != currentPage) {
+      if (selectedKategoriId  != currentPage) {
         setState(() {
-          _currentIndex = currentPage;
+          selectedKategoriId  = currentPage;
         });
       }
     });
     _getUser();
+    fetchArtikels();
   }
 
   Future<void> _getUser() async {
@@ -117,6 +126,25 @@ class _DashboardPageState extends State<DashboardPage> {
       print("object not found");
     }
   }
+
+  Future<void> fetchArtikels() async {
+    try {
+      final fetched = await ArtikelService().fetchArtikel();
+      setState(() {
+        allArtikels = fetched;
+        highlightArtikels =
+        fetched.length > 4 ? fetched.take(4).toList() : fetched;
+        artikels = fetched;
+        isLoading = false;
+      });
+    } catch (_) {
+      setState(() => isLoading = false);
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Gagal memuat data artikel')),
+      );
+    }
+  }
+
 
   @override
   Widget build(BuildContext context) {
@@ -190,15 +218,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       ],
                     ),
                     const SizedBox(height: 24),
-
-                    // EduCard
                     SizedBox(
                       height: 200,
                       child: PageView.builder(
                         controller: _pageController,
-                        itemCount: 4,
+                        itemCount: highlightArtikels.length,
                         itemBuilder: (context, index) {
-                          return EdukasiCard(index: index);
+                          return EdukasiCard(artikel: highlightArtikels[index]);
                         },
                       ),
                     ),
@@ -214,7 +240,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             height: 8,
                             margin: const EdgeInsets.all(2),
                             decoration: BoxDecoration(
-                              color: _currentIndex == index
+                              color: selectedKategoriId == index
                                   ? Colors.blue
                                   : Colors.grey.shade300,
                               shape: BoxShape.circle,
