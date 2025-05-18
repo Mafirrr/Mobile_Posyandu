@@ -109,7 +109,7 @@ class AuthService {
   }
 
   Future<void> _saveUser(Anggota user, String role, String token) async {
-    await UserDatabase.instance.create(user, role, token);
+    await UserDatabase().create(user, role, token);
   }
 
   Future<void> updateFcmToken(String fcmToken, String authToken) async {

@@ -28,6 +28,9 @@ String? no_telp;
 String? alamat;
 final TextEditingController namaController = TextEditingController();
 final TextEditingController nikController = TextEditingController();
+final TextEditingController jknController = TextEditingController();
+final TextEditingController tk1Controller = TextEditingController();
+final TextEditingController rujukanController = TextEditingController();
 final TextEditingController telpController = TextEditingController();
 final TextEditingController tempatLahirController = TextEditingController();
 final TextEditingController TanggalLahirController = TextEditingController();
@@ -48,6 +51,7 @@ final List<String> golDarahOptions = [
 
 class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   final ProfilService _profilService = ProfilService();
+  final userDatabase = UserDatabase();
   File? localImg;
   Anggota? _anggota;
   String? token;
@@ -55,7 +59,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
   bool isLoading = true;
 
   Future<void> getUser() async {
-    final localUser = await UserDatabase.instance.readUser();
+    final localUser = await userDatabase.readUser();
 
     if (localUser != null) {
       _anggota = localUser.anggota;
@@ -63,7 +67,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
       final result = await _profilService.getAnggota();
       if (result != null) {
         _anggota = result;
-        await UserDatabase.instance.update(result);
+        await userDatabase.update(result);
       }
     }
 
@@ -71,6 +75,9 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
       setState(() {
         namaController.text = _anggota!.nama;
         nikController.text = _anggota!.nik;
+        jknController.text = _anggota!.no_jkn;
+        tk1Controller.text = _anggota!.faskes_tk1;
+        rujukanController.text = _anggota!.faskes_rujukan;
         telpController.text = _anggota!.no_telepon ?? '';
         tempatLahirController.text = _anggota!.tempat_lahir;
         alamatController.text = _anggota!.alamat;
@@ -207,6 +214,21 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                     label: 'NIK',
                     readOnly: true,
                   ),
+                  CustomTextField(
+                    controller: jknController,
+                    label: 'No_JKN',
+                    readOnly: true,
+                  ),
+                  CustomTextField(
+                    controller: tk1Controller,
+                    label: 'Faskes_TK1',
+                    readOnly: true,
+                  ),
+                  CustomTextField(
+                    controller: rujukanController,
+                    label: 'Faskes_Rujukan',
+                    readOnly: true,
+                  ),
                   const SizedBox(height: 16),
                   Row(
                     children: [
@@ -288,6 +310,9 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                           id: _anggota!.id,
                           nama: namaController.text,
                           nik: nikController.text,
+                          no_jkn: jknController.text,
+                          faskes_tk1: tk1Controller.text,
+                          faskes_rujukan: rujukanController.text,
                           no_telepon: telpController.text,
                           tempat_lahir: tempatLahirController.text,
                           tanggal_lahir: finalTanggal,

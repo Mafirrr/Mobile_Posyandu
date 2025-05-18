@@ -35,12 +35,12 @@ class KehamilanService {
 
   Future<void> _saveData(List<Kehamilan> dataList) async {
     for (var kehamilan in dataList) {
-      await UserDatabase.instance.insertKehamilan(kehamilan);
+      await UserDatabase().insertKehamilan(kehamilan);
     }
   }
 
   Future<int?> getID() async {
-    final db = await UserDatabase.instance;
+    final db = await UserDatabase();
     dynamic userData = await db.readUser();
 
     if (userData != null) {

@@ -30,6 +30,8 @@ class PemeriksaanRutin {
   String skriningDokter;
   @JsonKey(name: "tes_lab_gula_darah")
   dynamic tesLabGulaDarah;
+  @JsonKey(name: "created_at")
+  String? created_at;
 
   PemeriksaanRutin({
     required this.id,
@@ -45,6 +47,7 @@ class PemeriksaanRutin {
     required this.konseling,
     required this.skriningDokter,
     required this.tesLabGulaDarah,
+    this.created_at,
   });
 
   factory PemeriksaanRutin.fromJson(Map<String, dynamic> json) =>

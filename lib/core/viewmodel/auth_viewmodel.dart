@@ -28,7 +28,7 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> logout(BuildContext context) async {
     _setLoading(true);
-    final db = UserDatabase.instance;
+    final db = UserDatabase();
     final response = await _authService.logoutUser();
 
     await db.logout();

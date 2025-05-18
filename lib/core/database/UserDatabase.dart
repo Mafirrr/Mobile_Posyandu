@@ -1,66 +1,13 @@
-import 'package:path/path.dart';
+import 'package:posyandu_mob/core/database/DatabaseProvider.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/models/User.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDatabase {
-  static final UserDatabase instance = UserDatabase._init();
-  static Database? _database;
+  final instance = DatabaseProvider.instance;
 
-  UserDatabase._init();
-
-  Future<Database> get database async {
-    if (_database != null) return _database!;
-    _database = await _initDB('user.db');
-    return _database!;
-  }
-
-  Future<Database> _initDB(String filePath) async {
-    final dbPath = await getDatabasesPath();
-    final path = join(dbPath, filePath);
-
-    return await openDatabase(
-      path,
-      version: 2,
-      onCreate: _createDB,
-      onUpgrade: (db, oldVersion, newVersion) async {
-        if (oldVersion < 2) {
-          await db
-              .execute("ALTER TABLE user ADD COLUMN role TEXT DEFAULT 'user'");
-        }
-      },
-    );
-  }
-
-  Future _createDB(Database db, int version) async {
-    await db.execute('''
-      CREATE TABLE user (
-        id INTEGER PRIMARY KEY,
-        nik TEXT NOT NULL,
-        nama TEXT NOT NULL,
-        tanggal_lahir TEXT NOT NULL,
-        tempat_lahir TEXT NOT NULL,
-        pekerjaan TEXT NOT NULL,
-        alamat TEXT NOT NULL,
-        no_telepon TEXT,
-        golongan_darah TEXT,
-        role TEXT DEFAULT 'Anggota',
-        token Text
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE kehamilan (
-        id INTEGER PRIMARY KEY,
-        anggota_id INTEGER NOT NULL,
-        status TEXT NOT NULL,
-        tanggal_awal TEXT NOT NULL,
-        label TEXT
-      )
-    ''');
-  }
-
+  //insert kehamilan
   Future<int> insertKehamilan(Kehamilan kehamilan) async {
     final db = await instance.database;
     return await db.insert(
@@ -77,6 +24,7 @@ class UserDatabase {
     return maps.map((map) => Kehamilan.fromJson(map)).toList();
   }
 
+  //user
   Future<Anggota> create(Anggota user, String role, String token) async {
     final db = await instance.database;
     final id = await db.insert(
@@ -126,13 +74,8 @@ class UserDatabase {
   }
 
   Future<void> logout() async {
-    final db = await UserDatabase.instance.database;
+    final db = await instance.database;
     await db.delete('user');
     await db.delete('kehamilan');
-  }
-
-  Future close() async {
-    final db = await instance.database;
-    db.close();
   }
 }

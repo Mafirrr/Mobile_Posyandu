@@ -8,6 +8,9 @@ class Anggota {
   int id;
   String nik;
   String nama;
+  String no_jkn;
+  String faskes_tk1;
+  String faskes_rujukan;
   String tanggal_lahir;
   String tempat_lahir;
   String pekerjaan;
@@ -19,6 +22,9 @@ class Anggota {
     required this.id,
     required this.nik,
     required this.nama,
+    required this.no_jkn,
+    required this.faskes_tk1,
+    required this.faskes_rujukan,
     required this.tanggal_lahir,
     required this.tempat_lahir,
     required this.pekerjaan,

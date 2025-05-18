@@ -23,7 +23,7 @@ class _LoginScreenState extends State<LoginScreen> {
   String? alert;
 
   Future<String> checkRole() async {
-    dynamic user = await UserDatabase.instance.readUser();
+    dynamic user = await UserDatabase().readUser();
 
     if (user.role != null) {
       return user.role ?? '';

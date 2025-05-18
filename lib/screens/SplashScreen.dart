@@ -84,7 +84,7 @@ class _SplashScreenState extends State<SplashScreen>
   }
 
   Future<bool> checkLoginStatus() async {
-    dynamic user = await UserDatabase.instance.readUser();
+    dynamic user = await UserDatabase().readUser();
 
     if (user != null) {
       setState(() {

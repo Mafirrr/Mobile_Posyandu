@@ -12,6 +12,7 @@ class ListKehamilanPage extends StatefulWidget {
 }
 
 class _ListKehamilanPageState extends State<ListKehamilanPage> {
+  final userDatabase = UserDatabase();
   String? nama;
   bool isLoading = true;
   late List<Kehamilan> kehamilanData = [];
@@ -27,7 +28,7 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
     try {
       final pemeriksaanService = KehamilanService();
 
-      List<Kehamilan> localData = await UserDatabase.instance.getAllKehamilan();
+      List<Kehamilan> localData = await userDatabase.getAllKehamilan();
       if (localData.isNotEmpty) {
         setState(() {
           kehamilanData = localData;
@@ -46,7 +47,7 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
   }
 
   Future<void> _getUser() async {
-    dynamic user = await UserDatabase.instance.readUser();
+    dynamic user = await userDatabase.readUser();
 
     if (user != null) {
       setState(() {

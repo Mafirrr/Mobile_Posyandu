@@ -77,7 +77,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   Future<void> _getUser() async {
-    dynamic user = await UserDatabase.instance.readUser();
+    dynamic user = await UserDatabase().readUser();
 
     if (user != null) {
       setState(() {

@@ -19,7 +19,7 @@ class ApiClient {
   }
 
   Future<void> setToken() async {
-    final user = await UserDatabase.instance.readUser();
+    final user = await UserDatabase().readUser();
 
     if (user != null && user.token.isNotEmpty) {
       dio.options.headers["Authorization"] = "Bearer ${user.token}";

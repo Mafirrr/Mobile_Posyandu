@@ -1,6 +1,7 @@
 import 'package:json_annotation/json_annotation.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester3.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanFisik.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/RencanaKonsultasi.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/SkriningKesehatan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester3.dart';
@@ -11,8 +12,12 @@ part 'Trimester3.g.dart';
 class Trimester3 {
   @JsonKey(name: "id")
   int id;
+  @JsonKey(name: "created_at")
+  String created_at;
   @JsonKey(name: "pemeriksaan_id")
   int pemeriksaanId;
+  @JsonKey(name: "pemeriksaan_rutin")
+  PemeriksaanRutin pemeriksaanRutin;
   @JsonKey(name: "skrining_kesehatan")
   SkriningKesehatan skriningKesehatan;
   @JsonKey(name: "pemeriksaan_fisik")
@@ -30,7 +35,9 @@ class Trimester3 {
 
   Trimester3({
     required this.id,
+    required this.created_at,
     required this.pemeriksaanId,
+    required this.pemeriksaanRutin,
     required this.skriningKesehatan,
     required this.pemeriksaanFisik,
     required this.trimester3LabTrimester3,

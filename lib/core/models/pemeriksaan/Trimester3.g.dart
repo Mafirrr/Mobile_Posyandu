@@ -8,7 +8,10 @@ part of 'Trimester3.dart';
 
 Trimester3 _$Trimester3FromJson(Map<String, dynamic> json) => Trimester3(
       id: (json['id'] as num).toInt(),
+      created_at: json['created_at'] as String,
       pemeriksaanId: (json['pemeriksaan_id'] as num).toInt(),
+      pemeriksaanRutin: PemeriksaanRutin.fromJson(
+          json['pemeriksaan_rutin'] as Map<String, dynamic>),
       skriningKesehatan: SkriningKesehatan.fromJson(
           json['skrining_kesehatan'] as Map<String, dynamic>),
       pemeriksaanFisik: PemeriksaanFisik.fromJson(
@@ -26,7 +29,9 @@ Trimester3 _$Trimester3FromJson(Map<String, dynamic> json) => Trimester3(
 Map<String, dynamic> _$Trimester3ToJson(Trimester3 instance) =>
     <String, dynamic>{
       'id': instance.id,
+      'created_at': instance.created_at,
       'pemeriksaan_id': instance.pemeriksaanId,
+      'pemeriksaan_rutin': instance.pemeriksaanRutin,
       'skrining_kesehatan': instance.skriningKesehatan,
       'pemeriksaan_fisik': instance.pemeriksaanFisik,
       'lab_trimester_3': instance.trimester3LabTrimester3,

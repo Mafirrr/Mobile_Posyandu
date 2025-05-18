@@ -107,7 +107,7 @@ class _DashboardPageState extends State<DashboardPage> {
   }
 
   Future<void> _getUser() async {
-    dynamic user = await UserDatabase.instance.readUser();
+    dynamic user = await UserDatabase().readUser();
 
     if (user != null) {
       setState(() {
@@ -415,11 +415,13 @@ class _DashboardPageState extends State<DashboardPage> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 const Row(
-                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  mainAxisAlignment:
+                                      MainAxisAlignment.spaceBetween,
                                   children: [
                                     Text(
                                       'Berat Badan',
-                                      style: TextStyle(fontWeight: FontWeight.bold),
+                                      style: TextStyle(
+                                          fontWeight: FontWeight.bold),
                                     ),
                                     Text(
                                       'Normal',
@@ -452,12 +454,14 @@ class _DashboardPageState extends State<DashboardPage> {
                                 Center(
                                   child: SizedBox(
                                     width: 180, // Lebih lebar
-                                    height: 40,  // Lebih tinggi agar tidak terlihat lancip
+                                    height:
+                                        40, // Lebih tinggi agar tidak terlihat lancip
                                     child: ElevatedButton(
                                       onPressed: () {
                                         showDialog(
                                           context: context,
-                                          builder: (context) => const GrafikPopup(
+                                          builder: (context) =>
+                                              const GrafikPopup(
                                             title: "Grafik Berat Badan",
                                           ),
                                         );
@@ -465,7 +469,8 @@ class _DashboardPageState extends State<DashboardPage> {
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(6), // Sedikit membulat
+                                          borderRadius: BorderRadius.circular(
+                                              6), // Sedikit membulat
                                         ),
                                       ),
                                       child: const Text(
@@ -485,7 +490,6 @@ class _DashboardPageState extends State<DashboardPage> {
                         ),
                       ],
                     )
-
                   ],
                 ),
               ),

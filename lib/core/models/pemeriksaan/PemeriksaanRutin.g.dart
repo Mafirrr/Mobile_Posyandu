@@ -21,6 +21,7 @@ PemeriksaanRutin _$PemeriksaanRutinFromJson(Map<String, dynamic> json) =>
       konseling: json['konseling'] as String,
       skriningDokter: json['skrining_dokter'] as String,
       tesLabGulaDarah: json['tes_lab_gula_darah'],
+      created_at: json['created_at'] as String?,
     );
 
 Map<String, dynamic> _$PemeriksaanRutinToJson(PemeriksaanRutin instance) =>
@@ -38,4 +39,5 @@ Map<String, dynamic> _$PemeriksaanRutinToJson(PemeriksaanRutin instance) =>
       'konseling': instance.konseling,
       'skrining_dokter': instance.skriningDokter,
       'tes_lab_gula_darah': instance.tesLabGulaDarah,
+      'created_at': instance.created_at,
     };

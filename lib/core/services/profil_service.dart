@@ -7,7 +7,7 @@ import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 
 class ProfilService {
-  final _db = UserDatabase.instance;
+  final _db = UserDatabase();
   final _api = ApiClient();
 
   Future<dynamic> getAnggota() async {
@@ -124,8 +124,7 @@ class ProfilService {
   }
 
   Future<int?> getID() async {
-    final db = await UserDatabase.instance;
-    dynamic userData = await db.readUser();
+    dynamic userData = await _db.readUser();
 
     if (userData != null) {
       return userData.anggota.id;
