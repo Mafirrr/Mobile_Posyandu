@@ -1,8 +1,13 @@
 import 'package:flutter/material.dart';
 
-class DetailPemeriksaan extends StatelessWidget {
-  const DetailPemeriksaan({super.key});
+class DetailPemeriksaan extends StatefulWidget {
+  const DetailPemeriksaan({Key? key}) : super(key: key);
 
+  @override
+  _DetailPemeriksaanState createState() => _DetailPemeriksaanState();
+}
+
+class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -41,17 +46,17 @@ class DetailPemeriksaan extends StatelessWidget {
 class _ProfileSection extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return Row(
+    return const Row(
       children: [
-        const CircleAvatar(
+        CircleAvatar(
           radius: 30,
           backgroundImage: AssetImage(
               'assets/images/picture.jpg'), // Ganti dengan path gambar kamu
         ),
-        const SizedBox(width: 12),
+        SizedBox(width: 12),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: const [
+          children: [
             Text(
               'SUTEYOO TYO',
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
