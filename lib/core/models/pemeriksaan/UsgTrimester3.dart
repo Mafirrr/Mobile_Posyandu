@@ -27,15 +27,15 @@ class UsgTrimester3 {
   @JsonKey(name: "jumlah_cairan_ketuban")
   String? jumlahCairanKetuban;
   @JsonKey(name: "BPD")
-  int? bpd;
+  double? bpd;
   @JsonKey(name: "HC")
-  int? hc;
+  double? hc;
   @JsonKey(name: "AC")
-  int? ac;
+  double? ac;
   @JsonKey(name: "FL")
-  int? fl;
+  double? fl;
   @JsonKey(name: "EFW")
-  int? efw;
+  double? efw;
   @JsonKey(name: "HC_Sesuai_Minggu")
   int? hcSesuaiMinggu;
   @JsonKey(name: "BPD_Sesuai_Minggu")
@@ -51,9 +51,9 @@ class UsgTrimester3 {
   @JsonKey(name: "keterangan")
   String? keterangan;
   @JsonKey(name: "djj")
-  int? djj;
+  dynamic djj;
   @JsonKey(name: "sdp")
-  int? sdp;
+  dynamic sdp;
 
   UsgTrimester3({
     required this.id,

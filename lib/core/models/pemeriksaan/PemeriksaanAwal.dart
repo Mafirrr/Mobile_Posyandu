@@ -18,7 +18,7 @@ class PemeriksaanAwal {
   String? statusImunisasiTd;
 
   @JsonKey(name: "hemoglobin")
-  int? hemoglobin;
+  double? hemoglobin;
 
   @JsonKey(
     name: "riwayat_kesehatan_ibu_sekarang",
