@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
@@ -76,7 +77,14 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                     dense: true,
                     leading: Icon(Icons.calendar_month, color: Colors.blue),
                     title: Text("Jadwal Posyandu"),
-                    onTap: () {},
+                    onTap: () {
+                      Navigator.pop(context); // Tutup drawer dulu
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => JadwalPosyanduView()),
+                      );
+                    },
                   ),
                   ListTile(
                     dense: true,
