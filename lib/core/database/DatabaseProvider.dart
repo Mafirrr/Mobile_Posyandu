@@ -46,6 +46,18 @@ class DatabaseProvider {
     ''');
 
     await db.execute('''
+      CREATE TABLE petugas (
+        id INTEGER PRIMARY KEY,
+        nip TEXT,
+        nama TEXT,
+        no_telepon TEXT,
+        email TEXT,
+        role TEXT DEFAULT 'Anggota',
+        token Text
+      )
+    ''');
+
+    await db.execute('''
       CREATE TABLE keluarga (
         id INTEGER PRIMARY KEY,
         anggota_id TEXT NOT NULL,

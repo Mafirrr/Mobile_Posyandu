@@ -6,7 +6,9 @@ import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/screens/profil/data_keluarga_screen.dart';
+import 'package:posyandu_mob/screens/profil/ubah_password_screen.dart';
 import 'package:posyandu_mob/widgets/custom_dialog.dart';
+import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:provider/provider.dart';
 import 'package:path_provider/path_provider.dart';
 
@@ -89,257 +91,292 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   @override
+  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
     return Scaffold(
       backgroundColor: Colors.white,
+      appBar: AppBar(
+        title: const CustomText(
+          text: 'Profile',
+          fontSize: 24,
+          fontWeight: FontWeight.bold,
+        ),
+        centerTitle: true,
+      ),
       body: isLoading
-          ? const Center(child: CircularProgressIndicator(strokeWidth: 2))
-          : Stack(
-              children: [
-                Container(
-                  decoration: const BoxDecoration(
-                      gradient: LinearGradient(
-                    colors: [
-                      Color.fromARGB(255, 77, 129, 231),
-                      Colors.white,
-                    ],
-                    stops: [0.0, 0.3],
-                    begin: Alignment.topCenter,
-                    end: Alignment.bottomCenter,
-                  )),
-                ),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    const SizedBox(height: 60),
-
-                    //profile
-                    Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 20),
-                      child: Row(
-                        children: [
-                          CircleAvatar(
-                            radius: 40,
-                            backgroundImage: (localImg != null &&
-                                    localImg!.path.isNotEmpty)
+          ? const Center(child: CircularProgressIndicator())
+          : SingleChildScrollView(
+              child: Column(
+                children: [
+                  const SizedBox(height: 8),
+                  Stack(
+                    alignment: Alignment.bottomRight,
+                    children: [
+                      CircleAvatar(
+                        radius: 50,
+                        backgroundImage:
+                            (localImg != null && localImg!.path.isNotEmpty)
                                 ? FileImage(localImg!)
-                                : const AssetImage('assets/images/picture.jpg'),
-                          ),
-                          const SizedBox(width: 12),
-                          Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                "$nama",
-                                style: TextStyle(
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: screenWidth * 0.05,
-                                ),
-                              ),
-                              Text(
-                                "$role",
-                                style: TextStyle(
-                                  color: Colors.white,
-                                  fontWeight: FontWeight.bold,
-                                  fontSize: screenWidth * 0.035,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ],
+                                : const AssetImage('assets/images/picture.jpg')
+                                    as ImageProvider,
                       ),
-                    ),
-
-                    const SizedBox(height: 24),
-
-                    //info card
-                    Stack(
-                      alignment: Alignment.center,
-                      children: [
-                        Container(
-                          height: 100,
+                      Positioned(
+                        bottom: 4,
+                        right: 4,
+                        child: CircleAvatar(
+                          radius: 14,
+                          backgroundColor: Colors.white,
+                          child: Icon(Icons.edit,
+                              size: 16, color: Colors.blueAccent),
                         ),
-                        const Padding(
-                          padding: EdgeInsets.only(
-                            top: 10,
-                            left: 10,
-                            right: 10,
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceEvenly,
-                            children: [
-                              Expanded(
-                                  child: InfoCard(
-                                "Berat Badan",
-                                "50.2 kg",
-                                "assets/images/berat_badan.png",
-                              )),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                  child: InfoCard(
-                                "Tinggi Badan",
-                                "160 cm",
-                                "assets/images/tinggi_badan.png",
-                              )),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                  child: InfoCard(
-                                "Tekanan Darah",
-                                "120/100 mmHg",
-                                "assets/images/tekanan_darah.png",
-                              )),
-                            ],
-                          ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  Text(
+                    "Mafira Aurelia",
+                    style: const TextStyle(
+                      fontWeight: FontWeight.bold,
+                      fontSize: 20,
+                    ),
+                  ),
+                  Text(
+                    "7499985299184352",
+                    style:
+                        const TextStyle(color: Color.fromARGB(221, 63, 63, 63)),
+                  ),
+                  const Text(
+                    "Anggota • Aktif",
+                    style: TextStyle(color: Colors.grey),
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 20),
+                    child: GridView.count(
+                      physics: const NeverScrollableScrollPhysics(),
+                      shrinkWrap: true,
+                      crossAxisCount: 2,
+                      mainAxisSpacing: 12,
+                      crossAxisSpacing: 12,
+                      childAspectRatio: 16 / 9,
+                      children: const [
+                        _StatCard(
+                          icon: Icons.monitor_weight,
+                          label: 'Berat Badan',
+                          value: '50.2 kg',
+                        ),
+                        _StatCard(
+                          icon: Icons.favorite,
+                          label: 'Tekanan Darah',
+                          value: '120/80 mmHg',
+                        ),
+                        _StatCard(
+                          icon: Icons.accessibility_new,
+                          label: 'Lingkar Lengan Atas',
+                          value: '23 cm',
+                        ),
+                        _StatCard(
+                          icon: Icons.height,
+                          label: 'Tinggi Rahim',
+                          value: '32 cm',
                         ),
                       ],
                     ),
-
-                    const SizedBox(height: 50),
-
-                    MenuOption(
-                      Icons.person,
-                      "Informasi Pribadi",
-                      onTap: () {
-                        _openEditPage();
-                      },
+                  ),
+                  const SizedBox(height: 20),
+                  const Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 20),
+                    child: Align(
+                      alignment: Alignment.centerLeft,
+                      child: Text("Setting",
+                          style: TextStyle(
+                              fontSize: 16, fontWeight: FontWeight.bold)),
                     ),
-                    MenuOption(
-                      Icons.group,
-                      "Data Keluarga",
-                      onTap: () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                              builder: (context) => const DataKeluargaScreen()),
-                        );
-                      },
-                    ),
-
-                    const Spacer(),
-
-                    // Logout Button at Bottom
-                    Padding(
-                      padding: const EdgeInsets.all(20.0),
-                      child: ElevatedButton.icon(
-                        onPressed: () {
-                          CustomDialog.show(
+                  ),
+                  const SizedBox(height: 10),
+                  Column(
+                    children: [
+                      ProfileMenuCard(
+                        title: "Informasi Pribadi",
+                        subtitle: "Lihat dan ubah informasi pribadi Anda",
+                        icon: Icons.person,
+                        onTap: () {
+                          Navigator.push(
                             context,
-                            title: "Log Out",
-                            message:
-                                "Anda akan logout dari akun ini.\nApakah Anda yakin ingin melanjutkan?",
-                            primaryButtonText: "Keluar",
-                            onPrimaryPressed: () {
-                              _logout();
-                            },
-                            secondaryButtonText: "Batal",
+                            MaterialPageRoute(
+                                builder: (context) => InformasiPribadiScreen()),
                           );
                         },
-                        icon: const Icon(Icons.logout, color: Colors.white),
-                        label: const Text("Logout",
-                            style: TextStyle(color: Colors.white)),
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: Color.fromARGB(255, 176, 42, 55),
-                          padding: const EdgeInsets.symmetric(vertical: 14),
-                          minimumSize: const Size(double.infinity, 50),
-                          shape: RoundedRectangleBorder(
-                            borderRadius: BorderRadius.circular(8),
-                          ),
+                      ),
+                      ProfileMenuCard(
+                        title: "Data Keluarga",
+                        subtitle: "Kelola informasi anggota keluarga",
+                        icon: Icons.family_restroom,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => DataKeluargaScreen()),
+                          );
+                        },
+                      ),
+                      ProfileMenuCard(
+                        title: "Ganti Password",
+                        subtitle: "Perbarui kata sandi akun Anda",
+                        icon: Icons.lock,
+                        onTap: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                                builder: (context) => UbahPasswordScreen()),
+                          );
+                        },
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 20),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: ElevatedButton.icon(
+                      onPressed: () {
+                        CustomDialog.show(
+                          context,
+                          title: "Log Out",
+                          message:
+                              "Anda akan logout dari akun ini.\nApakah Anda yakin ingin melanjutkan?",
+                          primaryButtonText: "Keluar",
+                          onPrimaryPressed: _logout,
+                          secondaryButtonText: "Batal",
+                        );
+                      },
+                      icon: const Icon(Icons.logout, color: Colors.white),
+                      label: const Text("Logout",
+                          style: TextStyle(color: Colors.white)),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: const Color(0xFFB02A37),
+                        minimumSize: const Size(double.infinity, 50),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
                         ),
                       ),
                     ),
-                  ],
-                ),
-              ],
+                  ),
+                ],
+              ),
             ),
     );
   }
 }
 
-class SingleRoundedCurveClipper extends CustomClipper<Path> {
-  @override
-  Path getClip(Size size) {
-    Path path = Path();
-    path.lineTo(0, size.height - 40);
-    path.quadraticBezierTo(
-        size.width / 2, size.height + 40, size.width, size.height - 40);
-    path.lineTo(size.width, 0);
-    path.close();
-    return path;
-  }
-
-  @override
-  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
-}
-
-class InfoCard extends StatelessWidget {
-  final String title;
+class _StatCard extends StatelessWidget {
+  final IconData icon;
+  final String label;
   final String value;
-  final String icon;
 
-  const InfoCard(this.title, this.value, this.icon, {super.key});
+  const _StatCard({
+    required this.icon,
+    required this.label,
+    required this.value,
+  });
 
   @override
   Widget build(BuildContext context) {
-    double screenWidth = MediaQuery.of(context).size.width;
-
-    return SizedBox(
-      height: screenWidth * 0.28,
-      width: screenWidth * 0.28,
-      child: Card(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-        elevation: 2,
-        child: Padding(
-          padding: EdgeInsets.all(screenWidth * 0.02),
-          child: Column(
-            children: [
-              Image.asset(
-                icon,
-                width: screenWidth * 0.08,
-                height: screenWidth * 0.08,
-              ),
-              SizedBox(height: screenWidth * 0.02),
-              Text(title,
-                  style: TextStyle(
-                    color: Colors.grey,
-                    fontSize: screenWidth * 0.02,
-                  )),
-              SizedBox(height: screenWidth * 0.02),
-              Text(value,
-                  style: TextStyle(
-                    fontWeight: FontWeight.bold,
-                    fontSize: screenWidth * 0.03,
-                  )),
-            ],
-          ),
+    return Container(
+      padding: const EdgeInsets.all(12),
+      decoration: BoxDecoration(
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: Colors.grey.shade300,
+          width: 1.2,
         ),
+        color: Colors.white,
+      ),
+      child: Row(
+        children: [
+          Icon(icon, color: Colors.blue),
+          const SizedBox(width: 10),
+          Expanded(
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Text(
+                  label,
+                  style: const TextStyle(fontSize: 13, color: Colors.grey),
+                ),
+                Text(
+                  value,
+                  style: const TextStyle(
+                    fontWeight: FontWeight.bold,
+                    fontSize: 16,
+                  ),
+                ),
+              ],
+            ),
+          )
+        ],
       ),
     );
   }
 }
 
-// Menu Option Widget
-class MenuOption extends StatelessWidget {
-  final IconData icon;
+class ProfileMenuCard extends StatelessWidget {
   final String title;
+  final String subtitle;
+  final IconData icon;
   final VoidCallback onTap;
 
-  const MenuOption(this.icon, this.title, {required this.onTap, super.key});
+  const ProfileMenuCard({
+    required this.title,
+    required this.subtitle,
+    required this.icon,
+    required this.onTap,
+  });
 
   @override
   Widget build(BuildContext context) {
-    return ListTile(
-      leading: Icon(icon, color: Colors.black),
-      title: Text(
-        title,
-        style: const TextStyle(
-          fontSize: 16,
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 8),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(12),
+        child: Container(
+          decoration: BoxDecoration(
+            color: const Color(0xFFEEF3FF),
+            borderRadius: BorderRadius.circular(12),
+          ),
+          padding: const EdgeInsets.all(12),
+          child: Row(
+            children: [
+              CircleAvatar(
+                radius: 20,
+                backgroundColor: Colors.blueAccent,
+                child: Icon(icon, color: Colors.white, size: 18),
+              ),
+              const SizedBox(width: 10),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      title,
+                      style: const TextStyle(
+                          fontWeight: FontWeight.bold, fontSize: 14),
+                    ),
+                    Text(
+                      subtitle,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                  ],
+                ),
+              ),
+              const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
+            ],
+          ),
         ),
       ),
-      trailing:
-          const Icon(Icons.arrow_forward_ios, size: 16, color: Colors.grey),
-      onTap: onTap,
     );
   }
 }

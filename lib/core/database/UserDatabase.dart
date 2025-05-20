@@ -1,6 +1,7 @@
 import 'package:posyandu_mob/core/database/DatabaseProvider.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
+import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/models/User.dart';
 import 'package:posyandu_mob/core/models/dataAnggota.dart';
 import 'package:sqflite/sqflite.dart';
@@ -35,6 +36,22 @@ class UserDatabase {
         'role': role,
         'token': token,
       },
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+
+    return user..id = id;
+  }
+
+  Future<Petugas> createPetugas(Petugas user, String role, String token) async {
+    final db = await instance.database;
+    final id = await db.insert(
+      'petugas',
+      {
+        ...user.toJson(),
+        'role': role,
+        'token': token,
+      },
+      conflictAlgorithm: ConflictAlgorithm.replace,
     );
 
     return user..id = id;
@@ -52,6 +69,17 @@ class UserDatabase {
     } else {
       return null;
     }
+  }
+
+  Future<Petugas> readPetugas() async {
+    final db = await instance.database;
+    final result = await db.query('petugas', limit: 1);
+    if (result.isNotEmpty) {
+      Petugas petugas = Petugas.fromJson(result.first);
+      String role = result.first['role'].toString();
+      String token = result.first['token'].toString();
+    }
+    return Petugas();
   }
 
   Future<int> update(Anggota anggota) async {
@@ -111,6 +139,7 @@ class UserDatabase {
     final db = await instance.database;
     final tables = [
       'user',
+      'petugas',
       'keluarga',
       'kehamilan',
       'pemeriksaan_kehamilan',

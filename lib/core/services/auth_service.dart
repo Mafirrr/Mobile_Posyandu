@@ -4,6 +4,7 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/models/Petugas.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -48,14 +49,17 @@ class AuthService {
 
         dynamic user;
         if (role == "petugas") {
-          return null;
+          user = Petugas.fromJson(data['user']);
         } else {
           user = Anggota.fromJson(data['user']);
         }
 
         if (user != null) {
-          await _saveUser(user, role, token);
-
+          if (role == "petugas") {
+            await _savePetugas(user, role, token);
+          } else {
+            await _saveUser(user, role, token);
+          }
           // Ambil FCM Token
           String? fcmToken = await FirebaseMessaging.instance.getToken();
           if (fcmToken != null) {
@@ -110,6 +114,10 @@ class AuthService {
 
   Future<void> _saveUser(Anggota user, String role, String token) async {
     await UserDatabase().create(user, role, token);
+  }
+
+  Future<void> _savePetugas(Petugas user, String role, String token) async {
+    await UserDatabase().createPetugas(user, role, token);
   }
 
   Future<void> updateFcmToken(String fcmToken, String authToken) async {

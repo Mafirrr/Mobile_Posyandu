@@ -1,7 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/jadwal_screen.dart';
+import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
+import 'package:posyandu_mob/screens/profil/ubah_password_screen.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -27,7 +31,8 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> fadeOutAnimation;
 
   bool showSplash = true;
-  bool? isLoggedIn; // Status login user
+  bool? isLoggedIn;
+  String? role;
 
   // Durasi animasi
   final backgroundDuration = const Duration(milliseconds: 1000);
@@ -88,6 +93,7 @@ class _SplashScreenState extends State<SplashScreen>
 
     if (user != null) {
       setState(() {
+        role = user.role;
         isLoggedIn = true;
       });
     }
@@ -107,10 +113,17 @@ class _SplashScreenState extends State<SplashScreen>
     });
 
     if (isLoggedIn == true) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const NavAnggotaScreen()),
-      );
+      if (role == 'anggota') {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const NavAnggotaScreen()),
+        );
+      } else {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const DrawerkaderScreen()),
+        );
+      }
     } else {
       Navigator.pushReplacement(
         context,

@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
@@ -24,11 +26,13 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String> checkRole() async {
     dynamic user = await UserDatabase().readUser();
+    Petugas petugas = await UserDatabase().readPetugas();
 
-    if (user.role != null) {
-      return user.role ?? '';
+    if (user == null) {
+      if (petugas != null) {
+        return 'petugas';
+      }
     }
-
     return 'anggota';
   }
 
@@ -168,6 +172,13 @@ class _LoginScreenState extends State<LoginScreen> {
                                       MaterialPageRoute(
                                           builder: (context) =>
                                               const NavAnggotaScreen()),
+                                    );
+                                  } else if (role == "petugas") {
+                                    Navigator.pushReplacement(
+                                      context,
+                                      MaterialPageRoute(
+                                          builder: (context) =>
+                                              const DrawerkaderScreen()),
                                     );
                                   } else {
                                     Navigator.pushReplacement(
