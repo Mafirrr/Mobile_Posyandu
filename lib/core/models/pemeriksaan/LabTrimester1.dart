@@ -7,17 +7,17 @@ class LabTrimester1 {
   @JsonKey(name: "id")
   int? id;
   @JsonKey(name: "hemoglobin")
-  int? hemoglobin;
+  double? hemoglobin;
   @JsonKey(name: "golongan_darah_dan_rhesus")
   String? golonganDarahDanRhesus;
   @JsonKey(name: "gula_darah")
-  int? gulaDarah;
+  double? gulaDarah;
   @JsonKey(name: "hemoglobin_rtl")
   dynamic hemoglobinRtl;
   @JsonKey(name: "rhesus_rtl")
   dynamic rhesusRtl;
   @JsonKey(name: "gula_darah_rtl")
-  String? gulaDarahRtl;
+  dynamic gulaDarahRtl;
   @JsonKey(name: "hiv")
   String? hiv;
   @JsonKey(name: "sifilis")

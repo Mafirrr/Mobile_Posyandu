@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/services/KehamilanService.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 
@@ -27,7 +28,7 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> fadeOutAnimation;
 
   bool showSplash = true;
-  bool? isLoggedIn; // Status login user
+  bool? isLoggedIn;
 
   // Durasi animasi
   final backgroundDuration = const Duration(milliseconds: 1000);
@@ -106,7 +107,13 @@ class _SplashScreenState extends State<SplashScreen>
       showSplash = false;
     });
 
+    _renewData() async {
+      final pemeriksaanService = KehamilanService();
+      await pemeriksaanService.dataKehamilan();
+    }
+
     if (isLoggedIn == true) {
+      _renewData();
       Navigator.pushReplacement(
         context,
         MaterialPageRoute(builder: (context) => const NavAnggotaScreen()),

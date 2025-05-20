@@ -12,7 +12,7 @@ PemeriksaanAwal _$PemeriksaanAwalFromJson(Map<String, dynamic> json) =>
       tinggiBadan: (json['tinggi_badan'] as num?)?.toInt(),
       golonganDarah: json['golongan_darah'] as String?,
       statusImunisasiTd: json['status_imunisasi_td'] as String?,
-      hemoglobin: (json['hemoglobin'] as num?)?.toInt(),
+      hemoglobin: (json['hemoglobin'] as num?)?.toDouble(),
       riwayatKesehatanIbuSekarang:
           stringToList(json['riwayat_kesehatan_ibu_sekarang']),
       riwayatPerilaku: stringToList(json['riwayat_perilaku']),

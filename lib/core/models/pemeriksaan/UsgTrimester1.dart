@@ -23,13 +23,13 @@ class UsgTrimester1 {
   @JsonKey(name: "jumlah_gs")
   String? jumlahGs;
   @JsonKey(name: "diametes_gs")
-  int? diametesGs;
+  double? diametesGs;
   @JsonKey(name: "gs_hari")
   int? gsHari;
   @JsonKey(name: "gs_minggu")
   int? gsMinggu;
   @JsonKey(name: "crl")
-  int? crl;
+  dynamic crl;
   @JsonKey(name: "crl_hari")
   int? crlHari;
   @JsonKey(name: "crl_minggu")
