@@ -1,6 +1,8 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
@@ -21,7 +23,8 @@ class ProfilScreen extends StatefulWidget {
 
 class _ProfileScreenState extends State<ProfilScreen> {
   int? id;
-  String? nama, role;
+  String? nama, role, nik;
+  String? bb, diastol, sistol, lila, tinggi_rahim;
   File? localImg;
   bool isLoading = true;
 
@@ -38,6 +41,24 @@ class _ProfileScreenState extends State<ProfilScreen> {
       final url = await authProvider.checkImage();
       setState(() {
         localImg = File(url);
+      });
+    }
+  }
+
+  Future<void> _getDetailPemeriksaan() async {
+    PemeriksaanRutin? user = await Pemeriksaandatabase().getPemeriksaanRutin();
+
+    if (user != null) {
+      setState(() {
+        bb = user.beratBadan.toString();
+        lila = user.lingkarLenganAtas.toString();
+        sistol = user.tekananDarahSistol.toString();
+        diastol = user.tekananDarahDiastol.toString();
+        if (user.tinggiRahim!.contains('cm')) {
+          tinggi_rahim = user.tinggiRahim;
+        } else {
+          tinggi_rahim = "${user.tinggiRahim} cm";
+        }
       });
     }
   }
@@ -74,6 +95,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
   Future<void> _initialize() async {
     await _getUser();
     await _checkImage();
+    await _getDetailPemeriksaan();
 
     isLoading = false;
   }
@@ -84,6 +106,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
     if (user != null) {
       setState(() {
         nama = user.anggota.nama ?? '';
+        nik = user.anggota.nik ?? '';
         role = user.role ?? '';
         id = user.anggota.id ?? '';
       });
@@ -141,7 +164,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                                           'assets/images/picture.jpg')
                                       as ImageProvider,
                             ),
-                            Positioned(
+                            const Positioned(
                               bottom: 4,
                               right: 4,
                               child: CircleAvatar(
@@ -155,19 +178,19 @@ class _ProfileScreenState extends State<ProfilScreen> {
                         ),
                         const SizedBox(height: 12),
                         Text(
-                          "Mafira Aurelia",
+                          nama!,
                           style: const TextStyle(
                             fontWeight: FontWeight.bold,
                             fontSize: 20,
                           ),
                         ),
                         Text(
-                          "7499985299184352",
+                          nik!,
                           style: const TextStyle(
                               color: Color.fromARGB(221, 63, 63, 63)),
                         ),
-                        const Text(
-                          "Anggota • Aktif",
+                        Text(
+                          "$role • Aktif",
                           style: TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 20),
@@ -180,26 +203,26 @@ class _ProfileScreenState extends State<ProfilScreen> {
                             mainAxisSpacing: 12,
                             crossAxisSpacing: 12,
                             childAspectRatio: 16 / 9,
-                            children: const [
+                            children: [
                               _StatCard(
                                 icon: Icons.monitor_weight,
                                 label: 'Berat Badan',
-                                value: '50.2 kg',
+                                value: '$bb kg',
                               ),
                               _StatCard(
                                 icon: Icons.favorite,
                                 label: 'Tekanan Darah',
-                                value: '120/80 mmHg',
+                                value: '$sistol/$diastol mmHg',
                               ),
                               _StatCard(
                                 icon: Icons.accessibility_new,
                                 label: 'Lingkar Lengan Atas',
-                                value: '23 cm',
+                                value: '$lila cm',
                               ),
                               _StatCard(
                                 icon: Icons.height,
                                 label: 'Tinggi Rahim',
-                                value: '32 cm',
+                                value: '$tinggi_rahim',
                               ),
                             ],
                           ),

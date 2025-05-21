@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 
 class UbahPasswordScreen extends StatefulWidget {
@@ -17,6 +18,7 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
   bool _showOldPassword = false;
   bool _showNewPassword = false;
   bool _showConfirmPassword = false;
+  bool _isLoading = false;
 
   @override
   void dispose() {
@@ -26,12 +28,36 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
     super.dispose();
   }
 
-  void _resetPassword() {
+  void _resetPassword() async {
     if (_formKey.currentState!.validate()) {
-      Navigator.pushReplacement(
-        context,
-        MaterialPageRoute(builder: (context) => const ProfilScreen()),
-      );
+      final service = ProfilService();
+      setState(() => _isLoading = true);
+
+      final oldPassword = _oldPasswordController.text.trim();
+      final newPassword = _newPasswordController.text.trim();
+      try {
+        final response = await service.changePassword(oldPassword, newPassword);
+
+        if (response.statusCode == 200) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(content: Text('Password Berhasil Di ubah')),
+          );
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(builder: (context) => const ProfilScreen()),
+          );
+        } else {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+                content:
+                    Text('Gagal mengubah password: ${response.statusMessage}')),
+          );
+        }
+      } catch (e) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Terjadi kesalahan: $e')),
+        );
+      }
     }
   }
 
@@ -148,8 +174,8 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
                         validator: (value) {
                           if (value == null || value.isEmpty) {
                             return 'Password baru tidak boleh kosong';
-                          } else if (value.length < 10) {
-                            return 'Password minimal 10 karakter';
+                          } else if (value.length < 8) {
+                            return 'Password minimal 8 karakter';
                           }
                           return null;
                         },
@@ -208,10 +234,13 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
                             ),
                           ),
                           onPressed: _resetPassword,
-                          child: const Text(
-                            'Konfirmasi Password',
-                            style: TextStyle(fontSize: 16, color: Colors.white),
-                          ),
+                          child: _isLoading
+                              ? const Center(child: CircularProgressIndicator())
+                              : const Text(
+                                  'Konfirmasi Password',
+                                  style: TextStyle(
+                                      fontSize: 16, color: Colors.white),
+                                ),
                         ),
                       ),
                       const SizedBox(height: 16),

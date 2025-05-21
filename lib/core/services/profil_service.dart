@@ -62,7 +62,7 @@ class ProfilService {
   Future<Response> uploadImage(File image) async {
     try {
       int? id = await getID();
-
+      await _api.setToken();
       FormData formData = FormData.fromMap({
         "id": id,
         "photo": await MultipartFile.fromFile(image.path,
@@ -139,6 +139,7 @@ class ProfilService {
   Future<Response> checkImage() async {
     try {
       final id = await getID();
+      await _api.setToken();
       final response = await _api.dio.post(
         '/image',
         data: {
@@ -162,6 +163,31 @@ class ProfilService {
         requestOptions: RequestOptions(path: ''),
         statusCode: 404,
         statusMessage: "message: {$e.message}",
+      );
+    }
+  }
+
+  Future<Response> changePassword(String password, String newPassword) async {
+    try {
+      await _api.setToken();
+      int? id = await getID();
+
+      final response = await _api.dio.put(
+        '/user/pass-change',
+        data: {
+          "id": id,
+          "password": password,
+          "new_password": newPassword,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: e.response?.statusCode ?? 500,
+        statusMessage: e.message,
+        data: e.response?.data,
       );
     }
   }

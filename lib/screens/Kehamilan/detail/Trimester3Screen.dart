@@ -65,6 +65,7 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
     'Skrining Kesehatan Jiwa',
     'Pemeriksaan Laboratorium',
     'Pemeriksaan Usg',
+    'Rencana Konsultasi',
   ];
 
   String formatTanggalIndonesia(String isoDate) {
@@ -127,7 +128,7 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
           data: usg!,
         );
       case 'Rencana Konsultasi':
-        if (usg == null) {
+        if (rencana == null) {
           return const Text('Data Rencana Konsultasi belum tersedia');
         }
         return RencanaKonsultasiScreen(
