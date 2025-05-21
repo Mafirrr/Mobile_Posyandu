@@ -143,7 +143,7 @@ class UserDatabase {
       'keluarga',
       'kehamilan',
       'pemeriksaan_kehamilan',
-      'skrining_kesehatan_jiwa',
+      'skrining_kesehatan',
       'pemeriksaan_fisik',
       'pemeriksaan_rutin',
       'pemeriksaan_khusus',

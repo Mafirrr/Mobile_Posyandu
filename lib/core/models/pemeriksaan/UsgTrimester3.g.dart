@@ -21,11 +21,11 @@ UsgTrimester3 _$UsgTrimester3FromJson(Map<String, dynamic> json) =>
       djjStatus: json['djj_status'] as String?,
       lokasiPlasenta: json['lokasi_plasenta'] as String?,
       jumlahCairanKetuban: json['jumlah_cairan_ketuban'] as String?,
-      bpd: (json['BPD'] as num?)?.toInt(),
-      hc: (json['HC'] as num?)?.toInt(),
-      ac: (json['AC'] as num?)?.toInt(),
-      fl: (json['FL'] as num?)?.toInt(),
-      efw: (json['EFW'] as num?)?.toInt(),
+      bpd: (json['BPD'] as num?)?.toDouble(),
+      hc: (json['HC'] as num?)?.toDouble(),
+      ac: (json['AC'] as num?)?.toDouble(),
+      fl: (json['FL'] as num?)?.toDouble(),
+      efw: (json['EFW'] as num?)?.toDouble(),
       hcSesuaiMinggu: (json['HC_Sesuai_Minggu'] as num?)?.toInt(),
       bpdSesuaiMinggu: (json['BPD_Sesuai_Minggu'] as num?)?.toInt(),
       acSesuaiMinggu: (json['AC_Sesuai_Minggu'] as num?)?.toInt(),
@@ -33,8 +33,8 @@ UsgTrimester3 _$UsgTrimester3FromJson(Map<String, dynamic> json) =>
       efwSesuaiMinggu: (json['EFW_Sesuai_Minggu'] as num?)?.toInt(),
       kecurigaanTemuanAbnormal: json['kecurigaan_temuan_abnormal'] as String?,
       keterangan: json['keterangan'] as String?,
-      djj: (json['djj'] as num?)?.toInt(),
-      sdp: (json['sdp'] as num?)?.toInt(),
+      djj: json['djj'],
+      sdp: json['sdp'],
     );
 
 Map<String, dynamic> _$UsgTrimester3ToJson(UsgTrimester3 instance) =>

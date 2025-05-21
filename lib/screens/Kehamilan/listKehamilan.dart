@@ -123,6 +123,7 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
     required String status,
     required String title,
     required String description,
+    required int id,
   }) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
@@ -192,8 +193,10 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
                               Navigator.push(
                                 context,
                                 MaterialPageRoute(
-                                  builder: (context) =>
-                                      const DetailPemeriksaan(),
+                                  builder: (context) => DetailPemeriksaan(
+                                    label: title,
+                                    id: id,
+                                  ),
                                 ),
                               );
                             },

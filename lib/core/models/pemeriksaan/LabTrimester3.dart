@@ -7,9 +7,9 @@ class LabTrimester3 {
   @JsonKey(name: "id")
   int id;
   @JsonKey(name: "Hemoglobin")
-  int? hemoglobin;
+  double? hemoglobin;
   @JsonKey(name: "Protein_urin")
-  int? proteinUrin;
+  double? proteinUrin;
   @JsonKey(name: "urin_reduksi")
   String? urinReduksi;
   @JsonKey(name: "hemoglobin_rtl")

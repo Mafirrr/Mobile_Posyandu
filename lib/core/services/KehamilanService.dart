@@ -47,6 +47,7 @@ class KehamilanService {
 
   Future<void> _fetchAndSavePemeriksaan(int kehamilanId, int id) async {
     try {
+      _api.clearToken();
       final response = await _api.dio.get('/kehamilan/$id', queryParameters: {
         'detail': kehamilanId,
       });

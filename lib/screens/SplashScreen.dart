@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/services/KehamilanService.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
@@ -112,8 +113,15 @@ class _SplashScreenState extends State<SplashScreen>
     setState(() {
       showSplash = false;
     });
+
+    _renewData() async {
+      final pemeriksaanService = KehamilanService();
+      await pemeriksaanService.dataKehamilan();
+    }
+
     if (isLoggedIn == true) {
       if (role == 'anggota') {
+        _renewData();
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(builder: (context) => const NavAnggotaScreen()),
