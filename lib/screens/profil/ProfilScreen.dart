@@ -313,7 +313,7 @@ class _StatCard extends StatelessWidget {
       decoration: BoxDecoration(
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: Colors.grey.shade300,
+          color: Color.fromARGB(255, 194, 216, 255),
           width: 1.2,
         ),
         color: Colors.white,

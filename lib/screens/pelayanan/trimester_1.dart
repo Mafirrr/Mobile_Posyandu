@@ -129,9 +129,7 @@ class _Trimester1State extends State<Trimester1> {
                 const SizedBox(width: 100),
               const Spacer(),
               ElevatedButton(
-                onPressed: _currentStep < 3
-                    ? _nextStep
-                    : _saveData, 
+                onPressed: _currentStep < 3 ? _nextStep : _saveData,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.blue,
                   shape: RoundedRectangleBorder(
@@ -452,205 +450,277 @@ class _Trimester1State extends State<Trimester1> {
       "Fluor"
     ];
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      const Text(
-        "Pemeriksaan Khusus",
-        style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-      ),
-      ...pemeriksaanKhusus.asMap().entries.map((entry) {
-        int index = entry.key;
-        String item = entry.value;
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        const Text(
+          "Pemeriksaan Khusus",
+          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+        ),
+        const SizedBox(height: 8),
+        for (int i = 0; i < pemeriksaanKhusus.length; i += 2)
+          Row(
+            children: [
+              Expanded(
+                child: pemeriksaanKhususCell(i, pemeriksaanKhusus[i]),
+              ),
+              const SizedBox(width: 8),
+              if (i + 1 < pemeriksaanKhusus.length)
+                Expanded(
+                  child: pemeriksaanKhususCell(i + 1, pemeriksaanKhusus[i + 1]),
+                ),
+            ],
+          ),
+      ],
+    );
+  }
 
-        return Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(item,
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w400)),
-            SizedBox(
-              height: 4,
-            ),
-            Container(
-              child: Row(
-                children: [
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: "normal",
-                        groupValue: getGroupValueKhusus(index),
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (val) => setState(
-                            () => setGroupValueKhusus(index, "normal")),
-                      ),
-                      Text("Normal")
-                    ],
-                  ),
-                  SizedBox(width: 20),
-                  Row(
-                    children: [
-                      Radio<String>(
-                        value: "tidak_normal",
-                        groupValue: getGroupValueKhusus(index),
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: (val) => setState(
-                            () => setGroupValueKhusus(index, "tidak_normal")),
-                      ),
-                      Text("Tidak Normal")
-                    ],
-                  )
-                ],
+  Widget pemeriksaanKhususCell(int index, String title) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 8),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(
+          color: const Color.fromARGB(255, 255, 255, 255), // Warna border putih
+          width: 1,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.grey.withOpacity(0.5), // Warna bayangan
+            spreadRadius: 1, // Penyebaran shadow
+            blurRadius: 4, // Seberapa blur
+            offset: Offset(2, 2), // Arah bayangan (x, y)
+          ),
+        ],
+        borderRadius:
+            BorderRadius.circular(8), // Opsional: biar sudutnya lebih lembut
+      ),
+      child: Column(
+        children: [
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.symmetric(vertical: 8),
+            decoration: const BoxDecoration(
+              color: Color.fromARGB(255, 137, 179, 243),
+              borderRadius: BorderRadius.only(
+                topLeft: Radius.circular(8),
+                topRight: Radius.circular(8),
               ),
             ),
-            SizedBox(
-              height: 8,
-            )
-          ],
-        );
-      })
-    ]);
+            child: Center(
+              child: Text(
+                title,
+                style: const TextStyle(
+                  color: Colors.white,
+                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                ),
+              ),
+            ),
+          ),
+          Row(
+            children: [
+              Expanded(
+                child: Container(
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    border: const Border(
+                      right: BorderSide(
+                          color: Color.fromARGB(255, 180, 180, 180), width: 1),
+                    ),
+                  ),
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      children: [
+                        Radio<String>(
+                          value: "normal",
+                          groupValue: getGroupValueKhusus(index),
+                          onChanged: (val) =>
+                              setGroupValueKhusus(index, "normal"),
+                          visualDensity:
+                              const VisualDensity(horizontal: -4, vertical: -4),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        const Text("Normal", style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+              Expanded(
+                child: Container(
+                  color: Colors.white,
+                  padding: const EdgeInsets.symmetric(vertical: 6),
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    child: Row(
+                      children: [
+                        Radio<String>(
+                          value: "tidak_normal",
+                          groupValue: getGroupValueKhusus(index),
+                          onChanged: (val) =>
+                              setGroupValueKhusus(index, "tidak_normal"),
+                          visualDensity:
+                              const VisualDensity(horizontal: -4, vertical: -4),
+                          materialTapTargetSize:
+                              MaterialTapTargetSize.shrinkWrap,
+                        ),
+                        const Text("Tidak Normal",
+                            style: TextStyle(fontSize: 12)),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
   }
 
   Widget pemeriksaanFisikView() {
-    final List<Map<String, String>> pemeriksaanKhusus = [
-      {
-        "label": "Konjungtiva",
-        "value1": "anemia",
-        "value2": "tidak_anemia",
-      },
-      {
-        "label": "Sklera",
-        "value1": "ikterik",
-        "value2": "tidak_ikterik",
-      },
-      {
-        "label": "Leher",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Kulit",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Gigi Mulut",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "THT",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Jantung",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Paru",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Perut",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
-      {
-        "label": "Tungkai",
-        "value1": "normal",
-        "value2": "tidak_normal",
-      },
+    final List<Map<String, String>> pemeriksaanFisik = [
+      {"label": "Konjungtiva", "value1": "anemia", "value2": "tidak_anemia"},
+      {"label": "Sklera", "value1": "ikterik", "value2": "tidak_ikterik"},
+      {"label": "Leher", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Kulit", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Gigi Mulut", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "THT", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Jantung", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Paru", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Perut", "value1": "normal", "value2": "tidak_normal"},
+      {"label": "Tungkai", "value1": "normal", "value2": "tidak_normal"},
     ];
 
-    return Column(crossAxisAlignment: CrossAxisAlignment.start, children: [
-      ...pemeriksaanKhusus.asMap().entries.map((entry) {
+    return Wrap(
+      spacing: 10,
+      runSpacing: 10,
+      children: pemeriksaanFisik.asMap().entries.map((entry) {
         int index = entry.key;
         Map<String, String> item = entry.value;
-        String value1 = item["value1"]!.replaceAll('_', ' ');
-        String value2 = item["value2"]!.replaceAll('_', ' ');
 
-        String label1 =
-            value1[0].toUpperCase() + value1.substring(1).toLowerCase();
-        String label2 =
-            value2[0].toUpperCase() + value2.substring(1).toLowerCase();
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              SizedBox(
-                width: 150,
-                child: Text(item["label"] ?? "",
-                    style:
-                        TextStyle(fontSize: 12, fontWeight: FontWeight.w400)),
-              ),
-              SizedBox(
-                height: 4,
-              ),
-              Container(
-                child: Row(
-                  children: [
-                    Row(
-                      children: [
-                        Radio<String>(
-                          value: item["value1"] ?? "",
-                          groupValue: getGroupValueFisik(index),
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          onChanged: (val) => setState(() =>
-                              setGroupValueFisik(index, item["value1"] ?? "")),
-                        ),
-                        SizedBox(
-                          width: 60,
-                          child: Text(
-                            label1,
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w400),
-                          ),
-                        ),
-                      ],
+        String label = item["label"] ?? "";
+        String val1 = item["value1"] ?? "";
+        String val2 = item["value2"] ?? "";
+
+        String label1 = val1.replaceAll('_', ' ');
+        String label2 = val2.replaceAll('_', ' ');
+
+        String formattedLabel1 =
+            label1[0].toUpperCase() + label1.substring(1).toLowerCase();
+        String formattedLabel2 =
+            label2[0].toUpperCase() + label2.substring(1).toLowerCase();
+
+        return SizedBox(
+          width: 170,
+          child: Container(
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: Colors.white),
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5),
+                  spreadRadius: 1,
+                  blurRadius: 4,
+                  offset: const Offset(2, 2),
+                ),
+              ],
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 137, 179, 243),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
                     ),
-                    SizedBox(width: 20),
-                    Row(
-                      children: [
-                        Radio<String>(
-                          value: item["value2"] ?? "",
-                          groupValue: getGroupValueFisik(index),
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                          onChanged: (val) => setState(() =>
-                              setGroupValueFisik(index, item["value2"] ?? "")),
-                        ),
-                        SizedBox(
-                          width: 80,
-                          child: Text(
-                            label2,
-                            style: TextStyle(
-                                fontSize: 12, fontWeight: FontWeight.w400),
+                  ),
+                  child: Center(
+                    child: Text(
+                      label,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: const BoxDecoration(
+                          color: Colors.white,
+                          border: const Border(
+                            right: BorderSide(
+                                color: Color.fromARGB(255, 180, 180, 180),
+                                width: 1),
                           ),
                         ),
-                      ],
-                    )
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: val1,
+                                groupValue: getGroupValueFisik(index),
+                                onChanged: (val) =>
+                                    setGroupValueFisik(index, val1),
+                                visualDensity: const VisualDensity(
+                                    horizontal: -4, vertical: -4),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              Text(formattedLabel1,
+                                  style: const TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: val2,
+                                groupValue: getGroupValueFisik(index),
+                                onChanged: (val) =>
+                                    setGroupValueFisik(index, val2),
+                                visualDensity: const VisualDensity(
+                                    horizontal: -4, vertical: -4),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              Text(formattedLabel2,
+                                  style: const TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
                   ],
                 ),
-              ),
-              SizedBox(
-                height: 8,
-              )
-            ],
+              ],
+            ),
           ),
         );
-      })
-    ]);
+      }).toList(),
+    );
   }
 
   String getGroupValueKhusus(int index) {
