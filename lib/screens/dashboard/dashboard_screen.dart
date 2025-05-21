@@ -196,7 +196,7 @@ class _DashboardPageState extends State<DashboardPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.circular(7),
+                          borderRadius: BorderRadius.all(Radius.circular(50)),
                           child: Image.asset(
                             'assets/images/picture.jpg',
                             width: 50,
@@ -216,10 +216,10 @@ class _DashboardPageState extends State<DashboardPage> {
                               ),
                             ),
                             const Text(
-                              'Selamat Datang!',
+                              'Selamat Datang di Posyandu!',
                               style: TextStyle(
-                                color: Colors.black,
-                                fontWeight: FontWeight.bold,
+                                color: Color.fromARGB(255, 39, 39, 39),
+                                fontWeight: FontWeight.normal,
                                 fontSize: 14,
                               ),
                             ),
@@ -228,7 +228,7 @@ class _DashboardPageState extends State<DashboardPage> {
                         const Spacer(),
                         IconButton(
                           icon: const Icon(Icons.notifications_outlined),
-                          color: Colors.white,
+                          color: Colors.black,
                           onPressed: () {
                             showNotifikasiDialog(context);
                           },

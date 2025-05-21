@@ -86,10 +86,11 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
     final viewModel = Provider.of<ProfilViewModel>(context, listen: false);
 
     return Scaffold(
+      backgroundColor: const Color(0xFFF6F6F6),
       appBar: AppBar(
         title: const CustomText(
           text: 'Data Keluarga',
-          fontSize: 24,
+          fontSize: 20,
           fontWeight: FontWeight.bold,
         ),
         leading: IconButton(
@@ -99,114 +100,137 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
         centerTitle: true,
       ),
       body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            CustomTextField(
-              controller: namaController,
-              label: 'Nama Lengkap',
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              controller: nikController,
-              label: 'NIK',
-              readOnly: true,
-            ),
-            CustomTextField(
-              controller: jknController,
-              label: 'No_JKN',
-              readOnly: true,
-            ),
-            CustomTextField(
-              controller: tk1Controller,
-              label: 'Faskes_TK1',
-              readOnly: true,
-            ),
-            CustomTextField(
-              controller: rujukanController,
-              label: 'Faskes_Rujukan',
-              readOnly: true,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              controller: telpController,
-              label: 'No. Telepon',
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              controller: tempatLahirController,
-              label: 'Tempat Lahir',
-            ),
-            const SizedBox(height: 16),
-            CustomDatePicker(
-              controller: tanggalLahirController,
-              hintText: "Tanggal Lahir",
-              value: tanggal_lahir,
-              onDateSelected: (selectedDate) {
-                setState(() {
-                  tanggalLahirController.text =
-                      DateFormat('yyyy-MM-dd').format(selectedDate);
-                });
-              },
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-              controller: alamatController,
-              label: 'Alamat',
-              maxLines: 3,
-            ),
-            const SizedBox(height: 16),
-            CustomTextField(
-                controller: pekerjaanController, label: 'Pekerjaan'),
-            const SizedBox(height: 16),
-            CustomButton(
-              text: 'Simpan',
-              isLoading: viewModel.isLoading,
-              onPressed: () async {
-                try {
-                  String inputTanggal = tanggalLahirController.text.trim();
-                  final RegExp yyyyMMddFormat = RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                  late String finalTanggal;
+        padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 16),
+        child: Center(
+          child: ConstrainedBox(
+            constraints: const BoxConstraints(maxWidth: 500),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                const Text(
+                  "Informasi Pribadi",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                CustomTextField(
+                    controller: namaController, label: 'Nama Lengkap'),
+                const SizedBox(height: 12),
+                CustomTextField(
+                    controller: nikController, label: 'NIK', readOnly: true),
+                const SizedBox(height: 12),
+                CustomTextField(
+                    controller: tempatLahirController, label: 'Tempat Lahir'),
+                const SizedBox(height: 12),
+                CustomDatePicker(
+                  controller: tanggalLahirController,
+                  hintText: "Tanggal Lahir",
+                  value: tanggal_lahir,
+                  onDateSelected: (selectedDate) {
+                    setState(() {
+                      tanggalLahirController.text =
+                          DateFormat('yyyy-MM-dd').format(selectedDate);
+                    });
+                  },
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Kontak & Alamat",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                CustomTextField(
+                    controller: telpController, label: 'No. Telepon'),
+                const SizedBox(height: 12),
+                CustomTextField(
+                  controller: alamatController,
+                  label: 'Alamat',
+                  maxLines: 2,
+                ),
+                const SizedBox(height: 20),
+                const Text(
+                  "Data BPJS & Kesehatan",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                CustomTextField(
+                    controller: jknController, label: 'No JKN', readOnly: true),
+                const SizedBox(height: 12),
+                CustomTextField(
+                    controller: tk1Controller,
+                    label: 'Faskes TK1',
+                    readOnly: true),
+                const SizedBox(height: 12),
+                CustomTextField(
+                    controller: rujukanController,
+                    label: 'Faskes Rujukan',
+                    readOnly: true),
+                const SizedBox(height: 20),
+                const Text(
+                  "Lainnya",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+                ),
+                const SizedBox(height: 8),
+                CustomTextField(
+                    controller: pekerjaanController, label: 'Pekerjaan'),
+                const SizedBox(height: 24),
+                Align(
+                  alignment: Alignment.center,
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      text: 'Simpan',
+                      isLoading: viewModel.isLoading,
+                      onPressed: () async {
+                        try {
+                          String inputTanggal =
+                              tanggalLahirController.text.trim();
+                          final RegExp yyyyMMddFormat =
+                              RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                          late String finalTanggal;
 
-                  if (yyyyMMddFormat.hasMatch(inputTanggal)) {
-                    finalTanggal = inputTanggal;
-                  } else {
-                    final parsedDate =
-                        DateFormat('dd MMM yyyy').parseStrict(inputTanggal);
-                    finalTanggal = DateFormat('yyyy-MM-dd').format(parsedDate);
-                  }
+                          if (yyyyMMddFormat.hasMatch(inputTanggal)) {
+                            finalTanggal = inputTanggal;
+                          } else {
+                            final parsedDate = DateFormat('dd MMM yyyy')
+                                .parseStrict(inputTanggal);
+                            finalTanggal =
+                                DateFormat('yyyy-MM-dd').format(parsedDate);
+                          }
 
-                  final updatedAnggota = DataAnggota(
-                    id: _anggota!.id,
-                    anggotaId: _anggota!.anggotaId,
-                    nama: namaController.text,
-                    nik: nikController.text,
-                    noJkn: jknController.text,
-                    faskesTk1: tk1Controller.text,
-                    faskesRujukan: rujukanController.text,
-                    noTelepon: telpController.text,
-                    tempatLahir: tempatLahirController.text,
-                    tanggalLahir: finalTanggal,
-                    alamat: alamatController.text,
-                    pekerjaan: pekerjaanController.text,
-                  );
+                          final updatedAnggota = DataAnggota(
+                            id: _anggota!.id,
+                            anggotaId: _anggota!.anggotaId,
+                            nama: namaController.text,
+                            nik: nikController.text,
+                            noJkn: jknController.text,
+                            faskesTk1: tk1Controller.text,
+                            faskesRujukan: rujukanController.text,
+                            noTelepon: telpController.text,
+                            tempatLahir: tempatLahirController.text,
+                            tanggalLahir: finalTanggal,
+                            alamat: alamatController.text,
+                            pekerjaan: pekerjaanController.text,
+                          );
 
-                  final success =
-                      await viewModel.updateKeluarga(updatedAnggota);
-                  if (success) {
-                    _showSnackbar('Profil berhasil diperbarui');
-                    Navigator.pop(context, true);
-                  } else {
-                    _showSnackbar('Gagal memperbarui profil');
-                  }
-                } catch (e) {
-                  _showSnackbar(
-                      'Tanggal tidak valid: ${tanggalLahirController.text}');
-                }
-              },
+                          final success =
+                              await viewModel.updateKeluarga(updatedAnggota);
+                          if (success) {
+                            _showSnackbar('Profil berhasil diperbarui');
+                            Navigator.pop(context, true);
+                          } else {
+                            _showSnackbar('Gagal memperbarui profil');
+                          }
+                        } catch (e) {
+                          _showSnackbar(
+                              'Tanggal tidak valid: ${tanggalLahirController.text}');
+                        }
+                      },
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );

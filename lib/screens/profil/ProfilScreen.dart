@@ -91,7 +91,6 @@ class _ProfileScreenState extends State<ProfilScreen> {
   }
 
   @override
-  @override
   Widget build(BuildContext context) {
     double screenWidth = MediaQuery.of(context).size.width;
 
@@ -104,168 +103,194 @@ class _ProfileScreenState extends State<ProfilScreen> {
           fontWeight: FontWeight.bold,
         ),
         centerTitle: true,
+        backgroundColor: Colors.transparent,
+        elevation: 0,
       ),
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : SingleChildScrollView(
-              child: Column(
-                children: [
-                  const SizedBox(height: 8),
-                  Stack(
-                    alignment: Alignment.bottomRight,
-                    children: [
-                      CircleAvatar(
-                        radius: 50,
-                        backgroundImage:
-                            (localImg != null && localImg!.path.isNotEmpty)
-                                ? FileImage(localImg!)
-                                : const AssetImage('assets/images/picture.jpg')
-                                    as ImageProvider,
-                      ),
-                      Positioned(
-                        bottom: 4,
-                        right: 4,
-                        child: CircleAvatar(
-                          radius: 14,
-                          backgroundColor: Colors.white,
-                          child: Icon(Icons.edit,
-                              size: 16, color: Colors.blueAccent),
+      extendBodyBehindAppBar: true,
+      body: Stack(
+        children: [
+          Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 77, 129, 231),
+                  Colors.white,
+                ],
+                stops: [0.0, 0.3],
+                begin: Alignment.topCenter,
+                end: Alignment.bottomCenter,
+              ),
+            ),
+          ),
+          SafeArea(
+            child: isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : SingleChildScrollView(
+                    child: Column(
+                      children: [
+                        const SizedBox(height: 8),
+                        Stack(
+                          alignment: Alignment.bottomRight,
+                          children: [
+                            CircleAvatar(
+                              radius: 50,
+                              backgroundImage: (localImg != null &&
+                                      localImg!.path.isNotEmpty)
+                                  ? FileImage(localImg!)
+                                  : const AssetImage(
+                                          'assets/images/picture.jpg')
+                                      as ImageProvider,
+                            ),
+                            Positioned(
+                              bottom: 4,
+                              right: 4,
+                              child: CircleAvatar(
+                                radius: 14,
+                                backgroundColor: Colors.white,
+                                child: Icon(Icons.edit,
+                                    size: 16, color: Colors.blueAccent),
+                              ),
+                            ),
+                          ],
                         ),
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 12),
-                  Text(
-                    "Mafira Aurelia",
-                    style: const TextStyle(
-                      fontWeight: FontWeight.bold,
-                      fontSize: 20,
-                    ),
-                  ),
-                  Text(
-                    "7499985299184352",
-                    style:
-                        const TextStyle(color: Color.fromARGB(221, 63, 63, 63)),
-                  ),
-                  const Text(
-                    "Anggota • Aktif",
-                    style: TextStyle(color: Colors.grey),
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 20),
-                    child: GridView.count(
-                      physics: const NeverScrollableScrollPhysics(),
-                      shrinkWrap: true,
-                      crossAxisCount: 2,
-                      mainAxisSpacing: 12,
-                      crossAxisSpacing: 12,
-                      childAspectRatio: 16 / 9,
-                      children: const [
-                        _StatCard(
-                          icon: Icons.monitor_weight,
-                          label: 'Berat Badan',
-                          value: '50.2 kg',
+                        const SizedBox(height: 12),
+                        Text(
+                          "Mafira Aurelia",
+                          style: const TextStyle(
+                            fontWeight: FontWeight.bold,
+                            fontSize: 20,
+                          ),
                         ),
-                        _StatCard(
-                          icon: Icons.favorite,
-                          label: 'Tekanan Darah',
-                          value: '120/80 mmHg',
+                        Text(
+                          "7499985299184352",
+                          style: const TextStyle(
+                              color: Color.fromARGB(221, 63, 63, 63)),
                         ),
-                        _StatCard(
-                          icon: Icons.accessibility_new,
-                          label: 'Lingkar Lengan Atas',
-                          value: '23 cm',
+                        const Text(
+                          "Anggota • Aktif",
+                          style: TextStyle(color: Colors.grey),
                         ),
-                        _StatCard(
-                          icon: Icons.height,
-                          label: 'Tinggi Rahim',
-                          value: '32 cm',
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 20),
+                          child: GridView.count(
+                            physics: const NeverScrollableScrollPhysics(),
+                            shrinkWrap: true,
+                            crossAxisCount: 2,
+                            mainAxisSpacing: 12,
+                            crossAxisSpacing: 12,
+                            childAspectRatio: 16 / 9,
+                            children: const [
+                              _StatCard(
+                                icon: Icons.monitor_weight,
+                                label: 'Berat Badan',
+                                value: '50.2 kg',
+                              ),
+                              _StatCard(
+                                icon: Icons.favorite,
+                                label: 'Tekanan Darah',
+                                value: '120/80 mmHg',
+                              ),
+                              _StatCard(
+                                icon: Icons.accessibility_new,
+                                label: 'Lingkar Lengan Atas',
+                                value: '23 cm',
+                              ),
+                              _StatCard(
+                                icon: Icons.height,
+                                label: 'Tinggi Rahim',
+                                value: '32 cm',
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 20),
+                        const Padding(
+                          padding: EdgeInsets.symmetric(horizontal: 20),
+                          child: Align(
+                            alignment: Alignment.centerLeft,
+                            child: Text("Setting",
+                                style: TextStyle(
+                                    fontSize: 16, fontWeight: FontWeight.bold)),
+                          ),
+                        ),
+                        const SizedBox(height: 10),
+                        Column(
+                          children: [
+                            ProfileMenuCard(
+                              title: "Informasi Pribadi",
+                              subtitle: "Lihat dan ubah informasi pribadi Anda",
+                              icon: Icons.person,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          InformasiPribadiScreen()),
+                                );
+                              },
+                            ),
+                            ProfileMenuCard(
+                              title: "Data Keluarga",
+                              subtitle: "Kelola informasi anggota keluarga",
+                              icon: Icons.family_restroom,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          DataKeluargaScreen()),
+                                );
+                              },
+                            ),
+                            ProfileMenuCard(
+                              title: "Ganti Password",
+                              subtitle: "Perbarui kata sandi akun Anda",
+                              icon: Icons.lock,
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          UbahPasswordScreen()),
+                                );
+                              },
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 20),
+                        Padding(
+                          padding: const EdgeInsets.all(20.0),
+                          child: ElevatedButton.icon(
+                            onPressed: () {
+                              CustomDialog.show(
+                                context,
+                                title: "Log Out",
+                                message:
+                                    "Anda akan logout dari akun ini.\nApakah Anda yakin ingin melanjutkan?",
+                                primaryButtonText: "Keluar",
+                                onPrimaryPressed: _logout,
+                                secondaryButtonText: "Batal",
+                              );
+                            },
+                            icon: const Icon(Icons.logout, color: Colors.white),
+                            label: const Text("Logout",
+                                style: TextStyle(color: Colors.white)),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: const Color(0xFFB02A37),
+                              minimumSize: const Size(double.infinity, 50),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(8),
+                              ),
+                            ),
+                          ),
                         ),
                       ],
                     ),
                   ),
-                  const SizedBox(height: 20),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 20),
-                    child: Align(
-                      alignment: Alignment.centerLeft,
-                      child: Text("Setting",
-                          style: TextStyle(
-                              fontSize: 16, fontWeight: FontWeight.bold)),
-                    ),
-                  ),
-                  const SizedBox(height: 10),
-                  Column(
-                    children: [
-                      ProfileMenuCard(
-                        title: "Informasi Pribadi",
-                        subtitle: "Lihat dan ubah informasi pribadi Anda",
-                        icon: Icons.person,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => InformasiPribadiScreen()),
-                          );
-                        },
-                      ),
-                      ProfileMenuCard(
-                        title: "Data Keluarga",
-                        subtitle: "Kelola informasi anggota keluarga",
-                        icon: Icons.family_restroom,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => DataKeluargaScreen()),
-                          );
-                        },
-                      ),
-                      ProfileMenuCard(
-                        title: "Ganti Password",
-                        subtitle: "Perbarui kata sandi akun Anda",
-                        icon: Icons.lock,
-                        onTap: () {
-                          Navigator.push(
-                            context,
-                            MaterialPageRoute(
-                                builder: (context) => UbahPasswordScreen()),
-                          );
-                        },
-                      ),
-                    ],
-                  ),
-                  const SizedBox(height: 20),
-                  Padding(
-                    padding: const EdgeInsets.all(20.0),
-                    child: ElevatedButton.icon(
-                      onPressed: () {
-                        CustomDialog.show(
-                          context,
-                          title: "Log Out",
-                          message:
-                              "Anda akan logout dari akun ini.\nApakah Anda yakin ingin melanjutkan?",
-                          primaryButtonText: "Keluar",
-                          onPrimaryPressed: _logout,
-                          secondaryButtonText: "Batal",
-                        );
-                      },
-                      icon: const Icon(Icons.logout, color: Colors.white),
-                      label: const Text("Logout",
-                          style: TextStyle(color: Colors.white)),
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: const Color(0xFFB02A37),
-                        minimumSize: const Size(double.infinity, 50),
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                    ),
-                  ),
-                ],
-              ),
-            ),
+          ),
+        ],
+      ),
     );
   }
 }

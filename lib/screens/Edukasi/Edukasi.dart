@@ -59,72 +59,90 @@ class _EdukasiHomePageState extends State<EdukasiHomePage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: Colors.white,
-      body: SafeArea(
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : allArtikels.isEmpty
-                ? const Center(
-                    child: Padding(
-                      padding: EdgeInsets.symmetric(vertical: 100),
-                      child: Text(
-                        'Tidak ada data artikel',
-                        style: TextStyle(fontSize: 18, color: Colors.grey),
-                      ),
-                    ),
-                  )
-                : SingleChildScrollView(
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        const SizedBox(height: 15),
-                        HeaderSearch(
-                          onSearchChanged: (value) {
-                            searchQuery = value;
-                            filterArtikels();
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        SizedBox(
-                          height: 200,
-                          child: PageView.builder(
-                            controller: _pageController,
-                            itemCount: highlightArtikels.length,
-                            itemBuilder: (context, index) {
-                              return EdukasiCard(
-                                  artikel: highlightArtikels[index]);
-                            },
+        backgroundColor: Colors.white,
+        body: Stack(
+          children: [
+            Container(
+              decoration: const BoxDecoration(
+                gradient: LinearGradient(
+                  colors: [
+                    Color.fromARGB(255, 77, 129, 231),
+                    Colors.white,
+                  ],
+                  stops: [0.0, 0.3],
+                  begin: Alignment.topCenter,
+                  end: Alignment.bottomCenter,
+                ),
+              ),
+            ),
+            SafeArea(
+              child: isLoading
+                  ? const Center(child: CircularProgressIndicator())
+                  : allArtikels.isEmpty
+                      ? const Center(
+                          child: Padding(
+                            padding: EdgeInsets.symmetric(vertical: 100),
+                            child: Text(
+                              'Tidak ada data artikel',
+                              style:
+                                  TextStyle(fontSize: 18, color: Colors.grey),
+                            ),
+                          ),
+                        )
+                      : SingleChildScrollView(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              const SizedBox(height: 15),
+                              HeaderSearch(
+                                onSearchChanged: (value) {
+                                  searchQuery = value;
+                                  filterArtikels();
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              SizedBox(
+                                height: 200,
+                                child: PageView.builder(
+                                  controller: _pageController,
+                                  itemCount: highlightArtikels.length,
+                                  itemBuilder: (context, index) {
+                                    return EdukasiCard(
+                                        artikel: highlightArtikels[index]);
+                                  },
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              CategoryButtons(
+                                allArtikels: allArtikels,
+                                onKategoriSelected: (kategori) {
+                                  selectedKategori = kategori;
+                                  filterArtikels();
+                                },
+                              ),
+                              const SizedBox(height: 24),
+                              artikels.isEmpty
+                                  ? const Padding(
+                                      padding:
+                                          EdgeInsets.symmetric(vertical: 80),
+                                      child: Center(
+                                        child: Text(
+                                          'Tidak ada artikel',
+                                          style: TextStyle(
+                                              fontSize: 16, color: Colors.grey),
+                                        ),
+                                      ),
+                                    )
+                                  : LatestArticleCard(artikels: artikels),
+                              const SizedBox(height: 24),
+                              TipsSection(),
+                              const SizedBox(height: 15),
+                            ],
                           ),
                         ),
-                        const SizedBox(height: 24),
-                        CategoryButtons(
-                          allArtikels: allArtikels,
-                          onKategoriSelected: (kategori) {
-                            selectedKategori = kategori;
-                            filterArtikels();
-                          },
-                        ),
-                        const SizedBox(height: 24),
-                        artikels.isEmpty
-                            ? const Padding(
-                                padding: EdgeInsets.symmetric(vertical: 80),
-                                child: Center(
-                                  child: Text(
-                                    'Tidak ada artikel',
-                                    style: TextStyle(
-                                        fontSize: 16, color: Colors.grey),
-                                  ),
-                                ),
-                              )
-                            : LatestArticleCard(artikels: artikels),
-                        const SizedBox(height: 24),
-                        TipsSection(),
-                        const SizedBox(height: 15),
-                      ],
-                    ),
-                  ),
-      ),
-    );
+            ),
+          ],
+        ));
   }
 }
 
@@ -153,17 +171,39 @@ class _HeaderSearchState extends State<HeaderSearch> {
           // ),
           const SizedBox(width: 12),
           Expanded(
-            child: TextField(
-              controller: _controller,
-              onChanged: widget.onSearchChanged,
-              decoration: InputDecoration(
-                hintText: 'Cari...',
-                prefixIcon: const Icon(Icons.search, color: Colors.grey),
-                contentPadding: const EdgeInsets.symmetric(vertical: 0),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: Colors.grey.shade300, width: 1.5),
+            child: Container(
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                boxShadow: [
+                  BoxShadow(
+                    color: Colors.black12,
+                    blurRadius: 4,
+                    offset: Offset(0, 2),
+                  ),
+                ],
+              ),
+              child: TextField(
+                controller: _controller,
+                onChanged: widget.onSearchChanged,
+                decoration: InputDecoration(
+                  hintText: 'Cari...',
+                  prefixIcon: const Icon(Icons.search, color: Colors.grey),
+                  contentPadding: const EdgeInsets.symmetric(vertical: 0),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  enabledBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  focusedBorder: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide.none,
+                  ),
+                  filled: true,
+                  fillColor: Colors.white,
                 ),
               ),
             ),
@@ -262,9 +302,11 @@ class _CategoryButtonsState extends State<CategoryButtons> {
               widget.onKategoriSelected(kategori);
             },
             style: OutlinedButton.styleFrom(
-              backgroundColor:
-                  isActive ? const Color(0xFF1a3ea8) : Colors.white,
-              side: const BorderSide(color: Color(0xFF1a3ea8), width: 1.5),
+              backgroundColor: isActive
+                  ? const Color.fromARGB(255, 66, 135, 255)
+                  : Colors.white,
+              side: const BorderSide(
+                  color: Color.fromARGB(255, 124, 172, 255), width: 1.5),
               shape: RoundedRectangleBorder(
                 borderRadius: BorderRadius.circular(8),
               ),
@@ -272,7 +314,9 @@ class _CategoryButtonsState extends State<CategoryButtons> {
             child: Text(
               kategori,
               style: TextStyle(
-                color: isActive ? Colors.white : const Color(0xFF1a3ea8),
+                color: isActive
+                    ? Colors.white
+                    : const Color.fromARGB(255, 66, 135, 255),
                 fontWeight: FontWeight.w500,
               ),
             ),
