@@ -9,8 +9,6 @@ import 'package:posyandu_mob/core/models/Artikel.dart';
 import 'package:posyandu_mob/core/services/jadwal_service.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
 
-
-
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
 
@@ -39,7 +37,6 @@ class _DashboardPageState extends State<DashboardPage> {
       return jam;
     }
   }
-
 
   bool isPemeriksaan(DateTime date) {
     for (var jadwal in jadwalPemeriksaan) {
@@ -115,9 +112,9 @@ class _DashboardPageState extends State<DashboardPage> {
     super.initState();
     _pageController.addListener(() {
       int currentPage = _pageController.page?.toInt() ?? 0;
-      if (selectedKategoriId  != currentPage) {
+      if (selectedKategoriId != currentPage) {
         setState(() {
-          selectedKategoriId  = currentPage;
+          selectedKategoriId = currentPage;
         });
       }
     });
@@ -144,7 +141,7 @@ class _DashboardPageState extends State<DashboardPage> {
       setState(() {
         allArtikels = fetched;
         highlightArtikels =
-        fetched.length > 4 ? fetched.take(4).toList() : fetched;
+            fetched.length > 4 ? fetched.take(4).toList() : fetched;
         artikels = fetched;
         isLoading = false;
       });
@@ -166,7 +163,6 @@ class _DashboardPageState extends State<DashboardPage> {
       print("Error fetching jadwal: $e");
     }
   }
-
 
   @override
   Widget build(BuildContext context) {
@@ -222,7 +218,7 @@ class _DashboardPageState extends State<DashboardPage> {
                             const Text(
                               'Selamat Datang!',
                               style: TextStyle(
-                                color: Colors.white,
+                                color: Colors.black,
                                 fontWeight: FontWeight.bold,
                                 fontSize: 14,
                               ),
@@ -334,7 +330,8 @@ class _DashboardPageState extends State<DashboardPage> {
                               setState(() {
                                 _isExpanded = !_isExpanded;
                                 selectedJadwal = jadwalPemeriksaan.isNotEmpty
-                                    ? DateTime.parse(jadwalPemeriksaan[0].tanggal)
+                                    ? DateTime.parse(
+                                        jadwalPemeriksaan[0].tanggal)
                                     : null;
                               });
                             },
@@ -353,20 +350,23 @@ class _DashboardPageState extends State<DashboardPage> {
                                     children: [
                                       Expanded(
                                         child: Column(
-                                          crossAxisAlignment: CrossAxisAlignment.start,
+                                          crossAxisAlignment:
+                                              CrossAxisAlignment.start,
                                           children: [
                                             Text(
                                               jadwalPemeriksaan.isNotEmpty
                                                   ? jadwalPemeriksaan[0].judul
                                                   : 'Tidak ada jadwal',
-                                              style: TextStyle(fontWeight: FontWeight.bold),
+                                              style: TextStyle(
+                                                  fontWeight: FontWeight.bold),
                                             ),
                                             SizedBox(height: 4),
                                             Text(
                                               jadwalPemeriksaan.isNotEmpty
                                                   ? '${formatJamMenit(jadwalPemeriksaan[0].jam_mulai)} - ${formatJamMenit(jadwalPemeriksaan[0].jam_selesai)} WIB'
                                                   : '-',
-                                              style: TextStyle(color: Colors.grey),
+                                              style:
+                                                  TextStyle(color: Colors.grey),
                                             ),
                                           ],
                                         ),
@@ -383,25 +383,33 @@ class _DashboardPageState extends State<DashboardPage> {
                                     secondChild: Padding(
                                       padding: const EdgeInsets.only(top: 8.0),
                                       child: Column(
-                                        crossAxisAlignment: CrossAxisAlignment.start,
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
                                         children: [
                                           Text(
                                             jadwalPemeriksaan.isNotEmpty
                                                 ? jadwalPemeriksaan[0].lokasi
                                                 : 'Lokasi tidak tersedia',
-                                            style: TextStyle(color: Colors.grey),
+                                            style:
+                                                TextStyle(color: Colors.grey),
                                           ),
                                           SizedBox(height: 4),
                                           Text(
                                             selectedJadwal != null
-                                                ? DateFormat('EEEE, dd MMMM yyyy', 'id_ID').format(selectedJadwal!)
+                                                ? DateFormat(
+                                                        'EEEE, dd MMMM yyyy',
+                                                        'id_ID')
+                                                    .format(selectedJadwal!)
                                                 : 'Tanggal belum tersedia',
-                                            style: TextStyle(color: Colors.grey),
+                                            style:
+                                                TextStyle(color: Colors.grey),
                                           ),
                                         ],
                                       ),
                                     ),
-                                    crossFadeState: _isExpanded ? CrossFadeState.showSecond : CrossFadeState.showFirst,
+                                    crossFadeState: _isExpanded
+                                        ? CrossFadeState.showSecond
+                                        : CrossFadeState.showFirst,
                                     duration: Duration(milliseconds: 300),
                                   ),
                                 ],
@@ -496,7 +504,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                 const SizedBox(height: 16),
                                 Center(
                                   child: SizedBox(
-                                    width: 180, // Lebih lebar
+                                    width: double.infinity, // Lebih lebar
                                     height:
                                         40, // Lebih tinggi agar tidak terlihat lancip
                                     child: ElevatedButton(

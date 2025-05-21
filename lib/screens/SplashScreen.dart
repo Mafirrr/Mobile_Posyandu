@@ -4,6 +4,7 @@ import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/jadwal_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/screens/profil/ubah_password_screen.dart';
 
@@ -111,7 +112,6 @@ class _SplashScreenState extends State<SplashScreen>
     setState(() {
       showSplash = false;
     });
-
     if (isLoggedIn == true) {
       if (role == 'anggota') {
         Navigator.pushReplacement(

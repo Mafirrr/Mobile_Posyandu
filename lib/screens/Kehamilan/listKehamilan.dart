@@ -61,37 +61,58 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              const SizedBox(height: 32),
-              Expanded(
-                child: isLoading
-                    ? const Center(child: CircularProgressIndicator())
-                    : kehamilanData.isEmpty
-                        ? const Center(
-                            child: Text(
-                              'Tidak ada data kehamilan',
-                              style: TextStyle(fontSize: 16), // opsional
-                            ),
-                          )
-                        : ListView.builder(
-                            itemCount: kehamilanData.length,
-                            itemBuilder: (context, index) {
-                              var item = kehamilanData[index];
-                              return _buildCard(
-                                status: item.status,
-                                title: item.label,
-                                description:
-                                    "Lihat detail Pemeriksaan ${item.label}mu.",
-                              );
-                            },
-                          ),
-              ),
+      body: Container(
+        decoration: const BoxDecoration(
+          gradient: LinearGradient(
+            colors: [
+              Color.fromARGB(255, 77, 129, 231),
+              Colors.white,
             ],
+            stops: [0.0, 0.3],
+            begin: Alignment.topCenter,
+            end: Alignment.bottomCenter,
+          ),
+        ),
+        child: SafeArea(
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                const Text(
+                  'Pemeriksaan',
+                  style: TextStyle(
+                    fontSize: 22,
+                    fontWeight: FontWeight.bold,
+                    color: Colors.black,
+                  ),
+                ),
+                const SizedBox(height: 32),
+                Expanded(
+                  child: isLoading
+                      ? const Center(child: CircularProgressIndicator())
+                      : kehamilanData.isEmpty
+                          ? const Center(
+                              child: Text(
+                                'Tidak ada data kehamilan',
+                                style: TextStyle(fontSize: 16),
+                              ),
+                            )
+                          : ListView.builder(
+                              itemCount: kehamilanData.length,
+                              itemBuilder: (context, index) {
+                                var item = kehamilanData[index];
+                                return _buildCard(
+                                  status: item.status,
+                                  title: item.label,
+                                  description:
+                                      "Lihat detail Pemeriksaan ${item.label}mu.",
+                                );
+                              },
+                            ),
+                ),
+              ],
+            ),
           ),
         ),
       ),

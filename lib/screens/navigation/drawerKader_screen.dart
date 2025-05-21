@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
@@ -14,88 +15,81 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
       drawer: Drawer(
         child: Column(
           children: [
-            const SizedBox(height: 50),
-            ListTile(
-              leading: CircleAvatar(
-                radius: 24,
-                backgroundImage: AssetImage('assets/images/picture.jpg'),
-              ),
-              title: Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
+            SizedBox(
+              height: 180,
+              child: Stack(
                 children: [
-                  Text("Mafira", style: TextStyle(fontWeight: FontWeight.bold)),
-                  SizedBox(height: 2),
-                  Text("mafira@email.com",
-                      style: TextStyle(fontSize: 12, color: Colors.grey)),
+                  ClipPath(
+                    clipper: DoubleCurveClipper(),
+                    child: Container(
+                      height: 180,
+                      decoration: const BoxDecoration(
+                        gradient: LinearGradient(
+                          colors: [Colors.blue, Colors.lightBlueAccent],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                      ),
+                    ),
+                  ),
+                  Padding(
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 12, horizontal: 8.0),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Column(
+                          children: [
+                            CircleAvatar(
+                              radius: 30,
+                              backgroundImage:
+                                  AssetImage('assets/images/picture.jpg'),
+                            ),
+                            SizedBox(height: 12),
+                            Text(
+                              "Mafira",
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 16,
+                              ),
+                            ),
+                            SizedBox(height: 0),
+                            Text(
+                              "mafira@email.com",
+                              style: TextStyle(
+                                color: Colors.white70,
+                                fontSize: 12,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
-            const Divider(),
             Expanded(
               child: ListView(
                 children: [
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text("Home",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  ListTile(
-                    dense: true,
-                    leading: Icon(Icons.home_outlined, color: Colors.blue),
-                    title: Text("Dashboard"),
-                    onTap: () {},
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text("Data Pengguna",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  ListTile(
-                    dense: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                    leading: Icon(Icons.people, color: Colors.blue),
-                    title: Text("Ibu Hamil"),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    dense: true,
-                    contentPadding:
-                        EdgeInsets.symmetric(horizontal: 16.0, vertical: 0),
-                    leading: Icon(Icons.person, color: Colors.blue),
-                    title: Text("Bidan"),
-                    onTap: () {},
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text("Pelayanan Posyandu",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  ListTile(
-                    dense: true,
-                    leading: Icon(Icons.calendar_month, color: Colors.blue),
-                    title: Text("Jadwal Posyandu"),
-                    onTap: () {},
-                  ),
-                  ListTile(
-                    dense: true,
-                    leading:
-                        Icon(Icons.medical_information, color: Colors.blue),
-                    title: Text("Pemeriksaan"),
-                    onTap: () {},
-                  ),
-                  const Padding(
-                    padding: EdgeInsets.symmetric(horizontal: 16.0),
-                    child: Text("Lainnya",
-                        style: TextStyle(fontWeight: FontWeight.bold)),
-                  ),
-                  ListTile(
-                    dense: true,
-                    leading: Icon(Icons.menu_book, color: Colors.blue),
-                    title: Text("Edukasi"),
-                    onTap: () {},
-                  ),
+                  sectionTitle("Home"),
+                  drawerItem(Icons.home_outlined, "Dashboard", () {}),
+                  sectionTitle("Data Pengguna"),
+                  drawerItem(Icons.people, "Ibu Hamil", () {}),
+                  drawerItem(Icons.person, "Bidan", () {}),
+                  sectionTitle("Pelayanan Posyandu"),
+                  drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {}),
+                  drawerItem(Icons.medical_information, "Pemeriksaan", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PemeriksaanScreen(),
+                      ),
+                    );
+                  }),
+                  sectionTitle("Lainnya"),
+                  drawerItem(Icons.menu_book, "Edukasi", () {}),
                 ],
               ),
             ),
@@ -108,10 +102,10 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(4),
                   ),
-                  minimumSize: Size(double.infinity, 40),
+                  minimumSize: const Size(double.infinity, 40),
                 ),
-                icon: Icon(Icons.power_settings_new, color: Colors.white),
-                label: Text(
+                icon: const Icon(Icons.power_settings_new, color: Colors.white),
+                label: const Text(
                   "LogOut",
                   style: TextStyle(color: Colors.white),
                 ),
@@ -128,4 +122,48 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
       ),
     );
   }
+
+  Widget sectionTitle(String title) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8),
+      child: Text(title, style: const TextStyle(fontWeight: FontWeight.bold)),
+    );
+  }
+
+  Widget drawerItem(IconData icon, String title, VoidCallback onTap) {
+    return ListTile(
+      dense: true,
+      leading: Icon(icon, color: Colors.blue),
+      title: Text(title),
+      onTap: onTap,
+    );
+  }
+}
+
+class DoubleCurveClipper extends CustomClipper<Path> {
+  @override
+  Path getClip(Size size) {
+    final path = Path();
+    path.lineTo(0, size.height * 0.85);
+
+    path.quadraticBezierTo(
+      size.width * 0.25,
+      size.height,
+      size.width * 0.5,
+      size.height * 0.85,
+    );
+    path.quadraticBezierTo(
+      size.width * 0.75,
+      size.height * 0.7,
+      size.width,
+      size.height * 0.85,
+    );
+
+    path.lineTo(size.width, 0);
+    path.close();
+    return path;
+  }
+
+  @override
+  bool shouldReclip(CustomClipper<Path> oldClipper) => false;
 }
