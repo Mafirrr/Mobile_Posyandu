@@ -353,4 +353,20 @@ class Pemeriksaandatabase {
 
     return list;
   }
+
+  Future<PemeriksaanRutin?> getPemeriksaanRutin() async {
+    final db = await instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT * FROM pemeriksaan_rutin 
+    ORDER BY id DESC 
+    LIMIT 1
+    ''');
+
+    if (result.isNotEmpty) {
+      return PemeriksaanRutin.fromJson(result.first);
+    } else {
+      return null;
+    }
+  }
 }
