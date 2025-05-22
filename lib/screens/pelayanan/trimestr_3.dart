@@ -28,8 +28,6 @@ class _Trimestr3State extends State<Trimestr3> {
 
   // State checkbox
   List<String> _selectedRiwayatKesehatan = [];
-  List<String> _selectedPerilaku = [];
-  List<String> _selectedPenyakitKeluarga = [];
   //rutin
   final TextEditingController _tanggalPeriksaController =
       TextEditingController();
@@ -63,6 +61,7 @@ class _Trimestr3State extends State<Trimestr3> {
   String? tindakLanjutJiwa;
   String? perluRujukanValue;
   bool perluRujukan = false;
+  String? pilihanKontrasepsi;
 
 //usg
   final TextEditingController _usgTrimester3 = TextEditingController();
@@ -106,6 +105,17 @@ class _Trimestr3State extends State<Trimestr3> {
 
 // konseling
   String? konseling;
+
+  String getOriginalValueFromEncodedController(
+      TextEditingController controller, List<String> options) {
+    final encodedValue = controller.text.trim();
+    final decoded = encodedValue.replaceAll('_', ' ').toLowerCase();
+
+    return options.firstWhere(
+      (option) => option.toLowerCase() == decoded,
+      orElse: () => encodedValue, // return apa adanya jika tidak cocok
+    );
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -203,7 +213,7 @@ class _Trimestr3State extends State<Trimestr3> {
         usgTrimester3: UsgTrimester3(
           usgTrimester3: _usgTrimester3.text,
           umurKehamilanUsgTrimester3:
-              int.tryParse(_umurUsgTrimester3Controller.text.trim()),
+              int.parse(_umurUsgTrimester3Controller.text.trim()),
           selisihUkUsg1HphtDenganTrimester3:
               _selisihUKUsgController.text.trim(),
           jumlahBayi: _jumlahBayiController.text.trim(),
@@ -213,25 +223,25 @@ class _Trimestr3State extends State<Trimestr3> {
           djjStatus: _djjStatusController.text.trim(),
           lokasiPlasenta: _lokasiPlasentaController.text.trim(),
           jumlahCairanKetuban: _jumlahCairanController.text.trim(),
-          bpd: double.tryParse(_bpdController.text.trim()),
-          hc: double.tryParse(_hcController.text.trim()),
-          ac: double.tryParse(_acController.text.trim()),
-          fl: double.tryParse(_flController.text.trim()),
-          efw: double.tryParse(_efwController.text.trim()),
-          hcSesuaiMinggu: int.tryParse(_hcMingguController.text.trim()),
-          bpdSesuaiMinggu: int.tryParse(_bpdMingguController.text.trim()),
-          acSesuaiMinggu: int.tryParse(_acMingguController.text.trim()),
-          flSesuaiMinggu: int.tryParse(_flMingguController.text.trim()),
-          efwSesuaiMinggu: int.tryParse(_efwMingguController.text.trim()),
+          bpd: double.parse(_bpdController.text.trim()),
+          hc: double.parse(_hcController.text.trim()),
+          ac: double.parse(_acController.text.trim()),
+          fl: double.parse(_flController.text.trim()),
+          efw: double.parse(_efwController.text.trim()),
+          hcSesuaiMinggu: int.parse(_hcMingguController.text.trim()),
+          bpdSesuaiMinggu: int.parse(_bpdMingguController.text.trim()),
+          acSesuaiMinggu: int.parse(_acMingguController.text.trim()),
+          flSesuaiMinggu: int.parse(_flMingguController.text.trim()),
+          efwSesuaiMinggu: int.parse(_efwMingguController.text.trim()),
           kecurigaanTemuanAbnormal: _kecuigaanController.text.trim(),
           keterangan: _alasanController.text.trim(),
           djj: _djjController.text.trim(),
           sdp: _sdpController.text.trim(),
         ),
         labTrimester3: LabTrimester3(
-          hemoglobin: double.tryParse(hemoglobinController.text.trim()),
+          hemoglobin: double.parse(hemoglobinController.text.trim()),
           hemoglobinRtl: hemoglobinRtl.text.trim(),
-          proteinUrin: double.tryParse(proteinUrin.text.trim()),
+          proteinUrin: double.parse(proteinUrin.text.trim()),
           proteinUrinRtl: proteinRtl.text.trim(),
           urinReduksi: urineReduksiValue,
           urinReduksiRtl: urinReduksiRtl.text.trim(),
@@ -239,8 +249,19 @@ class _Trimestr3State extends State<Trimestr3> {
         rencanaKonsultasi: RencanaKonsultasi(
           rencanaKonsultasiLanjut: _selectedRiwayatKesehatan,
           rencanaProsesMelahirkan: _rencanaController.text.trim(),
-          pilihanKontrasepsi: _kontrasepsiController.text.trim(),
-          kebutuhanKonseling: konseling,
+          pilihanKontrasepsi: pilihanKontrasepsi =
+              getOriginalValueFromEncodedController(
+            _kontrasepsiController,
+            [
+              "AKDR",
+              "Pil",
+              "Suntik",
+              "Steril",
+              "MAL",
+              "Implan",
+            ],
+          ),
+          kebutuhanKonseling: konseling?.toLowerCase(),
         ),
       );
 
@@ -528,6 +549,7 @@ class _Trimestr3State extends State<Trimestr3> {
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           ),
           keyboardType: TextInputType.number,
+          controller: hemoglobinController,
           style: const TextStyle(fontSize: 13),
         ),
         const SizedBox(height: 4),
@@ -538,6 +560,7 @@ class _Trimestr3State extends State<Trimestr3> {
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           ),
           style: const TextStyle(fontSize: 13),
+          controller: hemoglobinRtl,
         ),
 
         const SizedBox(height: 14),
@@ -554,6 +577,7 @@ class _Trimestr3State extends State<Trimestr3> {
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           ),
           keyboardType: TextInputType.number,
+          controller: proteinUrin,
           style: const TextStyle(fontSize: 13),
         ),
         const SizedBox(height: 4),
@@ -564,6 +588,7 @@ class _Trimestr3State extends State<Trimestr3> {
             contentPadding: EdgeInsets.symmetric(horizontal: 10, vertical: 8),
           ),
           style: const TextStyle(fontSize: 13),
+          controller: proteinRtl,
         ),
 
         const SizedBox(height: 14),
@@ -635,6 +660,7 @@ class _Trimestr3State extends State<Trimestr3> {
                           EdgeInsets.symmetric(horizontal: 10, vertical: 8),
                     ),
                     style: const TextStyle(fontSize: 13),
+                    controller: urinReduksiRtl,
                   ),
                 ),
               ],
@@ -965,11 +991,12 @@ class _Trimestr3State extends State<Trimestr3> {
         buildInputFieldVertical("SDP (cm)", _sdpController),
         buildDropdownFieldVertical("Kondisi Cairan Ketuban",
             ["Cukup", "Kurang", "Berlebih"], _jumlahCairanController),
-        buildBiometriRow("BPD", "cm", _bpdController),
-        buildBiometriRow("HC", "cm", _hcController),
-        buildBiometriRow("AC", "cm", _acController),
-        buildBiometriRow("FL", "cm", _flController),
-        buildBiometriRow("EFW/TBJ", "gram", _efwController),
+        buildBiometriRow("BPD", "cm", _bpdController, _bpdMingguController),
+        buildBiometriRow("HC", "cm", _hcController, _hcMingguController),
+        buildBiometriRow("AC", "cm", _acController, _acMingguController),
+        buildBiometriRow("FL", "cm", _flController, _flMingguController),
+        buildBiometriRow(
+            "EFW/TBJ", "gram", _efwController, _efwMingguController),
         buildDropdownFieldVertical("Kecurigaan Temuan Abnormal",
             ["Ya", "Tidak"], _kecuigaanController),
         buildInputFieldVertical("Keterangan", _alasanController),
@@ -977,14 +1004,14 @@ class _Trimestr3State extends State<Trimestr3> {
     );
   }
 
-  Widget buildBiometriRow(
-      String label, String unit, TextEditingController controller) {
+  Widget buildBiometriRow(String label, String unit,
+      TextEditingController controller1, TextEditingController controller2) {
     return Row(
       children: [
-        Expanded(child: buildInputFieldVertical("$label ($unit)", controller)),
+        Expanded(child: buildInputFieldVertical("$label ($unit)", controller1)),
         const SizedBox(width: 10),
         Expanded(
-            child: buildInputFieldVertical("Sesuai: ... minggu", controller)),
+            child: buildInputFieldVertical("Sesuai: ... minggu", controller2)),
       ],
     );
   }
