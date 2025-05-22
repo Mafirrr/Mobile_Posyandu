@@ -8,7 +8,7 @@ part of 'PemeriksaanRutin.dart';
 
 PemeriksaanRutin _$PemeriksaanRutinFromJson(Map<String, dynamic> json) =>
     PemeriksaanRutin(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       pemeriksaanId: (json['pemeriksaan_id'] as num?)?.toInt(),
       beratBadan: (json['berat_badan'] as num?)?.toInt(),
       tinggiRahim: json['tinggi_rahim'] as String?,

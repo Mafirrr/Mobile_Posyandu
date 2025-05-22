@@ -1,8 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:posyandu_mob/screens/pelayanan/trimester_1.dart';
 import 'package:posyandu_mob/screens/pelayanan/trimester_2.dart';
-import 'package:posyandu_mob/screens/pelayanan/trimester_3.dart';
+import 'package:posyandu_mob/screens/pelayanan/trimestr_3.dart';
 
 class PemeriksaanScreen extends StatefulWidget {
   const PemeriksaanScreen({super.key});
@@ -14,12 +13,6 @@ class PemeriksaanScreen extends StatefulWidget {
 class _PemeriksaanScreenState extends State<PemeriksaanScreen>
     with TickerProviderStateMixin {
   late TabController _tabController;
-  int _currentStep = 0; // total 4 step: 0,1,2,3
-
-  // State checkbox
-  List<String> _selectedRiwayatKesehatan = [];
-  List<String> _selectedPerilaku = [];
-  List<String> _selectedPenyakitKeluarga = [];
 
   final TextEditingController _tanggalPeriksaController =
       TextEditingController();
@@ -35,51 +28,6 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
     _tabController.dispose();
     _tanggalPeriksaController.dispose();
     super.dispose();
-  }
-
-  Future<void> _selectDate(BuildContext context) async {
-    final DateTime? picked = await showDatePicker(
-      context: context,
-      initialDate: DateTime.now(),
-      firstDate: DateTime(2020),
-      lastDate: DateTime(2100),
-      helpText: 'Pilih Tanggal Pemeriksaan',
-    );
-    if (picked != null) {
-      setState(() {
-        _tanggalPeriksaController.text =
-            DateFormat('dd-MM-yyyy').format(picked);
-      });
-    }
-  }
-
-  void _nextStep() {
-    if (_currentStep < 3) {
-      setState(() => _currentStep++);
-    }
-  }
-
-  void _prevStep() {
-    if (_currentStep > 0) {
-      setState(() => _currentStep--);
-    }
-  }
-
-  final _buttonRadius = BorderRadius.circular(8);
-  int imunisasiSelected = -1;
-
-  void _saveData() {
-    final data = {
-      "tanggalPeriksa": _tanggalPeriksaController.text,
-      "riwayatKesehatanIbu": _selectedRiwayatKesehatan,
-      "riwayatPerilaku": _selectedPerilaku,
-      "riwayatPenyakitKeluarga": _selectedPenyakitKeluarga,
-    };
-    print("Data disimpan: $data");
-
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Data pemeriksaan berhasil disimpan')),
-    );
   }
 
   @override
@@ -110,9 +58,9 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
       body: TabBarView(
         controller: _tabController,
         children: [
-          Trimester1(),
+          const Trimester1(),
           Trimester2(),
-          Trimester3(),
+          const Trimestr3(),
         ],
       ),
     );

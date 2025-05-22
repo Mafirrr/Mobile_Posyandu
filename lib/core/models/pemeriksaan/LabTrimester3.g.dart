@@ -8,7 +8,7 @@ part of 'LabTrimester3.dart';
 
 LabTrimester3 _$LabTrimester3FromJson(Map<String, dynamic> json) =>
     LabTrimester3(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       hemoglobin: (json['Hemoglobin'] as num?)?.toDouble(),
       proteinUrin: (json['Protein_urin'] as num?)?.toDouble(),
       urinReduksi: json['urin_reduksi'] as String?,

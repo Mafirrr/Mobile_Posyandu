@@ -5,7 +5,7 @@ part 'LabTrimester3.g.dart';
 @JsonSerializable()
 class LabTrimester3 {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "Hemoglobin")
   double? hemoglobin;
   @JsonKey(name: "Protein_urin")
@@ -20,7 +20,7 @@ class LabTrimester3 {
   dynamic urinReduksiRtl;
 
   LabTrimester3({
-    required this.id,
+    this.id,
     this.hemoglobin,
     this.proteinUrin,
     this.urinReduksi,

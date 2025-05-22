@@ -8,7 +8,7 @@ part of 'UsgTrimester1.dart';
 
 UsgTrimester1 _$UsgTrimester1FromJson(Map<String, dynamic> json) =>
     UsgTrimester1(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       hpht: json['hpht'],
       keteraturanHaid: json['keteraturan_haid'] as String?,
       umurKehamilanBerdasarHpht:

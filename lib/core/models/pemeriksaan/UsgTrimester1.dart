@@ -5,7 +5,7 @@ part 'UsgTrimester1.g.dart';
 @JsonSerializable()
 class UsgTrimester1 {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "hpht")
   dynamic hpht;
   @JsonKey(name: "keteraturan_haid")
@@ -44,7 +44,7 @@ class UsgTrimester1 {
   String? keterangan;
 
   UsgTrimester1({
-    required this.id,
+    this.id,
     this.hpht,
     this.keteraturanHaid,
     this.umurKehamilanBerdasarHpht,

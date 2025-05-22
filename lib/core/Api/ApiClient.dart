@@ -23,6 +23,9 @@ class ApiClient {
 
     if (user != null && user.token.isNotEmpty) {
       dio.options.headers["Authorization"] = "Bearer ${user.token}";
+    } else {
+      final user = await UserDatabase().readPetugas();
+      dio.options.headers["Authorization"] = "Bearer ${user!.token}";
     }
   }
 

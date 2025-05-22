@@ -5,7 +5,7 @@ part 'PemeriksaanRutin.g.dart';
 @JsonSerializable()
 class PemeriksaanRutin {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "pemeriksaan_id")
   int? pemeriksaanId;
   @JsonKey(name: "berat_badan")
@@ -34,7 +34,7 @@ class PemeriksaanRutin {
   String? created_at;
 
   PemeriksaanRutin({
-    required this.id,
+    this.id,
     this.pemeriksaanId,
     this.beratBadan,
     this.tinggiRahim,

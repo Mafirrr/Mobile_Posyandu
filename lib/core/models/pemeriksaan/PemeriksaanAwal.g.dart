@@ -8,7 +8,7 @@ part of 'PemeriksaanAwal.dart';
 
 PemeriksaanAwal _$PemeriksaanAwalFromJson(Map<String, dynamic> json) =>
     PemeriksaanAwal(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       tinggiBadan: (json['tinggi_badan'] as num?)?.toInt(),
       golonganDarah: json['golongan_darah'] as String?,
       statusImunisasiTd: json['status_imunisasi_td'] as String?,

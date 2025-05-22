@@ -8,7 +8,7 @@ part of 'PemeriksaanFisik.dart';
 
 PemeriksaanFisik _$PemeriksaanFisikFromJson(Map<String, dynamic> json) =>
     PemeriksaanFisik(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       konjungtiva: json['konjungtiva'] as String?,
       sklera: json['sklera'] as String?,
       leher: json['leher'] as String?,

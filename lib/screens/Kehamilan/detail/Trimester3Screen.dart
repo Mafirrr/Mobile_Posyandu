@@ -30,14 +30,40 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
   List<Trimester3> pemeriksaanList = [];
   bool isLoading = true;
 
-  Map<String, bool> expandedMap = {
-    'Pemeriksaan Rutin': false,
-    'Pemeriksaan Fisik': false,
-    'Skrining Kesehatan Jiwa': false,
-    'Pemeriksaan Laboratorium': false,
-    'Pemeriksaan Usg': false,
-    'Rencana Konsultasi': false,
-  };
+  final List<String> jenisPemeriksaanList = [
+    'Pemeriksaan Rutin',
+  ];
+
+  List<String> get uniqueTanggal {
+    final seen = <String>{};
+    return pemeriksaanList
+        .map((e) => e.created_at!.split('T')[0])
+        .where((tgl) => seen.add(tgl))
+        .toList();
+  }
+
+  String? selectedTanggal;
+
+  List<Trimester3> get filteredByTanggal {
+    if (selectedTanggal == null) return [];
+    return pemeriksaanList
+        .where((e) => e.created_at!.startsWith(selectedTanggal!))
+        .toList();
+  }
+
+  List<String> pemeriksaan = [
+    'Pemeriksaan Rutin',
+    'Pemeriksaan Fisik',
+    'Skrining Kesehatan Jiwa',
+    'Pemeriksaan Laboratorium',
+    'Pemeriksaan Usg',
+    'Rencana Konsultasi',
+  ];
+
+  String formatTanggalIndonesia(String isoDate) {
+    DateTime date = DateTime.parse(isoDate);
+    return DateFormat("d MMMM yyyy", "id_ID").format(date);
+  }
 
   @override
   void initState() {
@@ -49,6 +75,16 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
     final result = await _db.getTrimester3ByIds(widget.pemeriksaanIds);
     setState(() {
       pemeriksaanList = result;
+      if (pemeriksaanList.isNotEmpty) {
+        selectedTanggal = pemeriksaanList[0].created_at!.split('T')[0];
+        selectedPemeriksaan = pemeriksaanList[0];
+        rutin = selectedPemeriksaan!.pemeriksaanRutin;
+        fisik = selectedPemeriksaan!.pemeriksaanFisik;
+        skrining = selectedPemeriksaan!.skriningKesehatan;
+        lab = selectedPemeriksaan!.labTrimester3;
+        usg = selectedPemeriksaan!.usgTrimester3;
+        rencana = selectedPemeriksaan!.rencanaKonsultasi;
+      }
       isLoading = false;
     });
   }
