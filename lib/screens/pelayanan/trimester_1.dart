@@ -1,5 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester1.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanAwal.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanFisik.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKhusus.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/SkriningKesehatan.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Trimestr1.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester1.dart';
+import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
+import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
+import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class Trimester1 extends StatefulWidget {
   const Trimester1({super.key});
@@ -11,31 +25,88 @@ class Trimester1 extends StatefulWidget {
 class _Trimester1State extends State<Trimester1> {
   late TabController _tabController;
   int _currentStep = 0;
+  DateTime? date;
+  final TextEditingController _namaController = TextEditingController();
+  int? _selectedId;
+  int? petugas_id;
 
   // State checkbox
   List<String> _selectedRiwayatKesehatan = [];
   List<String> _selectedPerilaku = [];
   List<String> _selectedPenyakitKeluarga = [];
 
+  //pemeriksaan rutin
   final TextEditingController _tanggalPeriksaController =
+      TextEditingController();
+  final TextEditingController _tempatPeriksaController =
+      TextEditingController();
+  final TextEditingController _beratBadanController = TextEditingController();
+  final TextEditingController _tinggiBadanController = TextEditingController();
+  final TextEditingController _lilaController = TextEditingController();
+  final TextEditingController _tekananDiastolController =
+      TextEditingController();
+  final TextEditingController _tekananSistolController =
+      TextEditingController();
+  final TextEditingController _tinggiRahimController = TextEditingController();
+  final TextEditingController _denyutJantungJaninController =
+      TextEditingController();
+  final TextEditingController _konselingController = TextEditingController();
+  final TextEditingController _skriningController = TextEditingController();
+  final TextEditingController _tabletDarahController = TextEditingController();
+  final TextEditingController _golonganDarahController =
       TextEditingController();
 
   // ini lab Trimester 1
   final TextEditingController hemoglobinController = TextEditingController();
-  String? golonganDarahDanRhesus;
+  final TextEditingController golonganDarahDanRhesus = TextEditingController();
   final TextEditingController gulaDarahController = TextEditingController();
-  String? hemoglobinRtl;
-  String? rhesusRtl;
-  String? gulaDarahRtl;
+  final TextEditingController hemoglobinRtl = TextEditingController();
+  final TextEditingController rhesusRtl = TextEditingController();
+  final TextEditingController gulaDarahRtl = TextEditingController();
   String? hiv;
   String? sifilis;
   String? hepatitisB;
+
+//usg trimester 1
+  final TextEditingController _hphtController = TextEditingController();
+  final TextEditingController _haidController = TextEditingController();
+  final TextEditingController _umurHphtController = TextEditingController();
+  final TextEditingController _umurUsgController = TextEditingController();
+  final TextEditingController _hplBerdasarHphtController =
+      TextEditingController();
+  final TextEditingController _hplBerdasarUsgController =
+      TextEditingController();
+  final TextEditingController _jumlahGSController = TextEditingController();
+  final TextEditingController _jumlahBayiController = TextEditingController();
+  final TextEditingController _diameterGSController = TextEditingController();
+  final TextEditingController _gsHariController = TextEditingController();
+  final TextEditingController _gsMingguController = TextEditingController();
+  final TextEditingController _crlController = TextEditingController();
+  final TextEditingController _crlHariController = TextEditingController();
+  final TextEditingController _crlMingguController = TextEditingController();
+  final TextEditingController _letakProdukController = TextEditingController();
+  final TextEditingController _pulsasiController = TextEditingController();
+  final TextEditingController _kecurigaanController = TextEditingController();
+  final TextEditingController _alasanController = TextEditingController();
 
 // ini skrining Kesehatan Jiwa
   String? skriningJiwa;
   String? tindakLanjutJiwa;
   String? perluRujukanValue;
   bool perluRujukan = false;
+  bool isLoading = false;
+  PemeriksaanService service = PemeriksaanService();
+
+  String _mapCondition(String? value) {
+    switch (value) {
+      case "normal":
+        return "positif";
+      case "tidak_normal":
+        return "negatif";
+      default:
+        return value ?? "";
+    }
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -49,6 +120,19 @@ class _Trimester1State extends State<Trimester1> {
       setState(() {
         _tanggalPeriksaController.text =
             DateFormat('dd-MM-yyyy').format(picked);
+      });
+    }
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+    return await PemeriksaanService().fetchSuggestion(nama);
+  }
+
+  Future<void> _getID() async {
+    dynamic user = await UserDatabase().readPetugas();
+    if (user != null) {
+      setState(() {
+        petugas_id = user.petugas.id;
       });
     }
   }
@@ -68,18 +152,131 @@ class _Trimester1State extends State<Trimester1> {
   final _buttonRadius = BorderRadius.circular(8);
   int imunisasiSelected = -1;
 
-  void _saveData() {
-    final data = {
-      "tanggalPeriksa": _tanggalPeriksaController.text,
-      "riwayatKesehatanIbu": _selectedRiwayatKesehatan,
-      "riwayatPerilaku": _selectedPerilaku,
-      "riwayatPenyakitKeluarga": _selectedPenyakitKeluarga,
-    };
-    print("Data disimpan: $data");
+  void _saveData() async {
+    setState(() {
+      isLoading = true;
+    });
 
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text('Data pemeriksaan berhasil disimpan')),
-    );
+    try {
+      await _getID();
+
+      final pemeriksaan = PemeriksaanKehamilan(
+        jenisPemeriksaan: "trimester1",
+        kehamilanId: _selectedId,
+        petugasId: petugas_id,
+        tanggalPemeriksaan:
+            DateTime.tryParse(_tanggalPeriksaController.text.trim()) ??
+                DateTime.now(),
+        tempatPemeriksaan: _tempatPeriksaController.text.trim(),
+      );
+
+      final trimester1Data = Trimestr1(
+        pemeriksaanRutin: PemeriksaanRutin(
+          beratBadan: int.parse(_beratBadanController.text.trim()),
+          tinggiRahim: _tinggiRahimController.text.trim(),
+          tekananDarahSistol: int.parse(_tekananSistolController.text.trim()),
+          tekananDarahDiastol: int.parse(_tekananDiastolController.text.trim()),
+          letakDanDenyutNadiBayi: _denyutJantungJaninController.text.trim(),
+          lingkarLenganAtas: int.parse(_lilaController.text.trim()),
+          tabletTambahDarah: _tabletDarahController.text.trim(),
+          konseling: _konselingController.text.trim(),
+          skriningDokter: _skriningController.text.trim(),
+        ),
+        skriningKesehatan: SkriningKesehatan(
+          skriningJiwa: skriningJiwa,
+          tindakLanjutJiwa: tindakLanjutJiwa,
+          perluRujukan: perluRujukanValue,
+        ),
+        pemeriksaanFisik: PemeriksaanFisik(
+          konjungtiva: _selectedKonjungtiva,
+          sklera: _selectedSklera,
+          leher: _selectedLeher,
+          kulit: _selectedKulit,
+          gigiMulut: _selectedGigiMulut,
+          tht: _selectedTht,
+          jantung: _selectedJantung,
+          paru: _selectedParu,
+          perut: _selectedPerut,
+          tungkai: _selectedTungkai,
+        ),
+        pemeriksaanAwal: PemeriksaanAwal(
+          hemoglobin: double.parse(hemoglobinController.text.trim()),
+          tinggiBadan: int.parse(_tinggiBadanController.text.trim()),
+          golonganDarah: selectedGolDarah,
+          statusImunisasiTd: _selectedImunisasi,
+          riwayatKesehatanIbuSekarang: _selectedRiwayatKesehatan,
+          riwayatPenyakitKeluarga: _selectedPenyakitKeluarga,
+          riwayatPerilaku: _selectedPerilaku,
+        ),
+        pemeriksaanKhusus: PemeriksaanKhusus(
+          porsio: _selectedPorsio,
+          uretra: _selectedUretra,
+          vagina: _selectedVagina,
+          vulva: _selectedVulva,
+          fluksus: _mapCondition(_selectedFluksus),
+          fluor: _mapCondition(_selectedFluor),
+        ),
+        labTrimester1: LabTrimester1(
+          hemoglobin: double.parse(hemoglobinController.text.trim()),
+          golonganDarahDanRhesus: golonganDarahDanRhesus.text.trim(),
+          gulaDarah: double.parse(gulaDarahController.text.trim()),
+          hemoglobinRtl: hemoglobinRtl.text.trim(),
+          rhesusRtl: rhesusRtl.text.trim(),
+          gulaDarahRtl: gulaDarahRtl.text.trim(),
+          hiv: hiv?.toLowerCase().replaceAll(' ', '_') ?? '',
+          sifilis: sifilis?.toLowerCase().replaceAll(' ', '_') ?? '',
+          hepatitisB: hepatitisB?.toLowerCase().replaceAll(' ', '_') ?? '',
+        ),
+        usgTrimester1: UsgTrimester1(
+          hpht: _hphtController.text.trim(),
+          keteraturanHaid: _haidController.text.trim(),
+          umurKehamilanBerdasarHpht: int.parse(_umurHphtController.text.trim()),
+          umurKehamilanBerdasarkanUsg:
+              int.parse(_umurUsgController.text.trim()),
+          hplBerdasarkanHpht: _hplBerdasarHphtController.text.trim(),
+          hplBerdasarkanUsg: _hplBerdasarUsgController.text.trim(),
+          jumlahBayi: _jumlahBayiController.text.trim(),
+          jumlahGs: _jumlahGSController.text.trim(),
+          diametesGs: double.parse(_diameterGSController.text.trim()),
+          gsHari: int.parse(_gsHariController.text.trim()),
+          gsMinggu: int.parse(_gsMingguController.text.trim()),
+          crl: int.parse(_crlController.text.trim()),
+          crlHari: int.parse(_crlHariController.text.trim()),
+          crlMinggu: int.parse(_crlMingguController.text.trim()),
+          letakProdukKehamilan: _letakProdukController.text.trim(),
+          pulsasiJantung: _pulsasiController.text.trim(),
+          kecurigaanTemuanAbnormal: _kecurigaanController.text.trim(),
+          keterangan: _alasanController.text.trim(),
+        ),
+      );
+
+      final response =
+          await service.pemeriksaanTrimester1(pemeriksaan, trimester1Data);
+
+      if (response?.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data pemeriksaan berhasil disimpan')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(builder: (context) => const PemeriksaanScreen()),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Gagal menyimpan data: ${response?.statusCode ?? 'Unknown error'}')),
+        );
+      }
+    } catch (e) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
   }
 
   @override
@@ -136,10 +333,12 @@ class _Trimester1State extends State<Trimester1> {
                     borderRadius: _buttonRadius,
                   ),
                 ),
-                child: Text(
-                  _currentStep < 3 ? "Lanjut" : "Simpan",
-                  style: const TextStyle(color: Colors.white),
-                ),
+                child: isLoading
+                    ? const Center(child: CircularProgressIndicator())
+                    : Text(
+                        _currentStep < 3 ? "Lanjut" : "Simpan",
+                        style: const TextStyle(color: Colors.white),
+                      ),
               ),
             ],
           ),
@@ -155,7 +354,7 @@ class _Trimester1State extends State<Trimester1> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               "Catatan Pemeriksaan",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
@@ -166,19 +365,21 @@ class _Trimester1State extends State<Trimester1> {
           ],
         ),
         const SizedBox(height: 12),
+        _buildSuggestion(),
+        const SizedBox(height: 12),
         _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
             () => _selectDate(context)),
-        _buildTextField("Tempat Periksa"),
-        _buildTextFieldWithSuffix("Timbang BB", "Kg"),
-        _buildTextFieldWithSuffix("Tinggi Badan", "Cm"),
-        _buildTextField("Lingkar Lengan"),
+        _buildTextField("Tempat Periksa", _tempatPeriksaController),
+        _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
+        _buildTextFieldWithSuffix("Tinggi Badan", "Cm", _tinggiBadanController),
+        _buildTextField("Lingkar Lengan", _lilaController),
         _buildBloodPressureField(),
-        _buildTextField("Tinggi Rahim"),
-        _buildTextField("Denyut Jantung Janin"),
-        _buildTextField("Konseling"),
-        _buildTextField("Skrining Dokter"),
-        _buildTextField("Tablet Tambah Darah"),
-        _buildDropdownField("Golongan Darah"),
+        _buildTextField("Tinggi Rahim", _tinggiRahimController),
+        _buildTextField("Denyut Jantung Janin", _denyutJantungJaninController),
+        _buildTextField("Konseling", _konselingController),
+        _buildTextField("Skrining Dokter", _skriningController),
+        _buildTextField("Tablet Tambah Darah", _tabletDarahController),
+        _buildDropdownField("Golongan Darah", _golonganDarahController),
       ],
     );
   }
@@ -226,8 +427,8 @@ class _Trimester1State extends State<Trimester1> {
       "Obat Teratogenik",
       "Pola makan berisiko",
     ];
-
     final List<String> riwayatPenyakitKeluarga = riwayatKesehatanIbu;
+
     final List<Map<String, String>> _imunisasiTd = [
       {"tt": "1", "selang": "-", "perlindungan": "Awal"},
       {"tt": "2", "selang": "1 bulan", "perlindungan": "3 tahun"},
@@ -251,7 +452,7 @@ class _Trimester1State extends State<Trimester1> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               "Riwayat Kesehatan Ibu Sekarang",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
@@ -358,8 +559,6 @@ class _Trimester1State extends State<Trimester1> {
             itemCount: _imunisasiTd.length,
             itemBuilder: (context, index) {
               final item = _imunisasiTd[index];
-
-              print(imunisasiSelected);
               return Padding(
                 padding: const EdgeInsets.only(bottom: 6),
                 child: Material(
@@ -826,32 +1025,40 @@ class _Trimester1State extends State<Trimester1> {
   Widget usgTrimester1InputView() {
     return Column(
       children: [
-        buildInputFieldVertical("HPHT"),
+        buildInputFieldVertical("HPHT", _hphtController),
         buildDropdownFieldVertical(
-            "Keteraturan Haid", ["Teratur", "Tidak Teratur"]),
-        buildInputFieldVertical("Umur Kehamilan Berdasarkan HPHT (minggu)"),
-        buildInputFieldVertical("Umur Kehamilan Berdasarkan USG (minggu)"),
-        buildInputFieldVertical("HPL Berdasarkan HPHT"),
-        buildInputFieldVertical("HPL Berdasarkan USG"),
-        buildDropdownFieldVertical("Jumlah GS", ["Tunggal", "Kembar"]),
-        buildDropdownFieldVertical("Jumlah Bayi", ["Tunggal", "Kembar"]),
-        buildInputFieldVertical("Diameter GS (cm)"),
-        buildInputFieldVertical("GS Hari"),
-        buildInputFieldVertical("GS Minggu"),
-        buildInputFieldVertical("CRL (cm)"),
-        buildInputFieldVertical("CRL Hari"),
-        buildInputFieldVertical("CRL Minggu"),
+            "Keteraturan Haid", ["Teratur", "Tidak Teratur"], _haidController),
+        buildInputFieldVertical(
+            "Umur Kehamilan Berdasarkan HPHT (minggu)", _umurHphtController),
+        buildInputFieldVertical(
+            "Umur Kehamilan Berdasarkan USG (minggu)", _umurUsgController),
+        buildInputFieldVertical(
+            "HPL Berdasarkan HPHT", _hplBerdasarHphtController),
+        buildInputFieldVertical(
+            "HPL Berdasarkan USG", _hplBerdasarUsgController),
+        buildDropdownFieldVertical(
+            "Jumlah GS", ["Tunggal", "Kembar"], _jumlahGSController),
+        buildDropdownFieldVertical(
+            "Jumlah Bayi", ["Tunggal", "Kembar"], _jumlahBayiController),
+        buildInputFieldVertical("Diameter GS (cm)", _diameterGSController),
+        buildInputFieldVertical("GS Hari", _gsHariController),
+        buildInputFieldVertical("GS Minggu", _gsMingguController),
+        buildInputFieldVertical("CRL (cm)", _crlController),
+        buildInputFieldVertical("CRL Hari", _crlHariController),
+        buildInputFieldVertical("CRL Minggu", _crlMingguController),
         buildDropdownFieldVertical("Letak Produk Kehamilan",
-            ["Intrauterin", "Ektopik", "Tidak diketahui"]),
-        buildDropdownFieldVertical("Pulsasi Jantung", ["Ada", "Tidak Ada"]),
+            ["Intrauterin", "Ekstrauterin"], _letakProdukController),
         buildDropdownFieldVertical(
-            "Kecurigaan Temuan Abnormal", ["Ya", "Tidak"]),
-        buildInputFieldVertical("Keterangan"),
+            "Pulsasi Jantung", ["Tampak", "Tidak Tampak"], _pulsasiController),
+        buildDropdownFieldVertical("Kecurigaan Temuan Abnormal",
+            ["Ya", "Tidak"], _kecurigaanController),
+        buildInputFieldVertical("Keterangan", _alasanController),
       ],
     );
   }
 
-  Widget buildInputFieldVertical(String label) {
+  Widget buildInputFieldVertical(
+      String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -861,6 +1068,7 @@ class _Trimester1State extends State<Trimester1> {
           const SizedBox(height: 6),
           TextFormField(
             style: const TextStyle(fontSize: 13),
+            controller: controller,
             decoration: InputDecoration(
               isDense: true,
               contentPadding:
@@ -875,7 +1083,8 @@ class _Trimester1State extends State<Trimester1> {
     );
   }
 
-  Widget buildDropdownFieldVertical(String label, List<String> options) {
+  Widget buildDropdownFieldVertical(
+      String label, List<String> options, TextEditingController controller) {
     String? selectedValue;
 
     return Padding(
@@ -889,6 +1098,10 @@ class _Trimester1State extends State<Trimester1> {
             value: selectedValue,
             onChanged: (value) {
               selectedValue = value;
+              setState(() {
+                controller.text =
+                    selectedValue!.toLowerCase().replaceAll(' ', '_');
+              });
             },
             items: options.map((String value) {
               return DropdownMenuItem<String>(
@@ -917,12 +1130,12 @@ class _Trimester1State extends State<Trimester1> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               "Pemeriksaan Fisik",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             Text(
-              "Langkah " + (_currentStep + 1).toString() + " dari 4",
+              "Langkah ${(_currentStep + 1).toString()} dari 4",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -930,7 +1143,7 @@ class _Trimester1State extends State<Trimester1> {
         const SizedBox(height: 20),
         pemeriksaanFisikView(),
         const SizedBox(height: 20),
-        Text(
+        const Text(
           "USG Trimester 1",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
@@ -945,15 +1158,11 @@ class _Trimester1State extends State<Trimester1> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         buildInputFieldNumber("Hemoglobin", hemoglobinController),
-        buildInputField("Golongan Darah dan Rhesus",
-            TextEditingController(text: golonganDarahDanRhesus ?? "")),
+        buildInputField("Golongan Darah dan Rhesus", golonganDarahDanRhesus),
         buildInputFieldNumber("Gula Darah", gulaDarahController),
-        buildInputField(
-            "Hemoglobin RTL", TextEditingController(text: hemoglobinRtl ?? "")),
-        buildInputField(
-            "Rhesus RTL", TextEditingController(text: rhesusRtl ?? "")),
-        buildInputField(
-            "Gula Darah RTL", TextEditingController(text: gulaDarahRtl ?? "")),
+        buildInputField("Hemoglobin RTL", hemoglobinRtl),
+        buildInputField("Rhesus RTL", rhesusRtl),
+        buildInputField("Gula Darah RTL", gulaDarahRtl),
         buildDropdownField(
           "HIV",
           ["Reaktif", "Non Reaktif"],
@@ -1023,7 +1232,8 @@ class _Trimester1State extends State<Trimester1> {
                 width: 180,
                 child: Text(
                   item["label"] ?? "",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+                  style: const TextStyle(
+                      fontSize: 12, fontWeight: FontWeight.w400),
                 ),
               ),
               Row(
@@ -1042,7 +1252,7 @@ class _Trimester1State extends State<Trimester1> {
                         width: 60,
                         child: Text(
                           option,
-                          style: TextStyle(
+                          style: const TextStyle(
                               fontSize: 12, fontWeight: FontWeight.w400),
                         ),
                       ),
@@ -1151,12 +1361,12 @@ class _Trimester1State extends State<Trimester1> {
         Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Text(
+            const Text(
               "Pemeriksaan Laboratorium",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
             Text(
-              "Langkah " + (_currentStep + 1).toString() + " dari 4",
+              "Langkah ${(_currentStep + 1).toString()} dari 4",
               style: TextStyle(fontSize: 12, color: Colors.grey),
             ),
           ],
@@ -1164,7 +1374,7 @@ class _Trimester1State extends State<Trimester1> {
         const SizedBox(height: 20),
         pemeriksaanLab(),
         const SizedBox(height: 20),
-        Text(
+        const Text(
           "Skrining Kesehatan Jiwa",
           style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
         ),
@@ -1174,11 +1384,12 @@ class _Trimester1State extends State<Trimester1> {
     );
   }
 
-  Widget _buildTextField(String label) {
+  Widget _buildTextField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         style: const TextStyle(fontSize: 14),
+        controller: controller,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),
@@ -1190,12 +1401,14 @@ class _Trimester1State extends State<Trimester1> {
     );
   }
 
-  Widget _buildTextFieldWithSuffix(String label, String suffix) {
+  Widget _buildTextFieldWithSuffix(
+      String label, String suffix, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
         style: const TextStyle(fontSize: 14),
         keyboardType: TextInputType.number,
+        controller: controller,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),
@@ -1229,10 +1442,11 @@ class _Trimester1State extends State<Trimester1> {
     );
   }
 
-  Widget _buildDropdownField(String label) {
+  Widget _buildDropdownField(String label, TextEditingController controller) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: DropdownButtonFormField<String>(
+        value: controller.text.isNotEmpty ? controller.text : null,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),
@@ -1241,12 +1455,20 @@ class _Trimester1State extends State<Trimester1> {
           border: OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
         ),
         items: const [
-          DropdownMenuItem(value: "A", child: Text("A")),
-          DropdownMenuItem(value: "B", child: Text("B")),
-          DropdownMenuItem(value: "AB", child: Text("AB")),
-          DropdownMenuItem(value: "O", child: Text("O")),
+          DropdownMenuItem(value: "A+", child: Text("A+")),
+          DropdownMenuItem(value: "A-", child: Text("A-")),
+          DropdownMenuItem(value: "B+", child: Text("B+")),
+          DropdownMenuItem(value: "B-", child: Text("B-")),
+          DropdownMenuItem(value: "AB+", child: Text("AB+")),
+          DropdownMenuItem(value: "AB-", child: Text("AB-")),
+          DropdownMenuItem(value: "O+", child: Text("O+")),
+          DropdownMenuItem(value: "O-", child: Text("O-")),
         ],
-        onChanged: (value) {},
+        onChanged: (value) {
+          if (value != null) {
+            controller.text = value;
+          }
+        },
       ),
     );
   }
@@ -1255,13 +1477,46 @@ class _Trimester1State extends State<Trimester1> {
     return Row(
       children: [
         Expanded(
-          child: _buildTextFieldWithSuffix("Tekanan Darah (Sistolik)", "mmHg"),
+          child: _buildTextFieldWithSuffix(
+              "Tekanan Darah (Sistolik)", "mmHg", _tekananSistolController),
         ),
         const SizedBox(width: 10),
         Expanded(
-          child: _buildTextFieldWithSuffix("Tekanan Darah (Diastolik)", "mmHg"),
+          child: _buildTextFieldWithSuffix(
+              "Tekanan Darah (Diastolik)", "mmHg", _tekananDiastolController),
         ),
       ],
+    );
+  }
+
+  Widget _buildSuggestion() {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: _namaController,
+      suggestionsCallback: fetchSuggestion,
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Nama',
+            border: OutlineInputBorder(),
+          ),
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _namaController.text = suggestion['nama'];
+        _selectedId = suggestion['id'];
+        print("Nama: ${suggestion['nama']}, ID: $_selectedId");
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama tidak ditemukan"),
+      ),
     );
   }
 }

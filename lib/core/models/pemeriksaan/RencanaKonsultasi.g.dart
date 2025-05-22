@@ -8,7 +8,7 @@ part of 'RencanaKonsultasi.dart';
 
 RencanaKonsultasi _$RencanaKonsultasiFromJson(Map<String, dynamic> json) =>
     RencanaKonsultasi(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       rencanaKonsultasiLanjut: stringToList(json['rencana_konsultasi_lanjut']),
       rencanaProsesMelahirkan: json['rencana_proses_melahirkan'] as String?,
       pilihanKontrasepsi: json['pilihan_kontrasepsi'] as String?,

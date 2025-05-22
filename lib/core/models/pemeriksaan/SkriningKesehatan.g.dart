@@ -8,7 +8,7 @@ part of 'SkriningKesehatan.dart';
 
 SkriningKesehatan _$SkriningKesehatanFromJson(Map<String, dynamic> json) =>
     SkriningKesehatan(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       skriningJiwa: json['skrining_jiwa'] as String?,
       tindakLanjutJiwa: json['tindak_lanjut_jiwa'] as String?,
       perluRujukan: json['perlu_rujukan'] as String?,

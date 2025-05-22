@@ -4,6 +4,7 @@ import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/models/User.dart';
 import 'package:posyandu_mob/core/models/dataAnggota.dart';
+import 'package:posyandu_mob/core/models/petugasWithRole.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDatabase {
@@ -71,15 +72,17 @@ class UserDatabase {
     }
   }
 
-  Future<Petugas> readPetugas() async {
+  Future<PetugasWithRole?> readPetugas() async {
     final db = await instance.database;
     final result = await db.query('petugas', limit: 1);
     if (result.isNotEmpty) {
       Petugas petugas = Petugas.fromJson(result.first);
       String role = result.first['role'].toString();
       String token = result.first['token'].toString();
+      return PetugasWithRole(petugas: petugas, role: role, token: token);
+    } else {
+      return null;
     }
-    return Petugas();
   }
 
   Future<int> update(Anggota anggota) async {

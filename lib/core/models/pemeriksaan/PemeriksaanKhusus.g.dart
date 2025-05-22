@@ -8,7 +8,7 @@ part of 'PemeriksaanKhusus.dart';
 
 PemeriksaanKhusus _$PemeriksaanKhususFromJson(Map<String, dynamic> json) =>
     PemeriksaanKhusus(
-      id: (json['id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
       porsio: json['porsio'] as String?,
       uretra: json['uretra'] as String?,
       vagina: json['vagina'] as String?,

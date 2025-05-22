@@ -6,7 +6,7 @@ part 'PemeriksaanAwal.g.dart';
 @JsonSerializable()
 class PemeriksaanAwal {
   @JsonKey(name: "id")
-  int id;
+  int? id;
 
   @JsonKey(name: "tinggi_badan")
   int? tinggiBadan;
@@ -42,7 +42,7 @@ class PemeriksaanAwal {
   List<String>? riwayatPenyakitKeluarga;
 
   PemeriksaanAwal({
-    required this.id,
+    this.id,
     this.tinggiBadan,
     this.golonganDarah,
     this.statusImunisasiTd,

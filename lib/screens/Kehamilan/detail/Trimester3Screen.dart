@@ -55,7 +55,7 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
   List<Trimester3> get filteredByTanggal {
     if (selectedTanggal == null) return [];
     return pemeriksaanList
-        .where((e) => e.created_at.startsWith(selectedTanggal!))
+        .where((e) => e.created_at!.startsWith(selectedTanggal!))
         .toList();
   }
 
@@ -84,7 +84,7 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
     setState(() {
       pemeriksaanList = result;
       if (pemeriksaanList.isNotEmpty) {
-        selectedTanggal = pemeriksaanList[0].created_at.split('T')[0];
+        selectedTanggal = pemeriksaanList[0].created_at!.split('T')[0];
         selectedPemeriksaan = pemeriksaanList[0];
         rutin = selectedPemeriksaan!.pemeriksaanRutin;
         fisik = selectedPemeriksaan!.pemeriksaanFisik;

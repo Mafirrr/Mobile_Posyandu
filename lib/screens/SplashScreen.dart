@@ -94,6 +94,12 @@ class _SplashScreenState extends State<SplashScreen>
         role = user.role;
         isLoggedIn = true;
       });
+    } else {
+      dynamic user = await UserDatabase().readPetugas();
+      setState(() {
+        role = user.role;
+        isLoggedIn = true;
+      });
     }
     return false;
   }

@@ -12,11 +12,11 @@ part 'Trimestr1.g.dart';
 @JsonSerializable()
 class Trimestr1 {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "pemeriksaan_id")
-  int pemeriksaanId;
+  int? pemeriksaanId;
   @JsonKey(name: "created_at")
-  String created_at;
+  String? created_at;
   @JsonKey(name: "pemeriksaan_rutin")
   PemeriksaanRutin pemeriksaanRutin;
   @JsonKey(name: "skrining_kesehatan")
@@ -33,9 +33,9 @@ class Trimestr1 {
   UsgTrimester1 usgTrimester1;
 
   Trimestr1({
-    required this.id,
-    required this.created_at,
-    required this.pemeriksaanId,
+    this.id,
+    this.created_at,
+    this.pemeriksaanId,
     required this.pemeriksaanRutin,
     required this.skriningKesehatan,
     required this.pemeriksaanFisik,

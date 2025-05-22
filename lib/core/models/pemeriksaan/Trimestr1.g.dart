@@ -7,9 +7,9 @@ part of 'Trimestr1.dart';
 // **************************************************************************
 
 Trimestr1 _$Trimestr1FromJson(Map<String, dynamic> json) => Trimestr1(
-      id: (json['id'] as num).toInt(),
-      created_at: json['created_at'] as String,
-      pemeriksaanId: (json['pemeriksaan_id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
+      created_at: json['created_at'] as String?,
+      pemeriksaanId: (json['pemeriksaan_id'] as num?)?.toInt(),
       pemeriksaanRutin: PemeriksaanRutin.fromJson(
           json['pemeriksaan_rutin'] as Map<String, dynamic>),
       skriningKesehatan: SkriningKesehatan.fromJson(

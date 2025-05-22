@@ -5,7 +5,7 @@ part 'PemeriksaanFisik.g.dart';
 @JsonSerializable()
 class PemeriksaanFisik {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "konjungtiva")
   String? konjungtiva;
   @JsonKey(name: "sklera")
@@ -28,7 +28,7 @@ class PemeriksaanFisik {
   String? tungkai;
 
   PemeriksaanFisik({
-    required this.id,
+    this.id,
     this.konjungtiva,
     this.sklera,
     this.leher,

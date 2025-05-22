@@ -26,7 +26,7 @@ class _LoginScreenState extends State<LoginScreen> {
 
   Future<String> checkRole() async {
     dynamic user = await UserDatabase().readUser();
-    Petugas petugas = await UserDatabase().readPetugas();
+    dynamic petugas = await UserDatabase().readPetugas();
 
     if (user == null) {
       if (petugas != null) {

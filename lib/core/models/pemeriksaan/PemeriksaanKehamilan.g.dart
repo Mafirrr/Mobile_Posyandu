@@ -9,9 +9,9 @@ part of 'PemeriksaanKehamilan.dart';
 PemeriksaanKehamilan _$PemeriksaanKehamilanFromJson(
         Map<String, dynamic> json) =>
     PemeriksaanKehamilan(
-      id: (json['id'] as num).toInt(),
-      kehamilanId: (json['kehamilan_id'] as num).toInt(),
-      petugasId: (json['petugas_id'] as num).toInt(),
+      id: (json['id'] as num?)?.toInt(),
+      kehamilanId: (json['kehamilan_id'] as num?)?.toInt(),
+      petugasId: (json['petugas_id'] as num?)?.toInt(),
       tanggalPemeriksaan: DateTime.parse(json['tanggal_pemeriksaan'] as String),
       tempatPemeriksaan: json['tempat_pemeriksaan'] as String,
       jenisPemeriksaan: json['jenis_pemeriksaan'] as String,
