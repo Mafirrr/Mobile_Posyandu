@@ -39,12 +39,27 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
         final response = await service.changePassword(oldPassword, newPassword);
 
         if (response.statusCode == 200) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(content: Text('Password Berhasil Di ubah')),
-          );
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(builder: (context) => const ProfilScreen()),
+          showDialog(
+            context: context,
+            builder: (BuildContext context) {
+              return AlertDialog(
+                title: const Text('Berhasil'),
+                content: const Text('Password berhasil diubah.'),
+                actions: [
+                  TextButton(
+                    onPressed: () {
+                      Navigator.pop(context);
+                      Navigator.pushReplacement(
+                        context,
+                        MaterialPageRoute(
+                            builder: (context) => const ProfilScreen()),
+                      );
+                    },
+                    child: const Text('OK'),
+                  ),
+                ],
+              );
+            },
           );
         } else {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -65,7 +80,7 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       resizeToAvoidBottomInset: true,
-      backgroundColor: Colors.white, // container putih penuh
+      backgroundColor: Colors.white,
       appBar: AppBar(
         backgroundColor: Colors.white,
         elevation: 0,

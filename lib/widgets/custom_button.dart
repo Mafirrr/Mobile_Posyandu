@@ -33,7 +33,7 @@ class CustomButton extends StatelessWidget {
       width: screenWidth * 0.5,
       height: height,
       child: ElevatedButton(
-        onPressed: isLoading ? null : onPressed, // Disable when loading
+        onPressed: isLoading ? null : onPressed, 
         style: ElevatedButton.styleFrom(
           backgroundColor: backgroundColor,
           shape: RoundedRectangleBorder(

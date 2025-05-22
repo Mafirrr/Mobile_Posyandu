@@ -10,32 +10,42 @@ class JadwalkaderViewmodel extends ChangeNotifier {
 
   Future<void> loadJadwal() async {
     try {
-      _jadwalList = await JadwalkaderService().getAllJadwal();
+      _jadwalList = await _service.getAllJadwal();
+      notifyListeners();
     } catch (e, stacktrace) {
       print("Error saat loadJadwal: $e");
       print("Stacktrace: $stacktrace");
-      rethrow; // agar error bisa ditangkap di FutureBuilder
+      rethrow; // Agar error bisa ditangkap di FutureBuilder
     }
   }
 
   Future<void> addJadwal(Jadwal jadwal) async {
-    final newJadwal = await _service.createJadwal(jadwal);
-    _jadwalList.insert(0, newJadwal);
-    notifyListeners();
+    try {
+      await _service.createJadwal(jadwal);
+      await loadJadwal(); // Muat ulang dari server agar konsisten
+    } catch (e) {
+      print("Gagal menambahkan jadwal: $e");
+      rethrow;
+    }
   }
 
   Future<void> updateJadwal(Jadwal jadwal) async {
-    final updatedJadwal = await _service.updateJadwal(jadwal);
-    final index = _jadwalList.indexWhere((j) => j.id == updatedJadwal.id);
-    if (index != -1) {
-      _jadwalList[index] = updatedJadwal;
-      notifyListeners();
+    try {
+      await _service.updateJadwal(jadwal);
+      await loadJadwal(); // Refresh data
+    } catch (e) {
+      print("Gagal mengupdate jadwal: $e");
+      rethrow;
     }
   }
 
   Future<void> deleteJadwal(int id) async {
-    await _service.deleteJadwal(id);
-    _jadwalList.removeWhere((j) => j.id == id);
-    notifyListeners();
+    try {
+      await _service.deleteJadwal(id);
+      await loadJadwal(); // Refresh data
+    } catch (e) {
+      print("Gagal menghapus jadwal: $e");
+      rethrow;
+    }
   }
 }

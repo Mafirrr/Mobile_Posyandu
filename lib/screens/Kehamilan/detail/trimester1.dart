@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+
 import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester1.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanAwal.dart';
@@ -56,7 +58,7 @@ class _PemeriksaanDropdownState extends State<PemeriksaanDropdown> {
   late Map<String, int?> pemeriksaanMap;
   bool isLoading = true;
 
-  List<String> pemeriksaanList = [
+  final List<String> pemeriksaanList = [
     'Pemeriksaan Rutin',
     'Pemeriksaan Awal',
     'Pemeriksaan Fisik',
@@ -94,31 +96,80 @@ class _PemeriksaanDropdownState extends State<PemeriksaanDropdown> {
 
   @override
   Widget build(BuildContext context) {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        DropdownButtonFormField<String>(
-          value: _selectedItem,
-          hint: const Text('Pilih pemeriksaan'),
-          items: pemeriksaanList.map((item) {
-            return DropdownMenuItem(
-              value: item,
-              child: Text(item),
-            );
-          }).toList(),
-          onChanged: (value) {
-            setState(() {
-              _selectedItem = value;
-            });
-          },
+    return SafeArea(
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Row(
+              children: [
+                const SizedBox(width: 12),
+                Expanded(
+                  child: SizedBox(
+                    height: 42,
+                    child: DropdownButtonFormField2<String>(
+                      isExpanded: true,
+                      decoration: InputDecoration(
+                        contentPadding:
+                            const EdgeInsets.symmetric(vertical: 10),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        focusedBorder: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                          borderSide: const BorderSide(
+                            color: Colors.blue,
+                            width: 1.8,
+                          ),
+                        ),
+                      ),
+                      hint: const Text('Pilih'),
+                      value: _selectedItem,
+                      items: pemeriksaanList.map((item) {
+                        return DropdownMenuItem<String>(
+                          value: item,
+                          child: Text(
+                            item,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(fontSize: 13),
+                          ),
+                        );
+                      }).toList(),
+                      onChanged: (value) {
+                        setState(() {
+                          _selectedItem = value;
+                        });
+                      },
+                      validator: (value) {
+                        if (value == null || value.isEmpty) {
+                          return 'Harap pilih pemeriksaan';
+                        }
+                        return null;
+                      },
+                      dropdownStyleData: DropdownStyleData(
+                        maxHeight: 300,
+                        decoration: BoxDecoration(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      menuItemStyleData: const MenuItemStyleData(
+                        padding: EdgeInsets.symmetric(horizontal: 16),
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            isLoading
+                ? const Center(child: CircularProgressIndicator())
+                : _selectedItem != null
+                    ? _getDetailScreen(_selectedItem!)
+                    : const Center(child: Text("Belum ada data pemeriksaan.")),
+          ],
         ),
-        const SizedBox(height: 20),
-        isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : _selectedItem != null
-                ? _getDetailScreen(_selectedItem!)!
-                : const Center(child: Text("Belum ada data pemeriksaan.")),
-      ],
+      ),
     );
   }
 
@@ -141,9 +192,8 @@ class _PemeriksaanDropdownState extends State<PemeriksaanDropdown> {
           return const Text('Data Pemeriksaan Awal belum tersedia');
         return AwalScreen(data: awal!);
       case 'Skrining Kesehatan Jiwa':
-        return SkriningScreen(
-          data: skrining!,
-        );
+        if (skrining == null) return const Text('Data Skrining belum tersedia');
+        return SkriningScreen(data: skrining!);
       case 'Pemeriksaan Laboratorium':
         if (lab == null)
           return const Text('Data Pemeriksaan Lab belum tersedia');

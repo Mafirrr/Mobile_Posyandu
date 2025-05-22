@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:dropdown_button2/dropdown_button2.dart';
+
 import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/rutinScreen.dart';
@@ -24,23 +26,6 @@ class _Trimester2ScreenState extends State<Trimester2Screen> {
   final List<String> jenisPemeriksaanList = [
     'Pemeriksaan Rutin',
   ];
-
-  List<String> get uniqueTanggal {
-    final seen = <String>{};
-    return pemeriksaanList
-        .map((e) => e.created_at!.split('T')[0])
-        .where((tgl) => seen.add(tgl))
-        .toList();
-  }
-
-  String? selectedTanggal;
-
-  List<PemeriksaanRutin> get filteredByTanggal {
-    if (selectedTanggal == null) return [];
-    return pemeriksaanList
-        .where((e) => e.created_at!.startsWith(selectedTanggal!))
-        .toList();
-  }
 
   String formatTanggalIndonesia(String isoDate) {
     DateTime date = DateTime.parse(isoDate);
@@ -75,33 +60,69 @@ class _Trimester2ScreenState extends State<Trimester2Screen> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : pemeriksaanList.isEmpty
-              ? const Center(child: Text("Belum ada data pemeriksaan."))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
+    return SafeArea(
+      child: Padding(
+        padding: const EdgeInsets.symmetric(vertical: 12),
+        child: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : pemeriksaanList.isEmpty
+                ? const Center(child: Text("Belum ada data pemeriksaan."))
+                : Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      DropdownButtonFormField<PemeriksaanRutin>(
-                        value: selectedPemeriksaan,
-                        hint: const Text('Pilih tanggal pemeriksaan'),
-                        items: pemeriksaanList.map((item) {
-                          return DropdownMenuItem(
-                            value: item,
-                            child:
-                                Text(formatTanggalIndonesia(item.created_at!)),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedPemeriksaan = value;
-                          });
-                        },
+                      Row(
+                        children: [
+                          Expanded(
+                            child: SizedBox(
+                              height: 42,
+                              child: DropdownButtonFormField2<PemeriksaanRutin>(
+                                isExpanded: true,
+                                decoration: InputDecoration(
+                                  contentPadding:
+                                      const EdgeInsets.symmetric(vertical: 10),
+                                  border: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  focusedBorder: OutlineInputBorder(
+                                    borderRadius: BorderRadius.circular(8),
+                                    borderSide: const BorderSide(
+                                      color: Colors.blue,
+                                      width: 1.8,
+                                    ),
+                                  ),
+                                ),
+                                hint: const Text('Pilih tanggal pemeriksaan'),
+                                value: selectedPemeriksaan,
+                                items: pemeriksaanList.map((item) {
+                                  return DropdownMenuItem<PemeriksaanRutin>(
+                                    value: item,
+                                    child: Text(
+                                      formatTanggalIndonesia(item.created_at!),
+                                      overflow: TextOverflow.ellipsis,
+                                      style: const TextStyle(fontSize: 13),
+                                    ),
+                                  );
+                                }).toList(),
+                                onChanged: (value) {
+                                  setState(() {
+                                    selectedPemeriksaan = value;
+                                  });
+                                },
+                                dropdownStyleData: DropdownStyleData(
+                                  maxHeight: 300,
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                ),
+                                menuItemStyleData: const MenuItemStyleData(
+                                  padding: EdgeInsets.symmetric(horizontal: 16),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
                       ),
-                      const SizedBox(height: 16),
+                      const SizedBox(height: 20),
                       if (selectedJenis != null && selectedPemeriksaan != null)
                         Expanded(
                           child: _getDetailScreen(
@@ -109,7 +130,7 @@ class _Trimester2ScreenState extends State<Trimester2Screen> {
                         )
                     ],
                   ),
-                ),
+      ),
     );
   }
 }

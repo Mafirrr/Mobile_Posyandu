@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
@@ -79,7 +80,14 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                   drawerItem(Icons.people, "Ibu Hamil", () {}),
                   drawerItem(Icons.person, "Bidan", () {}),
                   sectionTitle("Pelayanan Posyandu"),
-                  drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {}),
+                  drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const JadwalPosyanduView(),
+                      ),
+                    );
+                  }),
                   drawerItem(Icons.medical_information, "Pemeriksaan", () {
                     Navigator.push(
                       context,

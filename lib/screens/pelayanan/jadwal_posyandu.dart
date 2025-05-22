@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
-import 'package:posyandu_mob/core/services/jadwalKader_service.dart';
 import 'package:posyandu_mob/core/viewmodel/jadwalKader_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_tanggal.dart';
@@ -9,6 +8,7 @@ import 'package:posyandu_mob/widgets/custom_textfield.dart';
 
 class JadwalPosyanduView extends StatefulWidget {
   const JadwalPosyanduView({Key? key}) : super(key: key);
+
   @override
   _JadwalPosyanduViewState createState() => _JadwalPosyanduViewState();
 }
@@ -21,49 +21,52 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
   final TextEditingController _jamSelesaiController = TextEditingController();
   final TextEditingController _tanggalController = TextEditingController();
   DateTime? _tanggal;
+
   final JadwalkaderViewmodel _viewModel = JadwalkaderViewmodel();
   late Future<void> _loadFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadFuture = _viewModel.loadJadwal();
+  }
 
   void _simpanJadwal() async {
     if (_formKey.currentState!.validate() && _tanggal != null) {
       final jadwalBaru = Jadwal(
-        id: 0, // placeholder, akan diisi backend saat create
+        id: 0,
         judul: _judulController.text,
         tanggal: _tanggalController.text,
         lokasi: _lokasiController.text,
         jam_mulai: _jamMulaiController.text,
         jam_selesai: _jamSelesaiController.text,
-        keterangan: null, // atau isi jika ada field keterangan
-        anggota_id: null, // jika kamu belum pakai user login
+        keterangan: null,
+        anggota_id: null,
       );
 
       try {
-        await _viewModel
-            .addJadwal(jadwalBaru); // simpan ke database dan list lokal
+        await _viewModel.addJadwal(jadwalBaru);
 
-        // reset form setelah sukses
         _judulController.clear();
         _lokasiController.clear();
         _jamMulaiController.clear();
         _jamSelesaiController.clear();
         _tanggalController.clear();
+
         setState(() {
           _tanggal = null;
-          _loadFuture = _viewModel.loadJadwal(); // update tampilan
+          _loadFuture = _viewModel.loadJadwal();
         });
 
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Jadwal berhasil disimpan')),
-        );
+        ScaffoldMessenger.of(context)
+            .showSnackBar(SnackBar(content: Text('Jadwal berhasil disimpan')));
       } catch (e) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Gagal menyimpan jadwal: $e')),
-        );
+            SnackBar(content: Text('Gagal menyimpan jadwal: $e')));
       }
     } else if (_tanggal == null) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text('Tanggal wajib dipilih')),
-      );
+      ScaffoldMessenger.of(context)
+          .showSnackBar(SnackBar(content: Text('Tanggal wajib dipilih')));
     }
   }
 
@@ -79,29 +82,186 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
 
     showDialog(
       context: context,
-      builder: (context) {
-        return AlertDialog(
-          title: Text('Edit Jadwal'),
-          content: SingleChildScrollView(
-            child: Form(
-              key: editFormKey,
+      builder: (context) => AlertDialog(
+        title: Text('Edit Jadwal', style: TextStyle(fontSize: 14)),
+        content: SingleChildScrollView(
+          child: Form(
+            key: editFormKey,
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              children: [
+                CustomTextField(
+                  controller: judulController,
+                  label: 'Judul',
+                  fontSize: 12,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Judul wajib diisi' : null,
+                ),
+                SizedBox(height: 8),
+                CustomTextField(
+                  controller: lokasiController,
+                  label: 'Lokasi',
+                  fontSize: 12,
+                  validator: (value) =>
+                      value!.isEmpty ? 'Lokasi wajib diisi' : null,
+                ),
+                SizedBox(height: 8),
+                Row(
+                  children: [
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {
+                          TimeOfDay? picked = await showTimePicker(
+                              context: context, initialTime: TimeOfDay.now());
+                          if (picked != null) {
+                            jamMulaiController.text = picked.format(context);
+                          }
+                        },
+                        child: IgnorePointer(
+                          child: TextFormField(
+                            controller: jamMulaiController,
+                            decoration: InputDecoration(
+                              labelText: 'Jam Mulai',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 10),
+                            ),
+                            style: TextStyle(fontSize: 12),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Wajib diisi' : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(width: 8),
+                    Expanded(
+                      child: InkWell(
+                        onTap: () async {
+                          TimeOfDay? picked = await showTimePicker(
+                              context: context, initialTime: TimeOfDay.now());
+                          if (picked != null) {
+                            jamSelesaiController.text = picked.format(context);
+                          }
+                        },
+                        child: IgnorePointer(
+                          child: TextFormField(
+                            controller: jamSelesaiController,
+                            decoration: InputDecoration(
+                              labelText: 'Jam Selesai',
+                              border: OutlineInputBorder(),
+                              isDense: true,
+                              contentPadding: EdgeInsets.symmetric(
+                                  vertical: 8, horizontal: 10),
+                            ),
+                            style: TextStyle(fontSize: 12),
+                            validator: (value) =>
+                                value!.isEmpty ? 'Wajib diisi' : null,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                SizedBox(height: 8),
+                CustomTanggal(
+                  controller: tanggalController,
+                  hintText: "Tanggal Pelaksanaan",
+                  value: selectedDate,
+                  fontSize: 12,
+                  onDateSelected: (date) {
+                    selectedDate = date;
+                    tanggalController.text =
+                        DateFormat('yyyy-MM-dd').format(date);
+                  },
+                ),
+              ],
+            ),
+          ),
+        ),
+        actions: [
+          TextButton(
+              onPressed: () => Navigator.pop(context),
+              child: Text('Batal', style: TextStyle(fontSize: 12))),
+          ElevatedButton(
+            onPressed: () async {
+              if (editFormKey.currentState!.validate() &&
+                  selectedDate != null) {
+                final updated = Jadwal(
+                  id: item.id,
+                  judul: judulController.text,
+                  tanggal: tanggalController.text,
+                  lokasi: lokasiController.text,
+                  jam_mulai: jamMulaiController.text,
+                  jam_selesai: jamSelesaiController.text,
+                  keterangan: item.keterangan,
+                  anggota_id: item.anggota_id,
+                );
+
+                try {
+                  await _viewModel.updateJadwal(updated);
+                  setState(() {
+                    _loadFuture = _viewModel.loadJadwal();
+                  });
+                  Navigator.pop(context);
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Jadwal berhasil diperbarui')));
+                } catch (e) {
+                  ScaffoldMessenger.of(context).showSnackBar(
+                      SnackBar(content: Text('Gagal update jadwal: $e')));
+                }
+              }
+            },
+            child: Text('Simpan', style: TextStyle(fontSize: 12)),
+          ),
+        ],
+      ),
+    );
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final TextStyle judulStyle = TextStyle(
+        color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14);
+    final TextStyle infoStyle =
+        TextStyle(color: Colors.black.withAlpha(179), fontSize: 10);
+
+    return Scaffold(
+      appBar: AppBar(
+        title: Text('Pelayanan Posyandu', style: TextStyle(fontSize: 16)),
+        toolbarHeight: 48,
+      ),
+      body: SingleChildScrollView(
+        padding: EdgeInsets.all(10),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text("Pembuatan Jadwal",
+                style: Theme.of(context)
+                    .textTheme
+                    .titleMedium
+                    ?.copyWith(fontSize: 16, fontWeight: FontWeight.w600)),
+            SizedBox(height: 12),
+            Form(
+              key: _formKey,
               child: Column(
-                mainAxisSize: MainAxisSize.min,
                 children: [
                   CustomTextField(
-                    controller: judulController,
+                    controller: _judulController,
                     label: 'Judul',
+                    fontSize: 12,
                     validator: (value) =>
                         value!.isEmpty ? 'Judul wajib diisi' : null,
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 6),
                   CustomTextField(
-                    controller: lokasiController,
+                    controller: _lokasiController,
                     label: 'Lokasi',
+                    fontSize: 12,
                     validator: (value) =>
                         value!.isEmpty ? 'Lokasi wajib diisi' : null,
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 6),
                   Row(
                     children: [
                       Expanded(
@@ -112,23 +272,27 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                               initialTime: TimeOfDay.now(),
                             );
                             if (picked != null) {
-                              jamMulaiController.text = picked.format(context);
+                              _jamMulaiController.text = picked.format(context);
                             }
                           },
                           child: IgnorePointer(
                             child: TextFormField(
-                              controller: jamMulaiController,
+                              controller: _jamMulaiController,
                               decoration: InputDecoration(
                                 labelText: 'Jam Mulai',
                                 border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 12),
                               ),
+                              style: TextStyle(fontSize: 12),
                               validator: (value) =>
                                   value!.isEmpty ? 'Wajib diisi' : null,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 10),
+                      SizedBox(width: 12),
                       Expanded(
                         child: InkWell(
                           onTap: () async {
@@ -137,17 +301,21 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                               initialTime: TimeOfDay.now(),
                             );
                             if (picked != null) {
-                              jamSelesaiController.text =
+                              _jamSelesaiController.text =
                                   picked.format(context);
                             }
                           },
                           child: IgnorePointer(
                             child: TextFormField(
-                              controller: jamSelesaiController,
+                              controller: _jamSelesaiController,
                               decoration: InputDecoration(
                                 labelText: 'Jam Selesai',
                                 border: OutlineInputBorder(),
+                                isDense: true,
+                                contentPadding: EdgeInsets.symmetric(
+                                    vertical: 12, horizontal: 12),
                               ),
+                              style: TextStyle(fontSize: 12),
                               validator: (value) =>
                                   value!.isEmpty ? 'Wajib diisi' : null,
                             ),
@@ -156,332 +324,134 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                       ),
                     ],
                   ),
-                  SizedBox(height: 10),
+                  SizedBox(height: 16),
                   CustomTanggal(
-                    controller: tanggalController,
+                    controller: _tanggalController,
                     hintText: "Tanggal Pelaksanaan",
-                    value: selectedDate,
-                    onDateSelected: (date) {
-                      selectedDate = date;
-                      tanggalController.text =
-                          DateFormat('yyyy-MM-dd').format(date);
+                    value: _tanggal,
+                    fontSize: 12,
+                    onDateSelected: (selectedDate) {
+                      setState(() {
+                        _tanggal = selectedDate;
+                        _tanggalController.text =
+                            DateFormat('yyyy-MM-dd').format(selectedDate);
+                      });
                     },
+                  ),
+                  SizedBox(height: 12),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 42,
+                    child: CustomButton(
+                      onPressed: _simpanJadwal,
+                      text: 'Simpan',
+                      fontSize: 14,
+                    ),
                   ),
                 ],
               ),
             ),
-          ),
-          actions: [
-            TextButton(
-              onPressed: () => Navigator.pop(context),
-              child: Text('Batal'),
-            ),
-            ElevatedButton(
-              onPressed: () async {
-                if (editFormKey.currentState!.validate() &&
-                    selectedDate != null) {
-                  final updated = Jadwal(
-                    id: item.id,
-                    judul: judulController.text,
-                    tanggal: tanggalController.text,
-                    lokasi: lokasiController.text,
-                    jam_mulai: jamMulaiController.text,
-                    jam_selesai: jamSelesaiController.text,
-                    keterangan: item.keterangan,
-                    anggota_id: item.anggota_id,
-                  );
-
-                  try {
-                    await _viewModel.updateJadwal(updated);
-                    setState(() {
-                      _loadFuture = _viewModel.loadJadwal();
-                    });
-                    Navigator.pop(context);
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Jadwal berhasil diperbarui')),
-                    );
-                  } catch (e) {
-                    ScaffoldMessenger.of(context).showSnackBar(
-                      SnackBar(content: Text('Gagal update jadwal: $e')),
-                    );
-                  }
-                }
-              },
-              child: Text('Simpan'),
-            ),
-          ],
-        );
-      },
-    );
-  }
-
-  @override
-  void initState() {
-    super.initState();
-    _loadFuture = _viewModel.loadJadwal();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text('Pelayanan Posyandu'),
-      ),
-      body: SingleChildScrollView(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            // Form Input
-            Card(
-              child: Padding(
-                padding: const EdgeInsets.all(16.0),
-                child: Form(
-                  key: _formKey,
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Text("Pembuatan Jadwal",
-                          style: Theme.of(context).textTheme.titleMedium),
-                      SizedBox(height: 16),
-                      CustomTextField(
-                        controller: _judulController,
-                        label: 'Judul',
-                        validator: (value) =>
-                            value!.isEmpty ? 'Judul wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      CustomTextField(
-                        controller: _lokasiController,
-                        label: 'Lokasi',
-                        validator: (value) =>
-                            value!.isEmpty ? 'Lokasi wajib diisi' : null,
-                      ),
-                      const SizedBox(height: 16),
-                      Row(
-                        children: [
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                TimeOfDay? picked = await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (picked != null) {
-                                  _jamMulaiController.text =
-                                      picked.format(context);
-                                }
-                              },
-                              child: IgnorePointer(
-                                child: TextFormField(
-                                  controller: _jamMulaiController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Jam Mulai',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  validator: (value) =>
-                                      value!.isEmpty ? 'Wajib diisi' : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                          SizedBox(width: 10),
-                          Expanded(
-                            child: InkWell(
-                              onTap: () async {
-                                TimeOfDay? picked = await showTimePicker(
-                                  context: context,
-                                  initialTime: TimeOfDay.now(),
-                                );
-                                if (picked != null) {
-                                  _jamSelesaiController.text =
-                                      picked.format(context);
-                                }
-                              },
-                              child: IgnorePointer(
-                                child: TextFormField(
-                                  controller: _jamSelesaiController,
-                                  decoration: InputDecoration(
-                                    labelText: 'Jam Selesai',
-                                    border: OutlineInputBorder(),
-                                  ),
-                                  validator: (value) =>
-                                      value!.isEmpty ? 'Wajib diisi' : null,
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      const SizedBox(height: 16),
-                      CustomTanggal(
-                        controller: _tanggalController,
-                        hintText: "Tanggal Pelaksanaan",
-                        value: _tanggal,
-                        onDateSelected: (selectedDate) {
-                          setState(() {
-                            _tanggal = selectedDate;
-                            _tanggalController.text =
-                                DateFormat('yyyy-MM-dd').format(selectedDate);
-                          });
-                        },
-                      ),
-                      SizedBox(height: 16),
-                      Align(
-                        alignment: Alignment.center,
-                        child: CustomButton(
-                          onPressed: _simpanJadwal,
-                          text: 'Simpan',
-                        ),
-                      )
-                    ],
-                  ),
-                ),
+            SizedBox(height: 20),
+            Text(
+              'Daftar Jadwal',
+              style: TextStyle(
+                fontSize: 16,
+                fontWeight: FontWeight.w600,
+                color: Colors.black87,
               ),
             ),
-            SizedBox(height: 24),
-
-            // Daftar Jadwal
+            SizedBox(height: 12),
             FutureBuilder<void>(
               future: _loadFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(child: CircularProgressIndicator());
+                  return Center(
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(strokeWidth: 2)));
                 }
 
                 if (snapshot.hasError) {
                   return Center(
                       child: Text(
-                          'Gagal memuat data jadwal.\nError: ${snapshot.error}'));
+                          'Gagal memuat data jadwal.\nError: ${snapshot.error}',
+                          style: TextStyle(fontSize: 12)));
                 }
 
                 if (_viewModel.jadwalList.isEmpty) {
-                  return Center(child: Text('Belum ada jadwal.'));
+                  return Center(
+                      child: Text('Belum ada jadwal.',
+                          style: TextStyle(fontSize: 12)));
                 }
 
-                return ListView.builder(
+                return ListView.separated(
                   shrinkWrap: true,
                   physics: NeverScrollableScrollPhysics(),
                   itemCount: _viewModel.jadwalList.length,
+                  separatorBuilder: (context, index) => SizedBox(height: 10),
                   itemBuilder: (context, index) {
                     final item = _viewModel.jadwalList[index];
-                    final tanggal = DateFormat('dd-MM-yyyy').format(
-                      DateTime.parse(item.tanggal),
-                    );
+                    final tanggal = DateFormat('dd-MM-yyyy')
+                        .format(DateTime.parse(item.tanggal));
 
-                    return Card(
-                      margin: EdgeInsets.symmetric(vertical: 6, horizontal: 12),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
+                    return Container(
+                      padding:
+                          EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                      decoration: BoxDecoration(
+                        border: Border.all(color: Colors.blue, width: 1),
+                        borderRadius: BorderRadius.circular(8),
                       ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(12.0),
-                        child: Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              item.judul,
-                              style: TextStyle(
-                                color: const Color.fromARGB(255, 0, 0, 0),
-                                fontWeight: FontWeight.bold,
-                                fontSize: 18,
-                              ),
-                            ),
-                            SizedBox(height: 6),
-                            Text(
-                              "Lokasi: ${item.lokasi}",
-                              style: TextStyle(
-                                color: const Color.fromARGB(179, 0, 0, 0),
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              "Jam: ${item.jam_mulai} - ${item.jam_selesai}",
-                              style: TextStyle(
-                                color: const Color.fromARGB(179, 0, 0, 0),
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 4),
-                            Text(
-                              "Tanggal: $tanggal",
-                              style: TextStyle(
-                                color: const Color.fromARGB(179, 0, 0, 0),
-                                fontSize: 14,
-                              ),
-                            ),
-                            SizedBox(height: 8),
-                            Row(
-                              mainAxisAlignment: MainAxisAlignment.end,
+                      child: Row(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
-                                IconButton(
-                                  icon: Icon(Icons.edit,
-                                      color: Colors.orangeAccent),
-                                  onPressed: () {
-                                     _editJadwal(item);
-                                  },
-                                ),
-                                IconButton(
-                                  icon: Icon(Icons.delete,
-                                      color: Colors.redAccent),
-                                  onPressed: () async {
-                                    final confirm = await showDialog<bool>(
-                                      context: context,
-                                      builder: (context) => AlertDialog(
-                                        title: Text('Konfirmasi Hapus'),
-                                        content: Text(
-                                            'Apakah kamu yakin ingin menghapus jadwal ini?'),
-                                        actions: [
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, false),
-                                            child: Text('Batal'),
-                                          ),
-                                          TextButton(
-                                            onPressed: () =>
-                                                Navigator.pop(context, true),
-                                            child: Text('Hapus',
-                                                style: TextStyle(
-                                                    color: Colors.red)),
-                                          ),
-                                        ],
-                                      ),
-                                    );
-
-                                    if (confirm == true) {
-                                      try {
-                                        await _viewModel.deleteJadwal(item.id);
-                                        setState(() {
-                                          _loadFuture = _viewModel.loadJadwal();
-                                        });
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Jadwal berhasil dihapus')),
-                                        );
-                                      } catch (e) {
-                                        ScaffoldMessenger.of(context)
-                                            .showSnackBar(
-                                          SnackBar(
-                                              content: Text(
-                                                  'Gagal menghapus jadwal: $e')),
-                                        );
-                                      }
-                                    }
-                                  },
-                                ),
+                                Text(item.judul,
+                                    style: TextStyle(
+                                        fontWeight: FontWeight.bold,
+                                        fontSize: 13,
+                                        color: Colors.black)),
+                                SizedBox(height: 2),
+                                Text("Lokasi: ${item.lokasi}",
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.black87)),
+                                Text(
+                                    "Jam: ${item.jam_mulai} - ${item.jam_selesai}",
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.black87)),
+                                Text("Tanggal: $tanggal",
+                                    style: TextStyle(
+                                        fontSize: 11, color: Colors.black87)),
                               ],
                             ),
-                          ],
-                        ),
+                          ),
+                          Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              IconButton(
+                                icon: Icon(Icons.edit,
+                                    size: 18, color: Colors.orange),
+                                onPressed: () => _editJadwal(item),
+                              ),
+                              IconButton(
+                                icon: Icon(Icons.delete,
+                                    size: 18, color: Colors.red),
+                                onPressed: () {
+                                  // Tambahkan logika hapus
+                                },
+                              ),
+                            ],
+                          ),
+                        ],
                       ),
                     );
                   },
                 );
               },
-            ),
+            )
           ],
         ),
       ),

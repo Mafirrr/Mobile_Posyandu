@@ -94,59 +94,94 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
 
   @override
   Widget build(BuildContext context) {
-    return Scaffold(
-      appBar: AppBar(
-        title: Text(widget.label),
-        centerTitle: true,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back),
-          onPressed: () {
-            Navigator.pop(context);
-          },
-        ),
-      ),
-      body: SingleChildScrollView(
-        padding: const EdgeInsets.all(16.0),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            DefaultTabController(
-              length: 3,
+    return DefaultTabController(
+      length: 3,
+      child: Scaffold(
+        appBar: PreferredSize(
+          preferredSize: const Size.fromHeight(
+              kToolbarHeight + 48), 
+          child: Container(
+            decoration: const BoxDecoration(
+              gradient: LinearGradient(
+                colors: [
+                  Color.fromARGB(255, 77, 129, 231), 
+                  Color.fromARGB(255, 255, 255, 255), 
+                ],
+                begin: Alignment.topLeft,
+                end: Alignment.bottomRight,
+              ),
+            ),
+            child: SafeArea(
               child: Column(
                 children: [
+                  SizedBox(
+                    height: kToolbarHeight,
+                    child: Row(
+                      children: [
+                        IconButton(
+                          icon:
+                              const Icon(Icons.arrow_back, color: Colors.white),
+                          onPressed: () => Navigator.pop(context),
+                        ),
+                        Expanded(
+                          child: Text(
+                            widget.label,
+                            style: const TextStyle(
+                              color: Colors.white,
+                              fontSize: 20,
+                              fontWeight: FontWeight.bold,
+                            ),
+                            textAlign: TextAlign.center,
+                          ),
+                        ),
+                        const SizedBox(
+                            width: 48),
+                      ],
+                    ),
+                  ),
                   const TabBar(
-                    labelColor: Colors.black,
+                    indicatorColor: Color.fromARGB(255, 0, 0, 0),
+                    labelColor: Color.fromARGB(255, 0, 0, 0),
+                    unselectedLabelColor: Color.fromARGB(179, 0, 0, 0),
+                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
                     tabs: [
                       Tab(text: "Trimester 1"),
                       Tab(text: "Trimester 2"),
                       Tab(text: "Trimester 3"),
                     ],
                   ),
-                  SizedBox(
-                    height: 800,
-                    child: TabBarView(
-                      children: [
-                        tri1 == null
-                            ? const Center(
-                                child: Text('Data Trimester 1 belum tersedia'))
-                            : Trimester1Screen(id: tri1!),
-                        tri2 == []
-                            ? const Center(
-                                child: Text('Data Trimester 2 belum tersedia'))
-                            : Trimester2Screen(pemeriksaanIds: tri2),
-                        tri3 == []
-                            ? const Center(
-                                child: Text('Data Trimester 3 belum tersedia'))
-                            : Trimester3Screen(pemeriksaanIds: tri3),
-                      ],
-                    ),
-                  ),
                 ],
               ),
             ),
-            const SizedBox(height: 20),
-          ],
+          ),
         ),
+        body: isLoading
+            ? const Center(child: CircularProgressIndicator())
+            : TabBarView(
+                children: [
+                  tri1 == null
+                      ? const Center(
+                          child: Text('Data Trimester 1 belum tersedia'))
+                      : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Trimester1Screen(id: tri1!),
+                        ),
+                  tri2.isEmpty
+                      ? const Center(
+                          child: Text('Data Trimester 2 belum tersedia'))
+                      : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Trimester2Screen(pemeriksaanIds: tri2),
+                        ),
+                  tri3.isEmpty
+                      ? const Center(
+                          child: Text('Data Trimester 3 belum tersedia'))
+                      : Padding(
+                          padding: const EdgeInsets.all(16.0),
+                          child: Trimester3Screen(pemeriksaanIds: tri3),
+                        ),
+                ],
+              ),
       ),
     );
   }

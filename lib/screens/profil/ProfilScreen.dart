@@ -216,7 +216,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                               ),
                               _StatCard(
                                 icon: Icons.accessibility_new,
-                                label: 'Lingkar Lengan Atas',
+                                label: 'Lingkar Lengan',
                                 value: '$lila cm',
                               ),
                               _StatCard(
@@ -343,7 +343,11 @@ class _StatCard extends StatelessWidget {
       ),
       child: Row(
         children: [
-          Icon(icon, color: Colors.blue),
+          Icon(
+            icon,
+            color: Colors.blue,
+            size: 26,
+          ),
           const SizedBox(width: 10),
           Expanded(
             child: Column(

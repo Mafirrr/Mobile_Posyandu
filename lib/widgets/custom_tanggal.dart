@@ -10,6 +10,9 @@ class CustomTanggal extends StatefulWidget {
   final DateTime? lastDate;
   final ValueChanged<DateTime> onDateSelected;
   final String? Function(String?)? validator;
+  final double fontSize;
+  final double height;
+  final EdgeInsetsGeometry contentPadding;
 
   const CustomTanggal({
     Key? key,
@@ -21,6 +24,9 @@ class CustomTanggal extends StatefulWidget {
     this.firstDate,
     this.lastDate,
     this.validator,
+    this.fontSize = 14,
+    this.height = 44,
+    this.contentPadding = const EdgeInsets.symmetric(horizontal: 12),
   }) : super(key: key);
 
   @override
@@ -33,8 +39,6 @@ class _CustomTanggalState extends State<CustomTanggal> {
   @override
   void didUpdateWidget(covariant CustomTanggal oldWidget) {
     super.didUpdateWidget(oldWidget);
-
-    // Jika value dari luar menjadi null, reset juga internal state
     if (widget.value == null && selectedDate != null) {
       setState(() {
         selectedDate = null;
@@ -44,6 +48,8 @@ class _CustomTanggalState extends State<CustomTanggal> {
 
   @override
   Widget build(BuildContext context) {
+    final isError = widget.validator?.call(widget.controller.text) != null;
+
     return GestureDetector(
       onTap: () async {
         DateTime initial = selectedDate ?? widget.value ?? DateTime.now();
@@ -67,36 +73,44 @@ class _CustomTanggalState extends State<CustomTanggal> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
-            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 14),
+            height: widget.height,
+            padding: widget.contentPadding,
             decoration: BoxDecoration(
-              borderRadius: BorderRadius.circular(10),
-              border: Border.all(color: Colors.black),
+              borderRadius: BorderRadius.circular(6),
+              border: Border.all(
+                color: isError ? Colors.red : Colors.grey.shade400,
+                width: 1,
+              ),
+              color: Colors.white,
             ),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Text(
-                  widget.controller.text.isNotEmpty
-                      ? widget.controller.text
-                      : widget.hintText,
-                  style: TextStyle(
-                    fontSize: 16,
-                    color: widget.controller.text.isNotEmpty
-                        ? Colors.black
-                        : Colors.grey,
+                Expanded(
+                  child: Text(
+                    widget.controller.text.isNotEmpty
+                        ? widget.controller.text
+                        : widget.hintText,
+                    style: TextStyle(
+                      fontSize: widget.fontSize,
+                      color: widget.controller.text.isNotEmpty
+                          ? Colors.black
+                          : Colors.grey.shade500,
+                    ),
                   ),
                 ),
-                Icon(widget.icon, color: Colors.black),
+                Icon(widget.icon, size: 18, color: Colors.black54),
               ],
             ),
           ),
-          if (widget.validator != null &&
-              widget.validator!(widget.controller.text) != null)
+          if (isError)
             Padding(
-              padding: const EdgeInsets.only(top: 5),
+              padding: const EdgeInsets.only(top: 4, left: 4),
               child: Text(
                 widget.validator!(widget.controller.text)!,
-                style: const TextStyle(color: Colors.red, fontSize: 12),
+                style: TextStyle(
+                  color: Colors.red,
+                  fontSize: widget.fontSize - 2,
+                ),
               ),
             ),
         ],

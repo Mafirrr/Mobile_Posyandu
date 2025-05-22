@@ -42,7 +42,10 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
         });
       }
     } catch (e) {
-      throw "error: $e";
+      setState(() {
+        isLoading = false;
+      });
+      debugPrint("Error load kehamilan data: $e");
     }
   }
 
@@ -58,7 +61,6 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
     }
   }
 
-  @override
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -94,30 +96,16 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
                       color: Colors.black,
                     ),
                   ),
-                  const SizedBox(height: 52),
+                  const SizedBox(height: 8),
+                  _buildWelcomeMessage(),
+                  const SizedBox(height: 24),
+                  const SizedBox(height: 24),
                   Expanded(
                     child: isLoading
-                        ? const Center(child: CircularProgressIndicator())
+                        ? _buildLoading()
                         : kehamilanData.isEmpty
-                            ? const Center(
-                                child: Text(
-                                  'Tidak ada data kehamilan',
-                                  style: TextStyle(fontSize: 16),
-                                ),
-                              )
-                            : ListView.builder(
-                                itemCount: kehamilanData.length,
-                                itemBuilder: (context, index) {
-                                  var item = kehamilanData[index];
-                                  return _buildCard(
-                                    status: item.status,
-                                    title: item.label,
-                                    description:
-                                        "Lihat detail Pemeriksaan ${item.label}mu.",
-                                    id: item.id,
-                                  );
-                                },
-                              ),
+                            ? _buildEmptyState()
+                            : _buildList(),
                   ),
                 ],
               ),
@@ -125,6 +113,101 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildWelcomeMessage() {
+    String displayName = nama != null && nama!.isNotEmpty ? nama! : 'Ibu';
+    return Center(
+      child: Text(
+        'Halo, $displayName! Pantau perkembangan kehamilanmu di sini.',
+        style: TextStyle(
+          fontSize: 14,
+          color: const Color.fromARGB(255, 34, 34, 34),
+        ),
+        textAlign: TextAlign.center,
+      ),
+    );
+  }
+
+  Widget _buildLoading() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: const [
+          CircularProgressIndicator(
+            color: Color(0xFF325CA8),
+          ),
+          SizedBox(height: 16),
+          Text(
+            'Memuat data kehamilan...',
+            style: TextStyle(color: Colors.black54, fontSize: 16),
+          ),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildEmptyState() {
+    return Center(
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(
+            Icons.pregnant_woman,
+            size: 80,
+            color: Colors.grey.shade400,
+          ),
+          const SizedBox(height: 16),
+          const Text(
+            'Belum ada data kehamilan',
+            style: TextStyle(
+              fontSize: 18,
+              color: Colors.black54,
+              fontWeight: FontWeight.w600,
+            ),
+          ),
+          const SizedBox(height: 8),
+          const Padding(
+            padding: EdgeInsets.symmetric(horizontal: 32),
+            child: Text(
+              'Mulai rekam pemeriksaan kehamilanmu agar dapat memantau perkembangan dengan mudah.',
+              textAlign: TextAlign.center,
+              style: TextStyle(color: Colors.black45),
+            ),
+          ),
+          const SizedBox(height: 24),
+          ElevatedButton.icon(
+            onPressed: () {
+              _loadKehamilanData();
+            },
+            icon: const Icon(Icons.refresh),
+            label: const Text('Muat ulang'),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: const Color(0xFF325CA8),
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(8),
+              ),
+            ),
+          )
+        ],
+      ),
+    );
+  }
+
+  Widget _buildList() {
+    return ListView.builder(
+      itemCount: kehamilanData.length,
+      itemBuilder: (context, index) {
+        var item = kehamilanData[index];
+        return _buildCard(
+          status: item.status,
+          title: item.label,
+          description: "Lihat detail Pemeriksaan ${item.label}mu.",
+          id: item.id,
+        );
+      },
     );
   }
 
