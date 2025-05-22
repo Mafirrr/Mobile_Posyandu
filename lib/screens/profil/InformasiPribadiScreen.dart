@@ -286,55 +286,58 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                   CustomTextField(
                       controller: pekerjaanController, label: 'Pekerjaan'),
                   const SizedBox(height: 16),
-                  CustomButton(
-                    text: 'Simpan',
-                    isLoading: viewModel.isLoading,
-                    onPressed: () async {
-                      try {
-                        String inputTanggal =
-                            TanggalLahirController.text.trim();
-                        final RegExp yyyyMMddFormat =
-                            RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                        late String finalTanggal;
+                  SizedBox(
+                    width: double.infinity,
+                    child: CustomButton(
+                      text: 'Simpan',
+                      isLoading: viewModel.isLoading,
+                      onPressed: () async {
+                        try {
+                          String inputTanggal =
+                              TanggalLahirController.text.trim();
+                          final RegExp yyyyMMddFormat =
+                              RegExp(r'^\d{4}-\d{2}-\d{2}$');
+                          late String finalTanggal;
 
-                        if (yyyyMMddFormat.hasMatch(inputTanggal)) {
-                          finalTanggal = inputTanggal;
-                        } else {
-                          final parsedDate = DateFormat('dd MMM yyyy')
-                              .parseStrict(inputTanggal);
-                          finalTanggal =
-                              DateFormat('yyyy-MM-dd').format(parsedDate);
+                          if (yyyyMMddFormat.hasMatch(inputTanggal)) {
+                            finalTanggal = inputTanggal;
+                          } else {
+                            final parsedDate = DateFormat('dd MMM yyyy')
+                                .parseStrict(inputTanggal);
+                            finalTanggal =
+                                DateFormat('yyyy-MM-dd').format(parsedDate);
+                          }
+
+                          final updatedAnggota = Anggota(
+                            id: _anggota!.id,
+                            nama: namaController.text,
+                            nik: nikController.text,
+                            no_jkn: jknController.text,
+                            faskes_tk1: tk1Controller.text,
+                            faskes_rujukan: rujukanController.text,
+                            no_telepon: telpController.text,
+                            tempat_lahir: tempatLahirController.text,
+                            tanggal_lahir: finalTanggal,
+                            alamat: alamatController.text,
+                            pekerjaan: pekerjaanController.text,
+                            golongan_darah: selectedGolDarah,
+                          );
+
+                          final success =
+                              await viewModel.updateProfil(updatedAnggota);
+                          if (success) {
+                            _showSnackbar('Profil berhasil diperbarui');
+                            Navigator.pop(context, true);
+                          } else {
+                            _showSnackbar('Gagal memperbarui profil');
+                          }
+                        } catch (e) {
+                          _showSnackbar(
+                              'Tanggal tidak valid: ${TanggalLahirController.text}');
                         }
-
-                        final updatedAnggota = Anggota(
-                          id: _anggota!.id,
-                          nama: namaController.text,
-                          nik: nikController.text,
-                          no_jkn: jknController.text,
-                          faskes_tk1: tk1Controller.text,
-                          faskes_rujukan: rujukanController.text,
-                          no_telepon: telpController.text,
-                          tempat_lahir: tempatLahirController.text,
-                          tanggal_lahir: finalTanggal,
-                          alamat: alamatController.text,
-                          pekerjaan: pekerjaanController.text,
-                          golongan_darah: selectedGolDarah,
-                        );
-
-                        final success =
-                            await viewModel.updateProfil(updatedAnggota);
-                        if (success) {
-                          _showSnackbar('Profil berhasil diperbarui');
-                          Navigator.pop(context, true);
-                        } else {
-                          _showSnackbar('Gagal memperbarui profil');
-                        }
-                      } catch (e) {
-                        _showSnackbar(
-                            'Tanggal tidak valid: ${TanggalLahirController.text}');
-                      }
-                    },
-                  ),
+                      },
+                    ),
+                  )
                 ],
               ),
             ),

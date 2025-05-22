@@ -54,21 +54,25 @@ class _PemeriksaanDropdownState extends State<PemeriksaanDropdown> {
   SkriningKesehatan? skrining;
   LabTrimester1? lab;
   UsgTrimester1? usg;
-  String? _selectedItem = "Pemeriksaan Rutin";
-  late Map<String, int?> pemeriksaanMap;
   bool isLoading = true;
 
-  final List<String> pemeriksaanList = [
-    'Pemeriksaan Rutin',
-    'Pemeriksaan Awal',
-    'Pemeriksaan Fisik',
-    'Pemeriksaan Khusus',
-    'Skrining Kesehatan Jiwa',
-    'Pemeriksaan Laboratorium',
-    'Pemeriksaan Usg',
-  ];
+  Map<String, bool> expandedMap = {
+    'Pemeriksaan Rutin': false,
+    'Pemeriksaan Awal': false,
+    'Pemeriksaan Fisik': false,
+    'Pemeriksaan Khusus': false,
+    'Skrining Kesehatan Jiwa': false,
+    'Pemeriksaan Laboratorium': false,
+    'Pemeriksaan Usg': false,
+  };
 
-  _dataPemeriksaan() async {
+  @override
+  void initState() {
+    super.initState();
+    _loadData();
+  }
+
+  _loadData() async {
     List<Trimestr1> result = await _db.getTrimester1(widget.id);
     setState(() {
       local = result;
@@ -86,124 +90,95 @@ class _PemeriksaanDropdownState extends State<PemeriksaanDropdown> {
   }
 
   @override
-  void initState() {
-    super.initState();
-    pemeriksaanMap = {
-      for (int i = 0; i < pemeriksaanList.length; i++) pemeriksaanList[i]: i,
-    };
-    _dataPemeriksaan();
-  }
-
-  @override
   Widget build(BuildContext context) {
-    return SafeArea(
-      child: SingleChildScrollView(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Row(
+    return isLoading
+        ? const Center(child: CircularProgressIndicator())
+        : SingleChildScrollView(
+            padding: const EdgeInsets.all(12),
+            child: Column(
               children: [
-                const SizedBox(width: 12),
-                Expanded(
-                  child: SizedBox(
-                    height: 42,
-                    child: DropdownButtonFormField2<String>(
-                      isExpanded: true,
-                      decoration: InputDecoration(
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 10),
-                        border: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        focusedBorder: OutlineInputBorder(
-                          borderRadius: BorderRadius.circular(8),
-                          borderSide: const BorderSide(
-                            color: Colors.blue,
-                            width: 1.8,
-                          ),
-                        ),
-                      ),
-                      hint: const Text('Pilih'),
-                      value: _selectedItem,
-                      items: pemeriksaanList.map((item) {
-                        return DropdownMenuItem<String>(
-                          value: item,
-                          child: Text(
-                            item,
-                            overflow: TextOverflow.ellipsis,
-                            style: const TextStyle(fontSize: 13),
-                          ),
-                        );
-                      }).toList(),
-                      onChanged: (value) {
-                        setState(() {
-                          _selectedItem = value;
-                        });
-                      },
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Harap pilih pemeriksaan';
-                        }
-                        return null;
-                      },
-                      dropdownStyleData: DropdownStyleData(
-                        maxHeight: 300,
-                        decoration: BoxDecoration(
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                      ),
-                      menuItemStyleData: const MenuItemStyleData(
-                        padding: EdgeInsets.symmetric(horizontal: 16),
-                      ),
-                    ),
-                  ),
-                ),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Rutin',
+                    rutin != null
+                        ? RutinScreen(data: rutin!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Awal',
+                    awal != null
+                        ? AwalScreen(data: awal!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Fisik',
+                    fisik != null
+                        ? FisikScreen(data: fisik!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Khusus',
+                    khusus != null
+                        ? KhususScreen(data: khusus!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Skrining Kesehatan Jiwa',
+                    skrining != null
+                        ? SkriningScreen(data: skrining!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Laboratorium',
+                    lab != null
+                        ? LabTrimester1Screen(data: lab!)
+                        : const Text('Data tidak tersedia')),
+                _buildPemeriksaanCard(
+                    'Pemeriksaan Usg',
+                    usg != null
+                        ? UsgTrimester1Screen(data: usg!)
+                        : const Text('Data tidak tersedia')),
               ],
             ),
-            const SizedBox(height: 20),
-            isLoading
-                ? const Center(child: CircularProgressIndicator())
-                : _selectedItem != null
-                    ? _getDetailScreen(_selectedItem!)
-                    : const Center(child: Text("Belum ada data pemeriksaan.")),
-          ],
-        ),
-      ),
-    );
+          );
   }
 
-  Widget _getDetailScreen(String selected) {
-    switch (selected) {
-      case 'Pemeriksaan Rutin':
-        if (rutin == null)
-          return const Text('Data Pemeriksaan Rutin belum tersedia');
-        return RutinScreen(data: rutin!);
-      case 'Pemeriksaan Khusus':
-        if (khusus == null)
-          return const Text('Data Pemeriksaan Khusus belum tersedia');
-        return KhususScreen(data: khusus!);
-      case 'Pemeriksaan Fisik':
-        if (fisik == null)
-          return const Text('Data Pemeriksaan Fisik belum tersedia');
-        return FisikScreen(data: fisik!);
-      case 'Pemeriksaan Awal':
-        if (awal == null)
-          return const Text('Data Pemeriksaan Awal belum tersedia');
-        return AwalScreen(data: awal!);
-      case 'Skrining Kesehatan Jiwa':
-        if (skrining == null) return const Text('Data Skrining belum tersedia');
-        return SkriningScreen(data: skrining!);
-      case 'Pemeriksaan Laboratorium':
-        if (lab == null)
-          return const Text('Data Pemeriksaan Lab belum tersedia');
-        return LabTrimester1Screen(data: lab!);
-      case 'Pemeriksaan Usg':
-        if (usg == null)
-          return const Text('Data Pemeriksaan USG belum tersedia');
-        return UsgTrimester1Screen(data: usg!);
-      default:
-        return const Text('Pilihan tidak dikenal.');
-    }
+  Widget _buildPemeriksaanCard(String title, Widget child) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EEFF),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            subtitle: Text('Id pemeriksaan: ${widget.id}'),
+            trailing: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF4D81E7),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  expandedMap[title]!
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    expandedMap[title] = !expandedMap[title]!;
+                  });
+                },
+              ),
+            ),
+          ),
+          if (expandedMap[title]!)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: child,
+            ),
+        ],
+      ),
+    );
   }
 }

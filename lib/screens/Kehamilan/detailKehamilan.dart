@@ -19,6 +19,7 @@ import 'package:posyandu_mob/screens/Kehamilan/detail/trimester1.dart';
 class DetailPemeriksaan extends StatefulWidget {
   final String label;
   final int id;
+
   const DetailPemeriksaan({Key? key, required this.label, required this.id})
       : super(key: key);
 
@@ -39,6 +40,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
   UsgTrimester3? usgTrimester3;
   RencanaKonsultasi? rencanaKonsultasi;
   SkriningKesehatan? skriningKesehatan;
+
   final _db = Pemeriksaandatabase();
   dynamic local;
   int? tri1;
@@ -46,6 +48,8 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
   List<int> tri3 = [];
   List<Map<String, dynamic>> dataList = [];
   bool isLoading = true;
+
+  int selectedTrimester = 0;
 
   _idPemeriksaan() async {
     int? id1;
@@ -94,95 +98,98 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
 
   @override
   Widget build(BuildContext context) {
-    return DefaultTabController(
-      length: 3,
-      child: Scaffold(
-        appBar: PreferredSize(
-          preferredSize: const Size.fromHeight(
-              kToolbarHeight + 48), 
-          child: Container(
-            decoration: const BoxDecoration(
-              gradient: LinearGradient(
-                colors: [
-                  Color.fromARGB(255, 77, 129, 231), 
-                  Color.fromARGB(255, 255, 255, 255), 
-                ],
-                begin: Alignment.topLeft,
-                end: Alignment.bottomRight,
-              ),
-            ),
-            child: SafeArea(
-              child: Column(
-                children: [
-                  SizedBox(
-                    height: kToolbarHeight,
-                    child: Row(
-                      children: [
-                        IconButton(
-                          icon:
-                              const Icon(Icons.arrow_back, color: Colors.white),
-                          onPressed: () => Navigator.pop(context),
-                        ),
-                        Expanded(
-                          child: Text(
-                            widget.label,
-                            style: const TextStyle(
-                              color: Colors.white,
-                              fontSize: 20,
-                              fontWeight: FontWeight.bold,
-                            ),
-                            textAlign: TextAlign.center,
-                          ),
-                        ),
-                        const SizedBox(
-                            width: 48),
-                      ],
-                    ),
-                  ),
-                  const TabBar(
-                    indicatorColor: Color.fromARGB(255, 0, 0, 0),
-                    labelColor: Color.fromARGB(255, 0, 0, 0),
-                    unselectedLabelColor: Color.fromARGB(179, 0, 0, 0),
-                    labelStyle: TextStyle(fontWeight: FontWeight.bold),
-                    tabs: [
-                      Tab(text: "Trimester 1"),
-                      Tab(text: "Trimester 2"),
-                      Tab(text: "Trimester 3"),
-                    ],
-                  ),
-                ],
-              ),
-            ),
+    return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color.fromARGB(255, 77, 129, 231),
+        title: Text(
+          widget.label,
+          style: const TextStyle(
+            color: Colors.white,
+            fontSize: 20,
+            fontWeight: FontWeight.bold,
           ),
         ),
-        body: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : TabBarView(
-                children: [
-                  tri1 == null
-                      ? const Center(
-                          child: Text('Data Trimester 1 belum tersedia'))
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Trimester1Screen(id: tri1!),
-                        ),
-                  tri2.isEmpty
-                      ? const Center(
-                          child: Text('Data Trimester 2 belum tersedia'))
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Trimester2Screen(pemeriksaanIds: tri2),
-                        ),
-                  tri3.isEmpty
-                      ? const Center(
-                          child: Text('Data Trimester 3 belum tersedia'))
-                      : Padding(
-                          padding: const EdgeInsets.all(16.0),
-                          child: Trimester3Screen(pemeriksaanIds: tri3),
-                        ),
-                ],
-              ),
+        leading: IconButton(
+          icon: const Icon(Icons.arrow_back, color: Colors.white),
+          onPressed: () => Navigator.pop(context),
+        ),
       ),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : Column(
+              children: [
+                const SizedBox(height: 12),
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16.0),
+                  child: Row(
+                    children: List.generate(3, (index) {
+                      return Expanded(
+                        child: Padding(
+                          padding: const EdgeInsets.symmetric(horizontal: 4.0),
+                          child: ElevatedButton(
+                            onPressed: () {
+                              setState(() {
+                                selectedTrimester = index;
+                              });
+                            },
+                            style: ElevatedButton.styleFrom(
+                                backgroundColor: selectedTrimester == index
+                                    ? const Color.fromARGB(255, 77, 129, 231)
+                                    : Colors.white,
+                                foregroundColor: selectedTrimester == index
+                                    ? Colors.white
+                                    : Colors.black,
+                                side: const BorderSide(
+                                  color: Color.fromARGB(255, 77, 129, 231),
+                                ),
+                                shape: RoundedRectangleBorder(
+                                  borderRadius: BorderRadius.circular(8.0),
+                                )),
+                            child: Text('Trimester ${index + 1}'),
+                          ),
+                        ),
+                      );
+                    }),
+                  ),
+                ),
+                const SizedBox(height: 16),
+                Expanded(
+                  child: Builder(
+                    builder: (context) {
+                      if (selectedTrimester == 0) {
+                        return tri1 == null
+                            ? const Center(
+                                child: Text('Data Trimester 1 belum tersedia'))
+                            : Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Trimester1Screen(id: tri1!),
+                              );
+                      } else if (selectedTrimester == 1) {
+                        return tri2.isEmpty
+                            ? const Center(
+                                child: Text('Data Trimester 2 belum tersedia'))
+                            : Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Trimester2Screen(
+                                  pemeriksaanIds: tri2,
+                                ),
+                              );
+                      } else {
+                        return tri3.isEmpty
+                            ? const Center(
+                                child: Text('Data Trimester 3 belum tersedia'))
+                            : Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: Trimester3Screen(
+                                  pemeriksaanIds: tri3,
+                                ),
+                              );
+                      }
+                    },
+                  ),
+                ),
+              ],
+            ),
     );
   }
 }

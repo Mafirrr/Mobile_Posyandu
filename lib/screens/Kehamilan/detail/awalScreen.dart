@@ -17,25 +17,29 @@ class AwalScreen extends StatelessWidget {
     return list.join(', ');
   }
 
-  Widget buildTextField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        initialValue: value,
-        style: const TextStyle(
-          color: Colors.black,
-        ),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.black),
-          border: const OutlineInputBorder(),
-          disabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        ),
-        enabled: false,
+  Widget buildDisplayItem(String label, String value) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color.fromARGB(255, 255, 255, 255)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontSize: 13)),
+          const SizedBox(height: 4),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.normal)),
+        ],
       ),
     );
   }
@@ -43,8 +47,7 @@ class AwalScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayData = {
-      'ID Pemeriksaan': data.id.toString(),
-      'Tinggi Badan': data.tinggiBadan.toString(),
+      'Tinggi Badan': displayValue(data.tinggiBadan),
       'Golongan Darah': displayValue(data.golonganDarah),
       'Status Imunisasi': displayValue(data.statusImunisasiTd),
       'Hemoglobin': displayValue(data.hemoglobin),
@@ -55,30 +58,12 @@ class AwalScreen extends StatelessWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            buildTextField('ID Pemeriksaan', displayData['ID Pemeriksaan']!),
-            const SizedBox(height: 10),
-            buildTextField('Tinggi Badan', displayData['Tinggi Badan']!),
-            const SizedBox(height: 10),
-            buildTextField('Golongan Darah', displayData['Golongan Darah']!),
-            const SizedBox(height: 10),
-            buildTextField(
-                'Status Imunisasi', displayData['Status Imunisasi']!),
-            const SizedBox(height: 10),
-            buildTextField('Hemoglobin', displayData['Hemoglobin']!),
-            const SizedBox(height: 10),
-            buildTextField(
-                'Riwayat Kesehatan Ibu', displayData['Riwayat Kesehatan Ibu']!),
-            const SizedBox(height: 10),
-            buildTextField(
-                'Riwayat Perilaku', displayData['Riwayat Perilaku']!),
-            const SizedBox(height: 10),
-            buildTextField('Riwayat Penyakit Keluarga',
-                displayData['Riwayat Penyakit Keluarga']!),
-          ],
+          children: displayData.entries
+              .map((e) => buildDisplayItem(e.key, e.value))
+              .toList(),
         ),
       ),
     );

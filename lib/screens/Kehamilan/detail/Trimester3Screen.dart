@@ -28,50 +28,16 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
   final _db = Pemeriksaandatabase();
 
   List<Trimester3> pemeriksaanList = [];
-  Trimester3? selectedPemeriksaan;
-  PemeriksaanRutin? rutin;
-  PemeriksaanFisik? fisik;
-  SkriningKesehatan? skrining;
-  LabTrimester3? lab;
-  UsgTrimester3? usg;
-  RencanaKonsultasi? rencana;
-  String? selectedJenis = "Pemeriksaan Rutin";
   bool isLoading = true;
 
-  final List<String> jenisPemeriksaanList = [
-    'Pemeriksaan Rutin',
-  ];
-
-  List<String> get uniqueTanggal {
-    final seen = <String>{};
-    return pemeriksaanList
-        .map((e) => e.created_at!.split('T')[0])
-        .where((tgl) => seen.add(tgl))
-        .toList();
-  }
-
-  String? selectedTanggal;
-
-  List<Trimester3> get filteredByTanggal {
-    if (selectedTanggal == null) return [];
-    return pemeriksaanList
-        .where((e) => e.created_at.startsWith(selectedTanggal!))
-        .toList();
-  }
-
-  List<String> pemeriksaan = [
-    'Pemeriksaan Rutin',
-    'Pemeriksaan Fisik',
-    'Skrining Kesehatan Jiwa',
-    'Pemeriksaan Laboratorium',
-    'Pemeriksaan Usg',
-    'Rencana Konsultasi',
-  ];
-
-  String formatTanggalIndonesia(String isoDate) {
-    DateTime date = DateTime.parse(isoDate);
-    return DateFormat("d MMMM yyyy", "id_ID").format(date);
-  }
+  Map<String, bool> expandedMap = {
+    'Pemeriksaan Rutin': false,
+    'Pemeriksaan Fisik': false,
+    'Skrining Kesehatan Jiwa': false,
+    'Pemeriksaan Laboratorium': false,
+    'Pemeriksaan Usg': false,
+    'Rencana Konsultasi': false,
+  };
 
   @override
   void initState() {
@@ -83,124 +49,141 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
     final result = await _db.getTrimester3ByIds(widget.pemeriksaanIds);
     setState(() {
       pemeriksaanList = result;
-      if (pemeriksaanList.isNotEmpty) {
-        selectedTanggal = pemeriksaanList[0].created_at.split('T')[0];
-        selectedPemeriksaan = pemeriksaanList[0];
-        rutin = selectedPemeriksaan!.pemeriksaanRutin;
-        fisik = selectedPemeriksaan!.pemeriksaanFisik;
-        skrining = selectedPemeriksaan!.skriningKesehatan;
-        lab = selectedPemeriksaan!.labTrimester3;
-        usg = selectedPemeriksaan!.usgTrimester3;
-        rencana = selectedPemeriksaan!.rencanaKonsultasi;
-      }
       isLoading = false;
     });
   }
 
-  Widget? _getDetailScreen(String selected, Trimester3 data) {
-    switch (selected) {
-      case 'Pemeriksaan Rutin':
-        if (rutin == null) {
-          return const Text('Data Pemeriksaan Rutin belum tersedia');
-        }
-        return RutinScreen(data: rutin!);
-      case 'Pemeriksaan Fisik':
-        if (fisik == null) {
-          return const Text('Data Pemeriksaan Fisik belum tersedia');
-        }
-        return FisikScreen(data: fisik!);
-      case 'Skrining Kesehatan Jiwa':
-        return SkriningScreen(
-          data: skrining!,
-        );
-      case 'Pemeriksaan Laboratorium':
-        if (lab == null) {
-          return const Text('Data Pemeriksaan Lab belum tersedia');
-        }
-        return LabTrimester3Screen(
-          data: lab!,
-        );
-      case 'Pemeriksaan Usg':
-        if (usg == null) {
-          return const Text('Data Pemeriksaan USG belum tersedia');
-        }
-        return UsgTrimester3Screen(
-          data: usg!,
-        );
-      case 'Rencana Konsultasi':
-        if (rencana == null) {
-          return const Text('Data Rencana Konsultasi belum tersedia');
-        }
-        return RencanaKonsultasiScreen(
-          data: rencana!,
-        );
-      default:
-        return const Text("Belum ada halaman detail untuk jenis ini.");
-    }
+  String formatTanggalIndonesia(String isoDate) {
+    DateTime date = DateTime.parse(isoDate);
+    return DateFormat("d MMMM yyyy", "id_ID").format(date);
+  }
+
+  Widget _buildPemeriksaanCard(
+      String title, Widget child, String id, String tanggal) {
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      decoration: BoxDecoration(
+        color: const Color(0xFFE6EEFF),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Column(
+        children: [
+          ListTile(
+            title: Text(
+              title,
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            subtitle: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text('Id pemeriksaan: $id'),
+                Text('Tanggal pemeriksaan: $tanggal'),
+              ],
+            ),
+            trailing: Container(
+              decoration: BoxDecoration(
+                color: const Color(0xFF4D81E7),
+                borderRadius: BorderRadius.circular(8),
+              ),
+              child: IconButton(
+                icon: Icon(
+                  expandedMap[title]!
+                      ? Icons.keyboard_arrow_up
+                      : Icons.keyboard_arrow_down,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  setState(() {
+                    expandedMap[title] = !expandedMap[title]!;
+                  });
+                },
+              ),
+            ),
+          ),
+          if (expandedMap[title]!)
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+              child: child,
+            ),
+        ],
+      ),
+    );
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
+    }
+
+    if (pemeriksaanList.isEmpty) {
+      return const Scaffold(
+          body: Center(child: Text("Belum ada data pemeriksaan.")));
+    }
+
+    final pemeriksaan = pemeriksaanList[0];
+    final id = pemeriksaan.id.toString();
+    final tanggal = pemeriksaan.created_at != null
+        ? formatTanggalIndonesia(pemeriksaan.created_at!.split('T')[0])
+        : "-";
+
     return Scaffold(
-      body: isLoading
-          ? const Center(child: CircularProgressIndicator())
-          : pemeriksaanList.isEmpty
-              ? const Center(child: Text("Belum ada data pemeriksaan."))
-              : Padding(
-                  padding: const EdgeInsets.all(16.0),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      DropdownButtonFormField<String>(
-                        value: selectedJenis,
-                        hint: const Text('Pilih pemeriksaan'),
-                        items: pemeriksaan.map((item) {
-                          return DropdownMenuItem(
-                            value: item,
-                            child: Text(item),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedJenis = value;
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 20),
-                      DropdownButtonFormField<String>(
-                        value: selectedTanggal,
-                        hint: const Text('Pilih tanggal pemeriksaan'),
-                        items: uniqueTanggal.map((item) {
-                          return DropdownMenuItem(
-                            value: item,
-                            child: Text(formatTanggalIndonesia(item)),
-                          );
-                        }).toList(),
-                        onChanged: (value) {
-                          setState(() {
-                            selectedTanggal = value;
-                            final found = filteredByTanggal;
-                            if (found.isNotEmpty) {
-                              selectedPemeriksaan = found.first;
-                              rutin = selectedPemeriksaan!.pemeriksaanRutin;
-                              fisik = selectedPemeriksaan!.pemeriksaanFisik;
-                              skrining = selectedPemeriksaan!.skriningKesehatan;
-                              lab = selectedPemeriksaan!.labTrimester3;
-                              usg = selectedPemeriksaan!.usgTrimester3;
-                              rencana = selectedPemeriksaan!.rencanaKonsultasi;
-                            }
-                          });
-                        },
-                      ),
-                      const SizedBox(height: 16),
-                      if (selectedJenis != null && selectedPemeriksaan != null)
-                        Expanded(
-                          child: _getDetailScreen(
-                              selectedJenis!, selectedPemeriksaan!)!,
-                        )
-                    ],
-                  ),
-                ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: [
+            _buildPemeriksaanCard(
+              'Pemeriksaan Rutin',
+              pemeriksaan.pemeriksaanRutin != null
+                  ? RutinScreen(data: pemeriksaan.pemeriksaanRutin!)
+                  : const Text('Data Pemeriksaan Rutin belum tersedia'),
+              id,
+              tanggal,
+            ),
+            _buildPemeriksaanCard(
+              'Pemeriksaan Fisik',
+              pemeriksaan.pemeriksaanFisik != null
+                  ? FisikScreen(data: pemeriksaan.pemeriksaanFisik!)
+                  : const Text('Data Pemeriksaan Fisik belum tersedia'),
+              id,
+              tanggal,
+            ),
+            _buildPemeriksaanCard(
+              'Skrining Kesehatan Jiwa',
+              pemeriksaan.skriningKesehatan != null
+                  ? SkriningScreen(data: pemeriksaan.skriningKesehatan!)
+                  : const Text('Data Skrining Kesehatan belum tersedia'),
+              id,
+              tanggal,
+            ),
+            _buildPemeriksaanCard(
+              'Pemeriksaan Laboratorium',
+              pemeriksaan.labTrimester3 != null
+                  ? LabTrimester3Screen(data: pemeriksaan.labTrimester3!)
+                  : const Text('Data Pemeriksaan Laboratorium belum tersedia'),
+              id,
+              tanggal,
+            ),
+            _buildPemeriksaanCard(
+              'Pemeriksaan Usg',
+              pemeriksaan.usgTrimester3 != null
+                  ? UsgTrimester3Screen(data: pemeriksaan.usgTrimester3!)
+                  : const Text('Data Pemeriksaan USG belum tersedia'),
+              id,
+              tanggal,
+            ),
+            _buildPemeriksaanCard(
+              'Rencana Konsultasi',
+              pemeriksaan.rencanaKonsultasi != null
+                  ? RencanaKonsultasiScreen(
+                      data: pemeriksaan.rencanaKonsultasi!)
+                  : const Text('Data Rencana Konsultasi belum tersedia'),
+              id,
+              tanggal,
+            ),
+          ],
+        ),
+      ),
     );
   }
 }

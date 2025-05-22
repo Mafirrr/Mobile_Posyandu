@@ -6,25 +6,35 @@ class FisikScreen extends StatelessWidget {
 
   const FisikScreen({Key? key, required this.data}) : super(key: key);
 
-  Widget buildTextField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        initialValue: value,
-        style: const TextStyle(
-          color: Colors.black,
-        ),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.black),
-          border: const OutlineInputBorder(),
-          disabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        ),
-        enabled: false,
+  String displayValue(dynamic value) {
+    if (value == null) return '-';
+    if (value is String && value.isEmpty) return '-';
+    return value.toString();
+  }
+
+  Widget buildDisplayItem(String label, String value) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: Colors.white),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontSize: 13)),
+          const SizedBox(height: 4),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.normal)),
+        ],
       ),
     );
   }
@@ -32,27 +42,26 @@ class FisikScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayData = {
-      'ID Pemeriksaan': data.id.toString(),
-      'Konjungtiva': data.konjungtiva ?? '-',
-      'Sklera': data.sklera ?? '-',
-      'Kulit': data.kulit ?? '-',
-      'Leher': data.leher ?? '-',
-      'Gigi Mulut': data.gigiMulut ?? '-',
-      'THT': data.tht ?? '-',
-      'Jantung': data.jantung ?? '-',
-      'Paru': data.paru ?? '-',
-      'Perut': data.perut ?? '-',
-      'Tungkai': data.tungkai ?? '-',
+      'Konjungtiva': displayValue(data.konjungtiva),
+      'Sklera': displayValue(data.sklera),
+      'Kulit': displayValue(data.kulit),
+      'Leher': displayValue(data.leher),
+      'Gigi Mulut': displayValue(data.gigiMulut),
+      'THT': displayValue(data.tht),
+      'Jantung': displayValue(data.jantung),
+      'Paru': displayValue(data.paru),
+      'Perut': displayValue(data.perut),
+      'Tungkai': displayValue(data.tungkai),
     };
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          children: displayData.entries.map((entry) {
-            return buildTextField(entry.key, entry.value);
-          }).toList(),
+          children: displayData.entries
+              .map((e) => buildDisplayItem(e.key, e.value))
+              .toList(),
         ),
       ),
     );

@@ -12,25 +12,29 @@ class RutinScreen extends StatelessWidget {
     return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
 
-  Widget buildTextField(String label, String value) {
-    return Padding(
-      padding: const EdgeInsets.symmetric(vertical: 6),
-      child: TextFormField(
-        initialValue: value,
-        style: const TextStyle(
-          color: Colors.black,
-        ),
-        decoration: InputDecoration(
-          labelText: label,
-          labelStyle: const TextStyle(color: Colors.black),
-          border: const OutlineInputBorder(),
-          disabledBorder: const OutlineInputBorder(
-            borderSide: BorderSide(color: Colors.grey),
-          ),
-          contentPadding:
-              const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-        ),
-        enabled: false,
+  Widget buildDisplayItem(String label, String value) {
+    return Container(
+      width: double.infinity,
+      margin: const EdgeInsets.symmetric(vertical: 6),
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        border: Border.all(color: const Color.fromARGB(255, 255, 255, 255)),
+        borderRadius: BorderRadius.circular(10),
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label,
+              style: const TextStyle(
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
+                  fontSize: 13)),
+          const SizedBox(height: 4),
+          Text(value,
+              style: const TextStyle(
+                  color: Colors.black, fontWeight: FontWeight.normal)),
+        ],
       ),
     );
   }
@@ -39,7 +43,6 @@ class RutinScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final displayData = {
-      'ID Pemeriksaan': data.id.toString(),
       'Berat Badan': data.beratBadan?.toString() ?? '-',
       'Tinggi Rahim': data.tinggiRahim ?? '-',
       'Tekanan Darah Sistol': data.tekananDarahSistol?.toString() ?? '-',
@@ -58,55 +61,41 @@ class RutinScreen extends StatelessWidget {
 
     return SafeArea(
       child: SingleChildScrollView(
-        padding: const EdgeInsets.all(16),
+        padding: const EdgeInsets.all(12),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            buildTextField('ID Pemeriksaan', displayData['ID Pemeriksaan']!),
-            const SizedBox(height: 10),
             Row(
               children: [
                 Expanded(
-                    child: buildTextField(
-                        'Berat Badan', displayData['Berat Badan']!)),
+                  child: buildDisplayItem(
+                      'Berat Badan', displayData['Berat Badan']!),
+                ),
                 const SizedBox(width: 10),
                 Expanded(
-                    child: buildTextField(
-                        'Tinggi Rahim', displayData['Tinggi Rahim']!)),
+                  child: buildDisplayItem(
+                      'Tinggi Rahim', displayData['Tinggi Rahim']!),
+                ),
               ],
             ),
             const SizedBox(height: 10),
-            Row(
-              children: [
-                Expanded(
-                    child: buildTextField('Tekanan Darah Sistol',
-                        displayData['Tekanan Darah Sistol']!)),
-                const SizedBox(width: 10),
-                Expanded(
-                    child: buildTextField('Tekanan Darah Diastol',
-                        displayData['Tekanan Darah Diastol']!)),
-              ],
-            ),
-            const SizedBox(height: 10),
-            buildTextField('Letak dan Denyut Nadi Bayi',
+            buildDisplayItem(
+                'Tekanan Darah Sistol', displayData['Tekanan Darah Sistol']!),
+            buildDisplayItem(
+                'Tekanan Darah Diastol', displayData['Tekanan Darah Diastol']!),
+            buildDisplayItem('Letak dan Denyut Nadi Bayi',
                 displayData['Letak dan Denyut Nadi Bayi']!),
-            const SizedBox(height: 10),
-            buildTextField(
+            buildDisplayItem(
                 'Lingkar Lengan Atas', displayData['Lingkar Lengan Atas']!),
-            const SizedBox(height: 10),
-            buildTextField('Protein Urin', displayData['Protein Urin']!),
-            const SizedBox(height: 10),
-            buildTextField(
+            buildDisplayItem('Protein Urin', displayData['Protein Urin']!),
+            buildDisplayItem(
                 'Tablet Tambah Darah', displayData['Tablet Tambah Darah']!),
-            const SizedBox(height: 10),
-            buildTextField('Konseling', displayData['Konseling']!),
-            const SizedBox(height: 10),
-            buildTextField('Skrining Dokter', displayData['Skrining Dokter']!),
-            const SizedBox(height: 10),
-            buildTextField(
+            buildDisplayItem('Konseling', displayData['Konseling']!),
+            buildDisplayItem(
+                'Skrining Dokter', displayData['Skrining Dokter']!),
+            buildDisplayItem(
                 'Tes Lab Gula Darah', displayData['Tes Lab Gula Darah']!),
-            const SizedBox(height: 10),
-            buildTextField(
+            buildDisplayItem(
                 'Tanggal Pemeriksaan', displayData['Tanggal Pemeriksaan']!),
           ],
         ),

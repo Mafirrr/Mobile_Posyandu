@@ -34,36 +34,44 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                     ),
                   ),
                   Padding(
-                    padding: const EdgeInsets.symmetric(
-                        vertical: 12, horizontal: 8.0),
+                    padding:
+                        const EdgeInsets.only(top: 40, left: 16.0, right: 16.0),
                     child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Column(
+                        Row(
                           children: [
-                            CircleAvatar(
-                              radius: 30,
-                              backgroundImage:
-                                  AssetImage('assets/images/picture.jpg'),
+                            Image.asset(
+                              'assets/images/logo_putih.png',
+                              width: 60,
+                              height: 60,
+                              fit: BoxFit.cover,
                             ),
-                            SizedBox(height: 12),
-                            Text(
-                              "Mafira",
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontWeight: FontWeight.bold,
-                                fontSize: 16,
-                              ),
-                            ),
-                            SizedBox(height: 0),
-                            Text(
-                              "mafira@email.com",
-                              style: TextStyle(
-                                color: Colors.white70,
-                                fontSize: 12,
-                              ),
+                            const Spacer(),
+                            IconButton(
+                              icon: const Icon(Icons.menu, color: Colors.white),
+                              onPressed: () {
+                                Navigator.of(context).pop();
+                              },
                             ),
                           ],
+                        ),
+                        const SizedBox(height: 16),
+                        const Text(
+                          "Mafira",
+                          style: TextStyle(
+                            color: Colors.white,
+                            fontWeight: FontWeight.bold,
+                            fontSize: 16,
+                          ),
+                        ),
+                        const SizedBox(height: 4),
+                        const Text(
+                          "mafira@email.com",
+                          style: TextStyle(
+                            color: Colors.white70,
+                            fontSize: 12,
+                          ),
                         ),
                       ],
                     ),
@@ -96,8 +104,6 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                       ),
                     );
                   }),
-                  sectionTitle("Lainnya"),
-                  drawerItem(Icons.menu_book, "Edukasi", () {}),
                 ],
               ),
             ),
@@ -141,7 +147,7 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
   Widget drawerItem(IconData icon, String title, VoidCallback onTap) {
     return ListTile(
       dense: true,
-      leading: Icon(icon, color: Colors.blue),
+      leading: Icon(icon, color: const Color.fromARGB(255, 96, 96, 96)),
       title: Text(title),
       onTap: onTap,
     );

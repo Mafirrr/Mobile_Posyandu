@@ -1,6 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
-import 'package:dropdown_button2/dropdown_button2.dart';
 
 import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
@@ -19,18 +17,9 @@ class _Trimester2ScreenState extends State<Trimester2Screen> {
   final _db = Pemeriksaandatabase();
 
   List<PemeriksaanRutin> pemeriksaanList = [];
-  PemeriksaanRutin? selectedPemeriksaan;
-  String? selectedJenis = "Pemeriksaan Rutin";
   bool isLoading = true;
 
-  final List<String> jenisPemeriksaanList = [
-    'Pemeriksaan Rutin',
-  ];
-
-  String formatTanggalIndonesia(String isoDate) {
-    DateTime date = DateTime.parse(isoDate);
-    return DateFormat("d MMMM yyyy", "id_ID").format(date);
-  }
+  Map<int, bool> expandedMap = {};
 
   @override
   void initState() {
@@ -42,94 +31,96 @@ class _Trimester2ScreenState extends State<Trimester2Screen> {
     final result = await _db.getTrimester2ByIds(widget.pemeriksaanIds);
     setState(() {
       pemeriksaanList = result;
-      if (pemeriksaanList.isNotEmpty) {
-        selectedPemeriksaan = pemeriksaanList[0];
-      }
+      expandedMap = {for (var p in pemeriksaanList) p.id!: false};
       isLoading = false;
     });
   }
 
-  Widget? _getDetailScreen(String selected, PemeriksaanRutin data) {
-    switch (selected) {
-      case 'Pemeriksaan Rutin':
-        return RutinScreen(data: data);
-      default:
-        return const Text("Belum ada halaman detail untuk jenis ini.");
-    }
+  String formatTanggalIndonesia(String isoDate) {
+    DateTime date = DateTime.parse(isoDate);
+    return "${date.day} ${_bulanIndonesia(date.month)} ${date.year}";
+  }
+
+  String _bulanIndonesia(int month) {
+    const bulan = [
+      '',
+      'Januari',
+      'Februari',
+      'Maret',
+      'April',
+      'Mei',
+      'Juni',
+      'Juli',
+      'Agustus',
+      'September',
+      'Oktober',
+      'November',
+      'Desember'
+    ];
+    return bulan[month];
   }
 
   @override
   Widget build(BuildContext context) {
+    if (isLoading) {
+      return const Center(child: CircularProgressIndicator());
+    }
+    if (pemeriksaanList.isEmpty) {
+      return const Center(child: Text("Belum ada data pemeriksaan."));
+    }
+
     return SafeArea(
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12),
-        child: isLoading
-            ? const Center(child: CircularProgressIndicator())
-            : pemeriksaanList.isEmpty
-                ? const Center(child: Text("Belum ada data pemeriksaan."))
-                : Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      Row(
-                        children: [
-                          Expanded(
-                            child: SizedBox(
-                              height: 42,
-                              child: DropdownButtonFormField2<PemeriksaanRutin>(
-                                isExpanded: true,
-                                decoration: InputDecoration(
-                                  contentPadding:
-                                      const EdgeInsets.symmetric(vertical: 10),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                  focusedBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(8),
-                                    borderSide: const BorderSide(
-                                      color: Colors.blue,
-                                      width: 1.8,
-                                    ),
-                                  ),
-                                ),
-                                hint: const Text('Pilih tanggal pemeriksaan'),
-                                value: selectedPemeriksaan,
-                                items: pemeriksaanList.map((item) {
-                                  return DropdownMenuItem<PemeriksaanRutin>(
-                                    value: item,
-                                    child: Text(
-                                      formatTanggalIndonesia(item.created_at!),
-                                      overflow: TextOverflow.ellipsis,
-                                      style: const TextStyle(fontSize: 13),
-                                    ),
-                                  );
-                                }).toList(),
-                                onChanged: (value) {
-                                  setState(() {
-                                    selectedPemeriksaan = value;
-                                  });
-                                },
-                                dropdownStyleData: DropdownStyleData(
-                                  maxHeight: 300,
-                                  decoration: BoxDecoration(
-                                    borderRadius: BorderRadius.circular(8),
-                                  ),
-                                ),
-                                menuItemStyleData: const MenuItemStyleData(
-                                  padding: EdgeInsets.symmetric(horizontal: 16),
-                                ),
-                              ),
-                            ),
-                          ),
-                        ],
+      child: SingleChildScrollView(
+        padding: const EdgeInsets.all(12),
+        child: Column(
+          children: pemeriksaanList.map((pemeriksaan) {
+            bool isExpanded = expandedMap[pemeriksaan.id!] ?? false;
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              decoration: BoxDecoration(
+                color: const Color(0xFFE6EEFF),
+                borderRadius: BorderRadius.circular(12),
+              ),
+              child: Column(
+                children: [
+                  ListTile(
+                    title: Text(
+                      formatTanggalIndonesia(pemeriksaan.created_at!),
+                      style: const TextStyle(fontWeight: FontWeight.w600),
+                    ),
+                    subtitle: Text('Id pemeriksaan: ${pemeriksaan.id}'),
+                    trailing: Container(
+                      decoration: BoxDecoration(
+                        color: const Color(0xFF4D81E7), 
+                        borderRadius:
+                            BorderRadius.circular(8),
                       ),
-                      const SizedBox(height: 20),
-                      if (selectedJenis != null && selectedPemeriksaan != null)
-                        Expanded(
-                          child: _getDetailScreen(
-                              selectedJenis!, selectedPemeriksaan!)!,
-                        )
-                    ],
+                      child: IconButton(
+                        icon: Icon(
+                          isExpanded
+                              ? Icons.keyboard_arrow_up
+                              : Icons.keyboard_arrow_down,
+                          color: Colors.white, 
+                        ),
+                        onPressed: () {
+                          setState(() {
+                            expandedMap[pemeriksaan.id!] = !isExpanded;
+                          });
+                        },
+                      ),
+                    ),
                   ),
+                  if (isExpanded)
+                    Padding(
+                      padding: const EdgeInsets.symmetric(
+                          horizontal: 12, vertical: 8),
+                      child: RutinScreen(data: pemeriksaan),
+                    ),
+                ],
+              ),
+            );
+          }).toList(),
+        ),
       ),
     );
   }

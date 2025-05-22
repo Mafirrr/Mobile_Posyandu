@@ -66,7 +66,6 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
     return Scaffold(
       body: Stack(
         children: [
-          // Background gradient
           Container(
             decoration: const BoxDecoration(
               gradient: LinearGradient(
@@ -80,7 +79,6 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
               ),
             ),
           ),
-
           SafeArea(
             child: Padding(
               padding: const EdgeInsets.all(16),
