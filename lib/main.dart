@@ -1,11 +1,13 @@
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/viewmodel/artikel_viewmodel.dart';
+import 'package:posyandu_mob/core/viewmodel/Anggota_viewmodel.dart';
 import 'package:flutter/services.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/jadwalKader_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/kategori_viewmodel.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
+import 'package:posyandu_mob/core/viewmodel/Petugas_viewmodel.dart';
 import 'package:posyandu_mob/screens/SplashScreen.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -95,6 +97,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ArtikelViewModel()..getArtikel()),
         ChangeNotifierProvider(create: (_) => KategoriViewmodel()),
         ChangeNotifierProvider(create: (_) => JadwalkaderViewmodel()),
+          ChangeNotifierProvider(create: (_) => AnggotaViewModel()),
+           ChangeNotifierProvider(create: (_) => PetugasViewModel()),
       ],
       child: const MyApp(),
     ),
