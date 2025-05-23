@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
-
+import 'package:posyandu_mob/screens/anggota/anggota_screen.dart';
+import 'package:posyandu_mob/screens/petugas/petugas_screen.dart';
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
 
@@ -85,8 +87,22 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                   sectionTitle("Home"),
                   drawerItem(Icons.home_outlined, "Dashboard", () {}),
                   sectionTitle("Data Pengguna"),
-                  drawerItem(Icons.people, "Ibu Hamil", () {}),
-                  drawerItem(Icons.person, "Bidan", () {}),
+                  drawerItem(Icons.people, "Ibu Hamil", () {
+                     Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const AnggotaScreen(),
+                      ),
+                    );
+                  }),
+                  drawerItem(Icons.person, "Bidan", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const PetugasScreen(),
+                      ),
+                    );
+                  }),
                   sectionTitle("Pelayanan Posyandu"),
                   drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {
                     Navigator.push(

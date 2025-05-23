@@ -28,6 +28,8 @@ class DataAnggota {
   String alamat;
   @JsonKey(name: "no_telepon")
   String? noTelepon;
+@JsonKey(name: "golongan_Darah")
+  String? golonganDarah;
 
   DataAnggota({
     required this.id,
@@ -42,6 +44,7 @@ class DataAnggota {
     required this.pekerjaan,
     required this.alamat,
     this.noTelepon,
+    this.golonganDarah,
   });
 
   factory DataAnggota.fromJson(Map<String, dynamic> json) =>
