@@ -130,9 +130,7 @@ class AuthService {
         }),
       );
 
-      if (response.statusCode == 200) {
-        throw ("FCM token berhasil diupdate");
-      } else {
+      if (response.statusCode != 200) {
         throw ("Gagal update FCM token: ${response.data}");
       }
     } catch (e) {

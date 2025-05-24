@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/core/models/dataAnggota.dart';
 import 'package:posyandu_mob/core/services/AnggotaService.dart';
 
 class AnggotaViewModel extends ChangeNotifier {
