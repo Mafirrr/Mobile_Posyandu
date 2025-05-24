@@ -55,17 +55,24 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> changePassword(String phone, String password) async {
+  Future<bool> changePassword(
+      String identifier, String password, String otp) async {
     _setLoading(true);
+    try {
+      final response = await _authService.resetPass(
+          identifier: identifier, password: password, otp: otp);
 
-    final response = await _authService.changePassword(phone, password);
-
-    _setLoading(false);
-
-    if (response != null && response.statusCode == 200) {
-      return true;
-    } else {
+      if (response.statusCode == 200) {
+        return true;
+      } else {
+        debugPrint('Gagal: ${response.data}');
+        return false;
+      }
+    } catch (e) {
+      debugPrint('Exception saat ganti password: $e');
       return false;
+    } finally {
+      _setLoading(false);
     }
   }
 }
