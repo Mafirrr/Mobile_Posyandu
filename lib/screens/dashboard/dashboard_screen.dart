@@ -8,6 +8,7 @@ import 'grafik_popup.dart';
 import 'package:posyandu_mob/core/models/Artikel.dart';
 import 'package:posyandu_mob/core/services/jadwal_service.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
+import 'notification_page.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -230,7 +231,10 @@ class _DashboardPageState extends State<DashboardPage> {
                           icon: const Icon(Icons.notifications_outlined),
                           color: Colors.black,
                           onPressed: () {
-                            showNotifikasiDialog(context);
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(builder: (context) => const NotificationPage()),
+                            );
                           },
                         ),
                       ],
