@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/services/PetugasService.dart';
 
 class PetugasViewModel extends ChangeNotifier {

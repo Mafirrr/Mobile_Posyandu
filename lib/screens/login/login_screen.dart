@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
-import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
