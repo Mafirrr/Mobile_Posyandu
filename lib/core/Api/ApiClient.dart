@@ -8,7 +8,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: "http://192.168.0.5:8000/api",
+      baseUrl: "http://192.168.1.120:8000/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -25,9 +25,7 @@ class ApiClient {
       dio.options.headers["Authorization"] = "Bearer ${user.token}";
     } else {
       final user = await UserDatabase().readPetugas();
-      (user != null && user.token.isNotEmpty)
-          ? dio.options.headers["Authorization"] = "Bearer ${user.token}"
-          : "";
+      dio.options.headers["Authorization"] = "Bearer ${user!.token}";
     }
   }
 

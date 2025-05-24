@@ -28,10 +28,16 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   late TextEditingController _noTeleponController;
 
   final List<String> _golonganDarahList = [
-    'A+', 'A-', 'B+', 'B-', 'AB+', 'AB-', 'O+', 'O-'
+    'A+',
+    'A-',
+    'B+',
+    'B-',
+    'AB+',
+    'AB-',
+    'O+',
+    'O-'
   ];
   String? _selectedGolonganDarah;
-  
 
   @override
   void initState() {
@@ -58,7 +64,6 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
         TextEditingController(text: widget.anggota?['noTelepon'] ?? '');
 
     _selectedGolonganDarah = widget.anggota?['golonganDarah'];
-    
   }
 
   @override
@@ -77,8 +82,8 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   }
 
   Future<void> _selectDate(BuildContext context) async {
-    DateTime initialDate = DateTime.tryParse(_tanggalLahirController.text) ??
-        DateTime.now();
+    DateTime initialDate =
+        DateTime.tryParse(_tanggalLahirController.text) ?? DateTime.now();
     final DateTime? picked = await showDatePicker(
       context: context,
       initialDate: initialDate,
@@ -139,8 +144,12 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEdit ? 'Edit Anggota' : 'Tambah Anggota',style: TextStyle(color: Colors.white),),
-        backgroundColor: const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
+        title: Text(
+          widget.isEdit ? 'Edit Anggota' : 'Tambah Anggota',
+          style: TextStyle(color: Colors.white),
+        ),
+        backgroundColor:
+            const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
       ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(16),
@@ -155,8 +164,9 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'Nama',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Nama tidak boleh kosong' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Nama tidak boleh kosong'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -169,7 +179,8 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                 ),
                 keyboardType: TextInputType.number,
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'NIK tidak boleh kosong';
+                  if (val == null || val.isEmpty)
+                    return 'NIK tidak boleh kosong';
                   return null;
                 },
               ),
@@ -182,10 +193,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'No JKN',
                   border: OutlineInputBorder(),
                 ),
-                 keyboardType: TextInputType.number,
-                
+                keyboardType: TextInputType.number,
                 validator: (val) {
-                  if (val == null || val.isEmpty) return 'No JKN tidak boleh kosong';
+                  if (val == null || val.isEmpty)
+                    return 'No JKN tidak boleh kosong';
                   return null;
                 },
               ),
@@ -198,9 +209,9 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'Faskes TK1',
                   border: OutlineInputBorder(),
                 ),
-            
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Faskes TK1 wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Faskes TK1 wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -211,22 +222,23 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'Faskes Rujukan',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Faskes Rujukan wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Faskes Rujukan wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
-
-              // Tanggal Lahir + Date Picker
               TextFormField(
                 controller: _tanggalLahirController,
                 decoration: InputDecoration(
                   labelText: 'Tanggal Lahir',
+                  suffixIcon: Icon(Icons.calendar_today),
                   border: OutlineInputBorder(),
                 ),
                 readOnly: true,
                 onTap: () => _selectDate(context),
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Tanggal lahir wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Tanggal lahir wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -237,8 +249,9 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'Tempat Lahir',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Tempat lahir wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Tempat lahir wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -261,7 +274,6 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   labelText: 'Alamat',
                   border: OutlineInputBorder(),
                 ),
-  
                 validator: (val) =>
                     val == null || val.isEmpty ? 'Alamat wajib diisi' : null,
               ),
@@ -275,8 +287,9 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'No telepon wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'No telepon wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -295,20 +308,26 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     _selectedGolonganDarah = val;
                   });
                 },
-                validator: (val) =>
-                    val == null || val.isEmpty ? 'Golongan darah wajib dipilih' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Golongan darah wajib dipilih'
+                    : null,
               ),
               SizedBox(height: 24),
 
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
+                  backgroundColor: const Color.from(
+                      alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
                   minimumSize: Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                  icon: Icon(Icons.save, color: const Color.fromARGB(255, 255, 255, 255)),
-                label: Text('Simpan',style: TextStyle(color: Colors.white),),
+                label: Text(
+                  'Simpan',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
                 onPressed: _saveAnggota,
-                
               ),
             ],
           ),

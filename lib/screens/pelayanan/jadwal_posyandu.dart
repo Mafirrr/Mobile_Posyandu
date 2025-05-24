@@ -342,10 +342,21 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                   SizedBox(
                     width: double.infinity,
                     height: 42,
-                    child: CustomButton(
+                    child: ElevatedButton(
                       onPressed: _simpanJadwal,
-                      text: 'Simpan',
-                      fontSize: 14,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Color.fromARGB(255, 33, 150, 243),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                      ),
+                      child: const Text(
+                        'Simpan',
+                        style: TextStyle(
+                          fontSize: 16,
+                          color: Colors.white,
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -431,17 +442,78 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                           Row(
                             mainAxisSize: MainAxisSize.min,
                             children: [
-                              IconButton(
-                                icon: Icon(Icons.edit,
-                                    size: 18, color: Colors.orange),
-                                onPressed: () => _editJadwal(item),
+                              GestureDetector(
+                                onTap: () => _editJadwal(item),
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color:
+                                            Color.fromARGB(255, 33, 150, 243)),
+                                  ),
+                                  child: const Icon(Icons.edit,
+                                      color: Color.fromARGB(255, 33, 150, 243),
+                                      size: 20),
+                                ),
                               ),
-                              IconButton(
-                                icon: Icon(Icons.delete,
-                                    size: 18, color: Colors.red),
-                                onPressed: () {
-                                  // Tambahkan logika hapus
+                              const SizedBox(width: 8),
+                              GestureDetector(
+                                onTap: () async {
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (_) => AlertDialog(
+                                      title: const Text('Konfirmasi'),
+                                      content: const Text('Hapus jadwal ini?'),
+                                      actions: [
+                                        TextButton(
+                                          child: const Text('Batal'),
+                                          onPressed: () =>
+                                              Navigator.pop(context, false),
+                                        ),
+                                        TextButton(
+                                          child: const Text('Hapus'),
+                                          onPressed: () =>
+                                              Navigator.pop(context, true),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+                                  if (confirmed == true) {
+                                    try {
+                                      await _viewModel.deleteJadwal(item.id);
+                                      setState(() {
+                                        _loadFuture = _viewModel.loadJadwal();
+                                      });
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Jadwal berhasil dihapus')),
+                                      );
+                                    } catch (e) {
+                                      ScaffoldMessenger.of(context)
+                                          .showSnackBar(
+                                        SnackBar(
+                                            content: Text(
+                                                'Gagal menghapus jadwal: $e')),
+                                      );
+                                    }
+                                  }
                                 },
+                                child: Container(
+                                  padding: const EdgeInsets.all(8),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                        color:
+                                            Color.fromARGB(255, 33, 150, 243)),
+                                  ),
+                                  child: const Icon(Icons.delete,
+                                      color: Colors.red, size: 20),
+                                ),
                               ),
                             ],
                           ),

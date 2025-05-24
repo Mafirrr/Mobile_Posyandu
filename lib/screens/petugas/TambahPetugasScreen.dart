@@ -6,7 +6,8 @@ class TambahPetugasScreen extends StatefulWidget {
   final Map<String, dynamic>? petugas; // data untuk edit
   final bool isEdit;
 
-  const TambahPetugasScreen({Key? key, this.petugas, required this.isEdit}) : super(key: key);
+  const TambahPetugasScreen({Key? key, this.petugas, required this.isEdit})
+      : super(key: key);
 
   @override
   State<TambahPetugasScreen> createState() => _TambahPetugasScreenState();
@@ -25,9 +26,12 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
     super.initState();
 
     _nipController = TextEditingController(text: widget.petugas?['nip'] ?? '');
-    _namaController = TextEditingController(text: widget.petugas?['nama'] ?? '');
-    _noTeleponController = TextEditingController(text: widget.petugas?['no_telepon'] ?? '');
-    _emailController = TextEditingController(text: widget.petugas?['email'] ?? '');
+    _namaController =
+        TextEditingController(text: widget.petugas?['nama'] ?? '');
+    _noTeleponController =
+        TextEditingController(text: widget.petugas?['no_telepon'] ?? '');
+    _emailController =
+        TextEditingController(text: widget.petugas?['email'] ?? '');
   }
 
   @override
@@ -48,12 +52,13 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
         'nama': _namaController.text.trim(),
         'no_telepon': _noTeleponController.text.trim(),
         'email': _emailController.text.trim(),
-        'role': 'bidan',  // Role default
+        'role': 'bidan', // Role default
       };
 
       bool success;
       if (widget.isEdit) {
-        success = await viewModel.updatePetugas(widget.petugas!['id'].toString(), data);
+        success = await viewModel.updatePetugas(
+            widget.petugas!['id'].toString(), data);
       } else {
         success = await viewModel.addPetugas(data);
       }
@@ -79,7 +84,8 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: Text(widget.isEdit ? 'Edit Petugas' : 'Tambah Petugas', style: TextStyle(color: Colors.white)),
+        title: Text(widget.isEdit ? 'Edit Petugas' : 'Tambah Petugas',
+            style: TextStyle(color: Colors.white)),
         backgroundColor: const Color.fromARGB(255, 33, 150, 243),
       ),
       body: SingleChildScrollView(
@@ -95,7 +101,9 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   labelText: 'NIP',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'NIP tidak boleh kosong' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'NIP tidak boleh kosong'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -106,7 +114,9 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   labelText: 'Nama',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) => val == null || val.isEmpty ? 'Nama tidak boleh kosong' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'Nama tidak boleh kosong'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -118,7 +128,9 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty ? 'No telepon wajib diisi' : null,
+                validator: (val) => val == null || val.isEmpty
+                    ? 'No telepon wajib diisi'
+                    : null,
               ),
               SizedBox(height: 16),
 
@@ -133,7 +145,8 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                 validator: (val) {
                   if (val == null || val.isEmpty) return 'Email wajib diisi';
                   final emailRegex = RegExp(r'^[^@]+@[^@]+\.[^@]+');
-                  if (!emailRegex.hasMatch(val)) return 'Format email tidak valid';
+                  if (!emailRegex.hasMatch(val))
+                    return 'Format email tidak valid';
                   return null;
                 },
               ),
@@ -141,11 +154,17 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
 
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.fromARGB(255, 33, 150, 243),
+                  backgroundColor: const Color.from(
+                      alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
                   minimumSize: Size(double.infinity, 50),
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(6),
+                  ),
                 ),
-                icon: Icon(Icons.save, color: Colors.white),
-                label: Text('Simpan', style: TextStyle(color: Colors.white)),
+                label: Text(
+                  'Simpan',
+                  style: TextStyle(color: Colors.white, fontSize: 20),
+                ),
                 onPressed: _savePetugas,
               ),
             ],
