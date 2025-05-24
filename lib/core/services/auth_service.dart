@@ -60,7 +60,7 @@ class AuthService {
           } else {
             await _saveUser(user, role, token);
           }
-          // Ambil FCM Token
+
           String? fcmToken = await FirebaseMessaging.instance.getToken();
           if (fcmToken != null) {
             await updateFcmToken(fcmToken, token);
@@ -70,10 +70,9 @@ class AuthService {
         }
       }
 
-      return null;
+      return response;
     } on DioException catch (e) {
-      print("Dio error: ${e.response?.data ?? e.message}");
-      return null;
+      throw ("Dio error: ${e.response?.data ?? e.message}");
     }
   }
 
@@ -91,13 +90,13 @@ class AuthService {
     }
   }
 
-  Future<Response?> changePassword(String phone, String password) async {
+  Future<Response?> changePassword(String identifier) async {
     try {
+      _api.setToken();
       final response = await _api.dio.post(
         "/lupa-password",
         data: {
-          "phone": phone,
-          "password": password,
+          "identifier": identifier,
         },
       );
 
@@ -132,12 +131,82 @@ class AuthService {
       );
 
       if (response.statusCode == 200) {
-        print("FCM token berhasil diupdate");
+        throw ("FCM token berhasil diupdate");
       } else {
-        print("Gagal update FCM token: ${response.data}");
+        throw ("Gagal update FCM token: ${response.data}");
       }
     } catch (e) {
-      print("Error saat update FCM token: $e");
+      throw ("Error saat update FCM token: $e");
+    }
+  }
+
+  Future<Response> sendOtpToEmail(String email) async {
+    try {
+      _api.setToken();
+      final response = await _api.dio.post(
+        "/send-otp",
+        data: {
+          "email": email,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 500,
+        statusMessage:
+            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+      );
+    }
+  }
+
+  Future<Response> verifyOtp(String email, String otp) async {
+    try {
+      _api.setToken();
+      final response = await _api.dio.post(
+        "/verify-otp",
+        data: {
+          "email": email,
+          "otp": otp,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 500,
+        statusMessage:
+            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+      );
+    }
+  }
+
+  Future<Response> resetPass({
+    required String identifier,
+    required String password,
+    String? otp,
+  }) async {
+    try {
+      _api.setToken();
+      final response = await _api.dio.post(
+        "/resetPass",
+        data: {
+          "identifier": identifier,
+          "otp": otp,
+          "password": password,
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      return Response(
+        requestOptions: RequestOptions(path: ''),
+        statusCode: 500,
+        statusMessage:
+            'Terjadi kesalahan saat logout: ${e.response?.data ?? e.message}',
+      );
     }
   }
 }

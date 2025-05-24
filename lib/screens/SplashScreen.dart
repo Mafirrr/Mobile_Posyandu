@@ -29,8 +29,8 @@ class _SplashScreenState extends State<SplashScreen>
   late Animation<double> fadeOutAnimation;
 
   bool showSplash = true;
-  bool? isLoggedIn;
-  String? role;
+  bool isLoggedIn = false;
+  String role = '';
 
   // Durasi animasi
   final backgroundDuration = const Duration(milliseconds: 1000);

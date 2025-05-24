@@ -4,7 +4,6 @@ import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/screens/login/verifikasi_kode_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class LupaPasswordScreen extends StatefulWidget {
   const LupaPasswordScreen({super.key});
@@ -16,25 +15,100 @@ class LupaPasswordScreen extends StatefulWidget {
 class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _phoneController = TextEditingController();
-  String phone = "+6283834055752";
   String verificationId = "";
+  bool isLoading = false;
 
   final authService = AuthService();
 
-  void sendOtp() async {
-    final prefs = await SharedPreferences.getInstance();
+  void _lupaPassword(String input) async {
+    if (input.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+            content: Text("Harap masukkan email atau nomor telepon.")),
+      );
+      return;
+    }
+
+    final emailRegex = RegExp(r"^[\w\.-]+@[\w\.-]+\.\w{2,}$");
+    final phoneRegex = RegExp(r"^\+?\d{10,15}$");
+
+    try {
+      setState(() {
+        isLoading = true;
+      });
+      if (!(emailRegex.hasMatch(input) || phoneRegex.hasMatch(input))) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+              content: Text("Format email atau nomor telepon tidak valid.")),
+        );
+        return;
+      }
+
+      final response = await authService.changePassword(input);
+
+      if (response != null && response.statusCode == 200) {
+        final identifer = response.data['identifier'];
+
+        if (emailRegex.hasMatch(identifer)) {
+          await sendOtpToEmail(identifer);
+        } else if (phoneRegex.hasMatch(identifer)) {
+          await sendOtp(identifer);
+        }
+
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Kode OTP telah dikirim.")),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text("Akun tidak ditemukan.")),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error lupaPassword: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Terjadi kesalahan. Silakan coba lagi.")),
+      );
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
+    }
+  }
+
+  Future<void> sendOtpToEmail(String email) async {
+    try {
+      final response = await authService.sendOtpToEmail(email);
+
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => VerifikasiKodeScreen(
+              verificationId: '',
+              identifer: email,
+              tipe: "email",
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      debugPrint("Error lupaPassword: $e");
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text("Terjadi kesalahan. Silakan coba lagi.")),
+      );
+    }
+  }
+
+  Future<void> sendOtp(String noTelp) async {
     authService.sendOtp(
-      phoneNumber: phone,
+      phoneNumber: noTelp,
       onVerificationCompleted: (PhoneAuthCredential credential) async {
         await FirebaseAuth.instance.signInWithCredential(credential);
-        print("Login berhasil dengan auto-verifikasi");
       },
       onVerificationFailed: (FirebaseAuthException e) {
-        print("Verifikasi gagal: ${e.message}");
+        throw ("Verifikasi gagal: ${e.message}");
       },
       onCodeSent: (String verId, int? forceResendingToken) {
-        print("Kode dikirim ke $phone");
-        prefs.setString('no_telp', phone);
         setState(() {
           verificationId = verId;
         });
@@ -43,12 +117,13 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
           MaterialPageRoute(
               builder: (context) => VerifikasiKodeScreen(
                     verificationId: verId,
+                    identifer: noTelp,
+                    tipe: "nomor",
                   )),
         );
       },
       onCodeAutoRetrievalTimeout: (String verId) {
         verificationId = verId;
-        print("Waktu habis, masukkan OTP manual");
       },
     );
   }
@@ -126,7 +201,7 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
                           ),
                           child: TextFormField(
                             controller: _phoneController,
-                            keyboardType: TextInputType.phone,
+                            keyboardType: TextInputType.text,
                             validator: (value) {
                               if (value == null || value.isEmpty) {
                                 return 'Nomor telepon harus diisi';
@@ -146,9 +221,11 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
                           width: double.infinity,
                           child: CustomButton(
                             text: "Kirim Kode OTP",
-                            isLoading: false,
+                            isLoading: isLoading,
                             onPressed: () {
-                              sendOtp();
+                              if (_formKey.currentState!.validate()) {
+                                _lupaPassword(_phoneController.text.trim());
+                              }
                             },
                             backgroundColor: const Color(0xFF4A7EFF),
                             textColor: Colors.white,

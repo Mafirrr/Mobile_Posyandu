@@ -5,10 +5,11 @@ import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 import 'package:provider/provider.dart';
-import 'package:shared_preferences/shared_preferences.dart';
 
 class NewPasswordScreen extends StatefulWidget {
-  const NewPasswordScreen({super.key});
+  final String identifier, otp;
+  const NewPasswordScreen(
+      {super.key, required this.identifier, required this.otp});
 
   @override
   State<NewPasswordScreen> createState() => _NewPasswordScreenState();
@@ -21,18 +22,6 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
   bool _isPasswordVisible = false;
   bool _isConfirmPasswordVisible = false;
   String? _errorMessage;
-
-  Future<String?> getNumber() async {
-    final prefs = await SharedPreferences.getInstance();
-    final noTelp = prefs.getString('no_telp');
-
-    if (noTelp != null) {
-      await prefs.remove('no_telp');
-      return noTelp;
-    }
-
-    return null;
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -162,34 +151,26 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                           setState(() {
                             _errorMessage = null;
                           });
+                          bool success = await authViewModel.changePassword(
+                              widget.identifier, password, widget.otp);
 
-                          String? phone = await getNumber();
-                          if (phone != null) {
-                            bool success = await authViewModel.changePassword(
-                                phone, password);
-
-                            if (success) {
-                              Navigator.pushReplacement(
-                                context,
-                                MaterialPageRoute(
-                                    builder: (context) =>
-                                        const ResetSuksesScreen()),
-                              );
-                            } else {
-                              setState(() {
-                                _errorMessage =
-                                    "Terjadi kesalahan saat mengubah kata sandi.";
-                              });
-                            }
+                          if (success) {
+                            Navigator.pushReplacement(
+                              context,
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const ResetSuksesScreen()),
+                            );
                           } else {
                             setState(() {
-                              _errorMessage = "Nomor telepon tidak ditemukan.";
+                              _errorMessage =
+                                  "Terjadi kesalahan saat mengubah kata sandi.";
                             });
                           }
                         }
                       },
                     ),
-                  )
+                  ),
                 ],
               ),
             ),

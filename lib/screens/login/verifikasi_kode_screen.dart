@@ -2,13 +2,18 @@ import 'dart:async';
 
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/screens/login/password_reset_screen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class VerifikasiKodeScreen extends StatefulWidget {
-  final String verificationId;
-  const VerifikasiKodeScreen({super.key, required this.verificationId});
+  final String verificationId, identifer, tipe;
+  const VerifikasiKodeScreen(
+      {super.key,
+      required this.verificationId,
+      required this.identifer,
+      required this.tipe});
 
   @override
   State<VerifikasiKodeScreen> createState() => _VerifikasiKodeScreenState();
@@ -23,6 +28,9 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
   Duration countdownDuration = const Duration(minutes: 3);
   Timer? _resendTimer;
   String countdownText = '';
+  AuthService authService = AuthService();
+  bool isLoading = false;
+  String verification = "";
 
   @override
   void initState() {
@@ -37,30 +45,96 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
     mergedText = controllers.map((controller) => controller.text).join();
   }
 
-  void verifyOtp() async {
-    final credential = PhoneAuthProvider.credential(
-      verificationId: widget.verificationId,
-      smsCode: mergedText!,
-    );
-
+  Future<void> handleResend(String identifier) async {
     try {
-      UserCredential userCredential =
-          await FirebaseAuth.instance.signInWithCredential(credential);
-
-      if (userCredential.user != null) {
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(builder: (context) => const PasswordResetScreen()),
+      if (widget.tipe == "email") {
+        await authService.sendOtpToEmail(identifier);
+        showSnack("Kode OTP telah dikirim ulang ke email.");
+      } else {
+        authService.sendOtp(
+          phoneNumber: identifier,
+          onVerificationCompleted: (_) {},
+          onVerificationFailed: (e) =>
+              showSnack("Verifikasi gagal: ${e.message}"),
+          onCodeSent: (verId, _) {
+            setState(() => verification = verId);
+            showSnack("OTP dikirim ulang ke nomor.");
+          },
+          onCodeAutoRetrievalTimeout: (verId) =>
+              setState(() => verification = verId),
         );
       }
-    } catch (e) {
-      // Catch errors such as incorrect OTP or network issues
-      print("OTP verification failed: $e");
+    } catch (_) {
+      showSnack("Gagal mengirim ulang OTP.");
+    }
+  }
 
-      // Optionally, show an error message to the user
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text("OTP salah, coba lagi.")),
+  void showSnack(String msg) {
+    ScaffoldMessenger.of(context).showSnackBar(SnackBar(content: Text(msg)));
+  }
+
+  void verifyOtp() async {
+    setState(() {
+      isLoading = true;
+    });
+
+    if (widget.tipe == "email") {
+      try {
+        final response =
+            await authService.verifyOtp(widget.identifer, mergedText!);
+
+        if (response.statusCode == 200) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PasswordResetScreen(
+                identifier: widget.identifer,
+                otp: mergedText!,
+              ),
+            ),
+          );
+        } else {
+          showSnack("OTP salah atau kadaluarsa.");
+        }
+      } catch (e) {
+        showSnack("Gagal verifikasi OTP email.");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
+    } else if (widget.tipe == "nomor") {
+      if (verification.isEmpty) {
+        verification = widget.verificationId;
+      }
+
+      final credential = PhoneAuthProvider.credential(
+        verificationId: verification,
+        smsCode: mergedText!,
       );
+
+      try {
+        final userCredential =
+            await FirebaseAuth.instance.signInWithCredential(credential);
+
+        if (userCredential.user != null) {
+          Navigator.pushReplacement(
+            context,
+            MaterialPageRoute(
+              builder: (context) => PasswordResetScreen(
+                identifier: widget.identifer,
+                otp: '',
+              ),
+            ),
+          );
+        }
+      } catch (e) {
+        showSnack("OTP Firebase salah, coba lagi.");
+      } finally {
+        setState(() {
+          isLoading = false;
+        });
+      }
     }
   }
 
@@ -143,10 +217,10 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                     fontWeight: FontWeight.bold,
                   ),
                   const SizedBox(height: 6),
-                  const Text(
-                    "Masukkan kode OTP yang dikirim ke nomor Anda",
+                  Text(
+                    "Masukkan kode OTP yang dikirim ke ${widget.tipe} Anda",
                     textAlign: TextAlign.center,
-                    style: TextStyle(
+                    style: const TextStyle(
                       fontSize: 14,
                       color: Color.fromARGB(255, 52, 59, 65),
                     ),
@@ -158,15 +232,6 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                       return SizedBox(
                         width: 50,
                         height: 60,
-                        // alignment: Alignment.center,
-                        // decoration: BoxDecoration(
-                        //   color: Colors.transparent,
-                        //   borderRadius: BorderRadius.circular(12),
-                        //   border: Border.all(
-                        //     color: Color.fromARGB(255, 151, 151, 151),
-                        //     width: 1,
-                        //   ),
-                        // ),
                         child: TextField(
                           textAlign: TextAlign.center,
                           keyboardType: TextInputType.number,
@@ -205,9 +270,8 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                       width: double.infinity,
                       child: CustomButton(
                         text: "Kirim Kode OTP",
-                        isLoading: false,
+                        isLoading: isLoading,
                         onPressed: () {
-                          // Resend logic here
                           verifyOtp();
                         },
                         backgroundColor: const Color(0xFF4A7EFF),
@@ -220,7 +284,7 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
                   GestureDetector(
                     onTap: showResendButton
                         ? () {
-                            //
+                            handleResend(widget.identifer);
                           }
                         : null,
                     child: Text.rich(
