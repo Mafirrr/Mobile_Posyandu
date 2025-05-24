@@ -59,11 +59,10 @@ class AuthService {
             await _savePetugas(user, role, token);
           } else {
             await _saveUser(user, role, token);
-          }
-
-          String? fcmToken = await FirebaseMessaging.instance.getToken();
-          if (fcmToken != null) {
-            await updateFcmToken(fcmToken, token);
+            String? fcmToken = await FirebaseMessaging.instance.getToken();
+            if (fcmToken != null) {
+              await updateFcmToken(fcmToken, token);
+            }
           }
 
           return user;
@@ -130,9 +129,7 @@ class AuthService {
         }),
       );
 
-      if (response.statusCode == 200) {
-        throw ("FCM token berhasil diupdate");
-      } else {
+      if (response.statusCode != 200) {
         throw ("Gagal update FCM token: ${response.data}");
       }
     } catch (e) {

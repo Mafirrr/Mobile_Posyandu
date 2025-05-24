@@ -119,7 +119,7 @@ class _PetugasScreenState extends State<PetugasScreen> {
                           style: const TextStyle(
                               fontWeight: FontWeight.bold, fontSize: 16),
                         ),
-                        subtitle: Text('EMAIL: ${petugas['email']}'),
+                        subtitle: Text('Email: ${petugas['email']}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [

@@ -179,8 +179,9 @@ class _ListKehamilanPageState extends State<ListKehamilanPage> {
             onPressed: () {
               _loadKehamilanData();
             },
-            icon: const Icon(Icons.refresh),
-            label: const Text('Muat ulang'),
+            icon: const Icon(Icons.refresh, color: Colors.white),
+            label:
+                const Text('Muat ulang', style: TextStyle(color: Colors.white)),
             style: ElevatedButton.styleFrom(
               backgroundColor: const Color(0xFF325CA8),
               padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 12),

@@ -5,6 +5,7 @@ import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 import 'package:posyandu_mob/screens/anggota/anggota_screen.dart';
 import 'package:posyandu_mob/screens/petugas/petugas_screen.dart';
+import 'package:posyandu_mob/screens/profil/ubah_password_screen.dart';
 import 'package:provider/provider.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
@@ -131,6 +132,15 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                       context,
                       MaterialPageRoute(
                         builder: (context) => const PemeriksaanScreen(),
+                      ),
+                    );
+                  }),
+                  sectionTitle("Lainnya"),
+                  drawerItem(Icons.key, "Ubah Password", () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const UbahPasswordScreen(),
                       ),
                     );
                   }),

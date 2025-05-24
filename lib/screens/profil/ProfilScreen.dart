@@ -256,7 +256,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                             ProfileMenuCard(
                               title: "Ganti Password",
                               subtitle: "Perbarui kata sandi akun Anda",
-                              icon: Icons.lock,
+                              icon: Icons.key,
                               onTap: () {
                                 Navigator.push(
                                   context,
