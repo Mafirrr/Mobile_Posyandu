@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
-import 'package:posyandu_mob/core/models/Petugas.dart';
+import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 import 'package:posyandu_mob/screens/anggota/anggota_screen.dart';
 import 'package:posyandu_mob/screens/petugas/petugas_screen.dart';
+import 'package:provider/provider.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
@@ -14,6 +15,17 @@ class DrawerkaderScreen extends StatefulWidget {
 }
 
 class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
+  Future<void> _logout() async {
+    final authProvider = Provider.of<AuthViewModel>(context, listen: false);
+    final result = await authProvider.logout(context);
+
+    if (result) {
+      Navigator.of(context).pushReplacement(
+        MaterialPageRoute(builder: (context) => const LoginScreen()),
+      );
+    }
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -129,11 +141,7 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton.icon(
                 onPressed: () {
-                  Navigator.pushAndRemoveUntil(
-                    context,
-                    MaterialPageRoute(builder: (context) => LoginScreen()),
-                    (route) => false,
-                  );
+                  _logout();
                 },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
@@ -144,7 +152,7 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                 ),
                 icon: const Icon(Icons.power_settings_new, color: Colors.white),
                 label: const Text(
-                  "LogOut",
+                  "Logout",
                   style: TextStyle(color: Colors.white),
                 ),
               ),

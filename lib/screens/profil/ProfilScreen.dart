@@ -54,10 +54,12 @@ class _ProfileScreenState extends State<ProfilScreen> {
         lila = user.lingkarLenganAtas.toString();
         sistol = user.tekananDarahSistol.toString();
         diastol = user.tekananDarahDiastol.toString();
-        if (user.tinggiRahim!.contains('cm')) {
-          tinggi_rahim = user.tinggiRahim;
-        } else {
+        if (user.tinggiRahim != null &&
+            !user.tinggiRahim!.toLowerCase().contains('cm') &&
+            double.tryParse(user.tinggiRahim!) != null) {
           tinggi_rahim = "${user.tinggiRahim} cm";
+        } else {
+          tinggi_rahim = user.tinggiRahim;
         }
       });
     }
@@ -164,16 +166,6 @@ class _ProfileScreenState extends State<ProfilScreen> {
                                           'assets/images/picture.jpg')
                                       as ImageProvider,
                             ),
-                            const Positioned(
-                              bottom: 4,
-                              right: 4,
-                              child: CircleAvatar(
-                                radius: 14,
-                                backgroundColor: Colors.white,
-                                child: Icon(Icons.edit,
-                                    size: 16, color: Colors.blueAccent),
-                              ),
-                            ),
                           ],
                         ),
                         const SizedBox(height: 12),
@@ -191,7 +183,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                         ),
                         Text(
                           "$role • Aktif",
-                          style: TextStyle(color: Colors.grey),
+                          style: const TextStyle(color: Colors.grey),
                         ),
                         const SizedBox(height: 20),
                         Padding(
@@ -245,12 +237,7 @@ class _ProfileScreenState extends State<ProfilScreen> {
                               subtitle: "Lihat dan ubah informasi pribadi Anda",
                               icon: Icons.person,
                               onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          InformasiPribadiScreen()),
-                                );
+                                _openEditPage();
                               },
                             ),
                             ProfileMenuCard(

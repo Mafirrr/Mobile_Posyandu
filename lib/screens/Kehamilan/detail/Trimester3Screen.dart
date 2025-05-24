@@ -1,13 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester3.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanFisik.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/RencanaKonsultasi.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/SkriningKesehatan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
-import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester3.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/fisikScreen.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/labTrimester3Screen.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/rencanaKonsultasiScreen.dart';
@@ -33,6 +27,15 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
   final List<String> jenisPemeriksaanList = [
     'Pemeriksaan Rutin',
   ];
+
+  Map<String, bool> expandedMap = {
+    'Pemeriksaan Rutin': false,
+    'Pemeriksaan Fisik': false,
+    'Skrining Kesehatan Jiwa': false,
+    'Pemeriksaan Laboratorium': false,
+    'Pemeriksaan Usg': false,
+    'Rencana Konsultasi': false,
+  };
 
   List<String> get uniqueTanggal {
     final seen = <String>{};
@@ -77,21 +80,16 @@ class _Trimester3ScreenState extends State<Trimester3Screen> {
       pemeriksaanList = result;
       if (pemeriksaanList.isNotEmpty) {
         selectedTanggal = pemeriksaanList[0].created_at!.split('T')[0];
-        selectedPemeriksaan = pemeriksaanList[0];
-        rutin = selectedPemeriksaan!.pemeriksaanRutin;
-        fisik = selectedPemeriksaan!.pemeriksaanFisik;
-        skrining = selectedPemeriksaan!.skriningKesehatan;
-        lab = selectedPemeriksaan!.labTrimester3;
-        usg = selectedPemeriksaan!.usgTrimester3;
-        rencana = selectedPemeriksaan!.rencanaKonsultasi;
+        // selectedPemeriksaan = pemeriksaanList[0];
+        // rutin = selectedPemeriksaan!.pemeriksaanRutin;
+        // fisik = selectedPemeriksaan!.pemeriksaanFisik;
+        // skrining = selectedPemeriksaan!.skriningKesehatan;
+        // lab = selectedPemeriksaan!.labTrimester3;
+        // usg = selectedPemeriksaan!.usgTrimester3;
+        // rencana = selectedPemeriksaan!.rencanaKonsultasi;
       }
       isLoading = false;
     });
-  }
-
-  String formatTanggalIndonesia(String isoDate) {
-    DateTime date = DateTime.parse(isoDate);
-    return DateFormat("d MMMM yyyy", "id_ID").format(date);
   }
 
   Widget _buildPemeriksaanCard(
