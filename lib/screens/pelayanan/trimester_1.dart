@@ -30,6 +30,11 @@ class _Trimester1State extends State<Trimester1> {
   int? _selectedId;
   int? petugas_id;
 
+  final _formKeyStep1 = GlobalKey<FormState>();
+  final _formKeyStep2 = GlobalKey<FormState>();
+  final _formKeyStep3 = GlobalKey<FormState>();
+  final _formKeyStep4 = GlobalKey<FormState>();
+
   // State checkbox
   List<String> _selectedRiwayatKesehatan = [];
   List<String> _selectedPerilaku = [];
@@ -138,7 +143,13 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   void _nextStep() {
-    if (_currentStep < 3) {
+    if (_currentStep == 0 && _formKeyStep1.currentState!.validate()) {
+      setState(() => _currentStep++);
+    }
+    if (_currentStep == 1 && _formKeyStep2.currentState!.validate()) {
+      setState(() => _currentStep++);
+    }
+    if (_currentStep == 2 && _formKeyStep3.currentState!.validate()) {
       setState(() => _currentStep++);
     }
   }
@@ -153,6 +164,9 @@ class _Trimester1State extends State<Trimester1> {
   int imunisasiSelected = -1;
 
   void _saveData() async {
+    if (_currentStep == 3 && !_formKeyStep4.currentState!.validate()) {
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -348,39 +362,44 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   Widget _buildStep1() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Catatan Pemeriksaan",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah " + (_currentStep + 1).toString() + " dari 4",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildSuggestion(),
-        const SizedBox(height: 12),
-        _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
-            () => _selectDate(context)),
-        _buildTextField("Tempat Periksa", _tempatPeriksaController),
-        _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
-        _buildTextFieldWithSuffix("Tinggi Badan", "Cm", _tinggiBadanController),
-        _buildTextField("Lingkar Lengan", _lilaController),
-        _buildBloodPressureField(),
-        _buildTextField("Tinggi Rahim", _tinggiRahimController),
-        _buildTextField("Denyut Jantung Janin", _denyutJantungJaninController),
-        _buildTextField("Konseling", _konselingController),
-        _buildTextField("Skrining Dokter", _skriningController),
-        _buildTextField("Tablet Tambah Darah", _tabletDarahController),
-        _buildDropdownField("Golongan Darah", _golonganDarahController),
-      ],
+    return Form(
+      key: _formKeyStep1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Catatan Pemeriksaan",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "Langkah " + (_currentStep + 1).toString() + " dari 4",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildSuggestion(),
+          const SizedBox(height: 12),
+          _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
+              () => _selectDate(context)),
+          _buildTextField("Tempat Periksa", _tempatPeriksaController),
+          _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
+          _buildTextFieldWithSuffix(
+              "Tinggi Badan", "Cm", _tinggiBadanController),
+          _buildTextFieldWithSuffix("Lingkar Lengan", "Cm", _lilaController),
+          _buildBloodPressureField(),
+          _buildTextField("Tinggi Rahim", _tinggiRahimController),
+          _buildTextField(
+              "Denyut Jantung Janin", _denyutJantungJaninController),
+          _buildTextField("Konseling", _konselingController),
+          _buildTextField("Skrining Dokter", _skriningController),
+          _buildTextField("Tablet Tambah Darah", _tabletDarahController),
+          _buildDropdownField("Golongan Darah", _golonganDarahController),
+        ],
+      ),
     );
   }
 
@@ -446,196 +465,221 @@ class _Trimester1State extends State<Trimester1> {
     ];
     int? _selectedPemeriksaanKhusus;
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Riwayat Kesehatan Ibu Sekarang",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah " + (_currentStep + 1).toString() + " dari 4",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 6,
-          runSpacing: 0,
-          children: riwayatKesehatanIbu.map((item) {
-            return SizedBox(
-              width: MediaQuery.of(context).size.width * 0.44,
-              child: CheckboxListTile(
-                value: _selectedRiwayatKesehatan.contains(item),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedRiwayatKesehatan.add(item);
-                    } else {
-                      _selectedRiwayatKesehatan.remove(item);
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(item, style: const TextStyle(fontSize: 14)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+    return Form(
+      key: _formKeyStep2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Riwayat Kesehatan Ibu Sekarang",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
               ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "Riwayat Perilaku Berisiko 1 Bulan Sebelum Hamil",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 6,
-          runSpacing: 0,
-          children: riwayatPerilaku.map((item) {
-            return SizedBox(
-              width: MediaQuery.of(context).size.width * 0.7,
-              child: CheckboxListTile(
-                value: _selectedPerilaku.contains(item),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedPerilaku.add(item);
-                    } else {
-                      _selectedPerilaku.remove(item);
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(item, style: const TextStyle(fontSize: 14)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+              Text(
+                "Langkah " + (_currentStep + 1).toString() + " dari 4",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
               ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "Riwayat Penyakit Keluarga",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 6,
-          runSpacing: 0,
-          children: riwayatPenyakitKeluarga.map((item) {
-            return SizedBox(
-              width: MediaQuery.of(context).size.width * 0.44,
-              child: CheckboxListTile(
-                value: _selectedPenyakitKeluarga.contains(item),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedPenyakitKeluarga.add(item);
-                    } else {
-                      _selectedPenyakitKeluarga.remove(item);
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(item, style: const TextStyle(fontSize: 14)),
-                contentPadding: const EdgeInsets.symmetric(horizontal: 0),
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "Status Imunisasi TD",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
-        ),
-        const SizedBox(height: 8),
-        ListView.builder(
-            shrinkWrap: true,
-            physics: const NeverScrollableScrollPhysics(),
-            itemCount: _imunisasiTd.length,
-            itemBuilder: (context, index) {
-              final item = _imunisasiTd[index];
-              return Padding(
-                padding: const EdgeInsets.only(bottom: 6),
-                child: Material(
-                  color: imunisasiSelected == index
-                      ? const Color(0xFFE3F2FD)
-                      : Colors.white,
-                  borderRadius: BorderRadius.circular(12),
-                  child: InkWell(
-                    borderRadius: BorderRadius.circular(12),
-                    onTap: () => setState(() {
-                      imunisasiSelected = index;
-                      _selectedImunisasi = "t" + (index + 1).toString();
-                    }),
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 8, vertical: 6),
-                      decoration: BoxDecoration(
-                        borderRadius: BorderRadius.circular(12),
-                        border: Border.all(
-                          color: imunisasiSelected == index
-                              ? Colors.blue
-                              : Colors.transparent,
-                          width: 1.5,
-                        ),
-                      ),
-                      child: Row(
-                        children: [
-                          Radio<String>(
-                            value: "t" + (index + 1).toString(),
-                            groupValue: _selectedImunisasi,
-                            visualDensity: const VisualDensity(
-                                horizontal: -4, vertical: -4),
-                            materialTapTargetSize:
-                                MaterialTapTargetSize.shrinkWrap,
-                            onChanged: (val) => setState(() =>
+            ],
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 0,
+            children: riwayatKesehatanIbu.map((item) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.44,
+                child: CheckboxListTile(
+                  value: _selectedRiwayatKesehatan.contains(item),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedRiwayatKesehatan.add(item);
+                      } else {
+                        _selectedRiwayatKesehatan.remove(item);
+                      }
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(item, style: const TextStyle(fontSize: 14)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "Riwayat Perilaku Berisiko 1 Bulan Sebelum Hamil",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 0,
+            children: riwayatPerilaku.map((item) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.7,
+                child: CheckboxListTile(
+                  value: _selectedPerilaku.contains(item),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedPerilaku.add(item);
+                      } else {
+                        _selectedPerilaku.remove(item);
+                      }
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(item, style: const TextStyle(fontSize: 14)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "Riwayat Penyakit Keluarga",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 10),
+          Wrap(
+            spacing: 6,
+            runSpacing: 0,
+            children: riwayatPenyakitKeluarga.map((item) {
+              return SizedBox(
+                width: MediaQuery.of(context).size.width * 0.44,
+                child: CheckboxListTile(
+                  value: _selectedPenyakitKeluarga.contains(item),
+                  onChanged: (bool? value) {
+                    setState(() {
+                      if (value == true) {
+                        _selectedPenyakitKeluarga.add(item);
+                      } else {
+                        _selectedPenyakitKeluarga.remove(item);
+                      }
+                    });
+                  },
+                  controlAffinity: ListTileControlAffinity.leading,
+                  title: Text(item, style: const TextStyle(fontSize: 14)),
+                  contentPadding: const EdgeInsets.symmetric(horizontal: 0),
+                ),
+              );
+            }).toList(),
+          ),
+          const SizedBox(height: 20),
+          const Text(
+            "Status Imunisasi TD",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold),
+          ),
+          const SizedBox(height: 8),
+          FormField(validator: (formState) {
+            if (_selectedImunisasi == null) {
+              return "Silahkan pilih vaksin TT ";
+            }
+          }, builder: (formState) {
+            return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  if (formState.hasError)
+                    Text(
+                      formState.errorText!,
+                      style: const TextStyle(color: Colors.red),
+                    ),
+                  ListView.builder(
+                      shrinkWrap: true,
+                      physics: const NeverScrollableScrollPhysics(),
+                      itemCount: _imunisasiTd.length,
+                      itemBuilder: (context, index) {
+                        final item = _imunisasiTd[index];
+                        return Padding(
+                          padding: const EdgeInsets.only(bottom: 6),
+                          child: Material(
+                            color: imunisasiSelected == index
+                                ? const Color(0xFFE3F2FD)
+                                : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            child: InkWell(
+                              borderRadius: BorderRadius.circular(12),
+                              onTap: () => setState(() {
+                                imunisasiSelected = index;
                                 _selectedImunisasi =
-                                    "t" + (index + 1).toString()),
-                          ),
-                          const SizedBox(width: 4),
-                          Expanded(
-                            child: Column(
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  "Vaksin TT ${item['tt']}",
-                                  style: const TextStyle(
-                                      fontSize: 14,
-                                      fontWeight: FontWeight.w600),
+                                    "t" + (index + 1).toString();
+                                formState.didChange(_selectedImunisasi);
+                              }),
+                              child: Container(
+                                padding: const EdgeInsets.symmetric(
+                                    horizontal: 8, vertical: 6),
+                                decoration: BoxDecoration(
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: imunisasiSelected == index
+                                        ? Colors.blue
+                                        : Colors.transparent,
+                                    width: 1.5,
+                                  ),
                                 ),
-                                const SizedBox(height: 2),
-                                Row(
-                                  mainAxisAlignment:
-                                      MainAxisAlignment.spaceBetween,
+                                child: Row(
                                   children: [
-                                    Text(
-                                      "Selang Waktu: ${item['selang']}",
-                                      style: const TextStyle(fontSize: 12),
+                                    Radio<String>(
+                                      value: "t" + (index + 1).toString(),
+                                      groupValue: _selectedImunisasi,
+                                      visualDensity: const VisualDensity(
+                                          horizontal: -4, vertical: -4),
+                                      materialTapTargetSize:
+                                          MaterialTapTargetSize.shrinkWrap,
+                                      onChanged: (val) => setState(() {
+                                        _selectedImunisasi =
+                                            "t" + (index + 1).toString();
+                                        formState.didChange(_selectedImunisasi);
+                                      }),
                                     ),
-                                    Text(
-                                      "Perlindungan: ${item['perlindungan']}",
-                                      style: const TextStyle(fontSize: 12),
+                                    const SizedBox(width: 4),
+                                    Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            "Vaksin TT ${item['tt']}",
+                                            style: const TextStyle(
+                                                fontSize: 14,
+                                                fontWeight: FontWeight.w600),
+                                          ),
+                                          const SizedBox(height: 2),
+                                          Row(
+                                            mainAxisAlignment:
+                                                MainAxisAlignment.spaceBetween,
+                                            children: [
+                                              Text(
+                                                "Selang Waktu: ${item['selang']}",
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                              Text(
+                                                "Perlindungan: ${item['perlindungan']}",
+                                                style: const TextStyle(
+                                                    fontSize: 12),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
                                     ),
                                   ],
                                 ),
-                              ],
+                              ),
                             ),
                           ),
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
-              );
-            }),
-        const SizedBox(height: 20),
-        pemeriksaanKhususView()
-      ],
+                        );
+                      }),
+                ]);
+          }),
+          const SizedBox(height: 20),
+          pemeriksaanKhususView()
+        ],
+      ),
     );
   }
 
@@ -675,110 +719,133 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   Widget pemeriksaanKhususCell(int index, String title) {
-    return Container(
-      margin: const EdgeInsets.only(bottom: 8),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(
-          color: const Color.fromARGB(255, 255, 255, 255), // Warna border putih
-          width: 1,
-        ),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.grey.withOpacity(0.5), // Warna bayangan
-            spreadRadius: 1, // Penyebaran shadow
-            blurRadius: 4, // Seberapa blur
-            offset: Offset(2, 2), // Arah bayangan (x, y)
-          ),
-        ],
-        borderRadius:
-            BorderRadius.circular(8), // Opsional: biar sudutnya lebih lembut
-      ),
-      child: Column(
+    return FormField(validator: (formState) {
+      if (getGroupValueKhusus(index) == "" ||
+          getGroupValueKhusus(index) == null) {
+        return "Silahkan pilih Pemeriksaan Khusus ";
+      }
+    }, builder: (formState) {
+      return Column(
         children: [
           Container(
-            width: double.infinity,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            decoration: const BoxDecoration(
-              color: Color.fromARGB(255, 137, 179, 243),
-              borderRadius: BorderRadius.only(
-                topLeft: Radius.circular(8),
-                topRight: Radius.circular(8),
+            margin: const EdgeInsets.only(bottom: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(
+                color: const Color.fromARGB(
+                    255, 255, 255, 255), // Warna border putih
+                width: 1,
               ),
-            ),
-            child: Center(
-              child: Text(
-                title,
-                style: const TextStyle(
-                  color: Colors.white,
-                  fontWeight: FontWeight.bold,
-                  fontSize: 14,
+              boxShadow: [
+                BoxShadow(
+                  color: Colors.grey.withOpacity(0.5), // Warna bayangan
+                  spreadRadius: 1, // Penyebaran shadow
+                  blurRadius: 4, // Seberapa blur
+                  offset: Offset(2, 2), // Arah bayangan (x, y)
                 ),
-              ),
+              ],
+              borderRadius: BorderRadius.circular(
+                  8), // Opsional: biar sudutnya lebih lembut
+            ),
+            child: Column(
+              children: [
+                Container(
+                  width: double.infinity,
+                  padding: const EdgeInsets.symmetric(vertical: 8),
+                  decoration: const BoxDecoration(
+                    color: Color.fromARGB(255, 137, 179, 243),
+                    borderRadius: BorderRadius.only(
+                      topLeft: Radius.circular(8),
+                      topRight: Radius.circular(8),
+                    ),
+                  ),
+                  child: Center(
+                    child: Text(
+                      title,
+                      style: const TextStyle(
+                        color: Colors.white,
+                        fontWeight: FontWeight.bold,
+                        fontSize: 14,
+                      ),
+                    ),
+                  ),
+                ),
+                Row(
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          border: const Border(
+                            right: BorderSide(
+                                color: Color.fromARGB(255, 180, 180, 180),
+                                width: 1),
+                          ),
+                        ),
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: "normal",
+                                groupValue: getGroupValueKhusus(index),
+                                onChanged: (val) {
+                                  setGroupValueKhusus(index, "normal");
+                                  formState.didChange("normal");
+                                },
+                                visualDensity: const VisualDensity(
+                                    horizontal: -4, vertical: -4),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              const Text("Normal",
+                                  style: TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                    Expanded(
+                      child: Container(
+                        color: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 6),
+                        child: FittedBox(
+                          fit: BoxFit.scaleDown,
+                          child: Row(
+                            children: [
+                              Radio<String>(
+                                value: "tidak_normal",
+                                groupValue: getGroupValueKhusus(index),
+                                onChanged: (val) {
+                                  setGroupValueKhusus(index, "tidak_normal");
+                                  formState.didChange("tidak_normal");
+                                },
+                                visualDensity: const VisualDensity(
+                                    horizontal: -4, vertical: -4),
+                                materialTapTargetSize:
+                                    MaterialTapTargetSize.shrinkWrap,
+                              ),
+                              const Text("Tidak Normal",
+                                  style: TextStyle(fontSize: 12)),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ],
             ),
           ),
-          Row(
-            children: [
-              Expanded(
-                child: Container(
-                  decoration: BoxDecoration(
-                    color: Colors.white,
-                    border: const Border(
-                      right: BorderSide(
-                          color: Color.fromARGB(255, 180, 180, 180), width: 1),
-                    ),
-                  ),
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      children: [
-                        Radio<String>(
-                          value: "normal",
-                          groupValue: getGroupValueKhusus(index),
-                          onChanged: (val) =>
-                              setGroupValueKhusus(index, "normal"),
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        const Text("Normal", style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-              Expanded(
-                child: Container(
-                  color: Colors.white,
-                  padding: const EdgeInsets.symmetric(vertical: 6),
-                  child: FittedBox(
-                    fit: BoxFit.scaleDown,
-                    child: Row(
-                      children: [
-                        Radio<String>(
-                          value: "tidak_normal",
-                          groupValue: getGroupValueKhusus(index),
-                          onChanged: (val) =>
-                              setGroupValueKhusus(index, "tidak_normal"),
-                          visualDensity:
-                              const VisualDensity(horizontal: -4, vertical: -4),
-                          materialTapTargetSize:
-                              MaterialTapTargetSize.shrinkWrap,
-                        ),
-                        const Text("Tidak Normal",
-                            style: TextStyle(fontSize: 12)),
-                      ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
+          if (formState.hasError)
+            Text(
+              formState.errorText!,
+              style: const TextStyle(color: Colors.red),
+            ),
         ],
-      ),
-    );
+      );
+    });
   }
 
   Widget pemeriksaanFisikView() {
@@ -814,110 +881,136 @@ class _Trimester1State extends State<Trimester1> {
         String formattedLabel2 =
             label2[0].toUpperCase() + label2.substring(1).toLowerCase();
 
-        return SizedBox(
-          width: 170,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.white),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(2, 2),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(8),
-            ),
+        return FormField(validator: (formState) {
+          if (getGroupValueFisik(index) == "" ||
+              getGroupValueFisik(index) == null) {
+            return "Silahkan pilih Pemeriksaan Fisik ";
+          }
+        }, builder: (formState) {
+          return SizedBox(
+            width: 170,
             child: Column(
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 137, 179, 243),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.white),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 137, 179, 243),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              label,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: const Border(
+                                    right: BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 180, 180, 180),
+                                        width: 1),
+                                  ),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: val1,
+                                        groupValue: getGroupValueFisik(index),
+                                        onChanged: (val) {
+                                          setGroupValueFisik(index, val1);
+                                          formState.didChange(val1);
+                                        },
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      Text(formattedLabel1,
+                                          style: const TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                color: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: val2,
+                                        groupValue: getGroupValueFisik(index),
+                                        onChanged: (val) {
+                                          setGroupValueFisik(index, val2);
+                                          formState.didChange(val2);
+                                        },
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      Text(formattedLabel2,
+                                          style: const TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          border: const Border(
-                            right: BorderSide(
-                                color: Color.fromARGB(255, 180, 180, 180),
-                                width: 1),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            children: [
-                              Radio<String>(
-                                value: val1,
-                                groupValue: getGroupValueFisik(index),
-                                onChanged: (val) =>
-                                    setGroupValueFisik(index, val1),
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4, vertical: -4),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              Text(formattedLabel1,
-                                  style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            children: [
-                              Radio<String>(
-                                value: val2,
-                                groupValue: getGroupValueFisik(index),
-                                onChanged: (val) =>
-                                    setGroupValueFisik(index, val2),
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4, vertical: -4),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              Text(formattedLabel2,
-                                  style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                if (formState.hasError)
+                  Text(
+                    formState.errorText!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
               ],
             ),
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -1028,9 +1121,9 @@ class _Trimester1State extends State<Trimester1> {
         buildInputFieldVertical("HPHT", _hphtController),
         buildDropdownFieldVertical(
             "Keteraturan Haid", ["Teratur", "Tidak Teratur"], _haidController),
-        buildInputFieldVertical(
+        _buildInputFieldNumber(
             "Umur Kehamilan Berdasarkan HPHT (minggu)", _umurHphtController),
-        buildInputFieldVertical(
+        _buildInputFieldNumber(
             "Umur Kehamilan Berdasarkan USG (minggu)", _umurUsgController),
         buildInputFieldVertical(
             "HPL Berdasarkan HPHT", _hplBerdasarHphtController),
@@ -1040,12 +1133,12 @@ class _Trimester1State extends State<Trimester1> {
             "Jumlah GS", ["Tunggal", "Kembar"], _jumlahGSController),
         buildDropdownFieldVertical(
             "Jumlah Bayi", ["Tunggal", "Kembar"], _jumlahBayiController),
-        buildInputFieldVertical("Diameter GS (cm)", _diameterGSController),
-        buildInputFieldVertical("GS Hari", _gsHariController),
-        buildInputFieldVertical("GS Minggu", _gsMingguController),
-        buildInputFieldVertical("CRL (cm)", _crlController),
-        buildInputFieldVertical("CRL Hari", _crlHariController),
-        buildInputFieldVertical("CRL Minggu", _crlMingguController),
+        _buildInputFieldNumber("Diameter GS (cm)", _diameterGSController),
+        _buildInputFieldNumber("GS Hari", _gsHariController),
+        _buildInputFieldNumber("GS Minggu", _gsMingguController),
+        _buildInputFieldNumber("CRL (cm)", _crlController),
+        _buildInputFieldNumber("CRL Hari", _crlHariController),
+        _buildInputFieldNumber("CRL Minggu", _crlMingguController),
         buildDropdownFieldVertical("Letak Produk Kehamilan",
             ["Intrauterin", "Ekstrauterin"], _letakProdukController),
         buildDropdownFieldVertical(
@@ -1054,6 +1147,35 @@ class _Trimester1State extends State<Trimester1> {
             ["Ya", "Tidak"], _kecurigaanController),
         buildInputFieldVertical("Keterangan", _alasanController),
       ],
+    );
+  }
+
+  Widget _buildInputFieldNumber(
+      String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 13)),
+          const SizedBox(height: 6),
+          TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
+            style: const TextStyle(fontSize: 13),
+            keyboardType: TextInputType.number,
+            controller: controller,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1067,6 +1189,8 @@ class _Trimester1State extends State<Trimester1> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 6),
           TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
             style: const TextStyle(fontSize: 13),
             controller: controller,
             decoration: InputDecoration(
@@ -1124,32 +1248,35 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   Widget _buildStep3() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Pemeriksaan Fisik",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah ${(_currentStep + 1).toString()} dari 4",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        pemeriksaanFisikView(),
-        const SizedBox(height: 20),
-        const Text(
-          "USG Trimester 1",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 10),
-        usgTrimester1InputView(),
-      ],
+    return Form(
+      key: _formKeyStep3,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Pemeriksaan Fisik",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "Langkah ${(_currentStep + 1).toString()} dari 4",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          pemeriksaanFisikView(),
+          const SizedBox(height: 20),
+          const Text(
+            "USG Trimester 1",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 10),
+          usgTrimester1InputView(),
+        ],
+      ),
     );
   }
 
@@ -1223,47 +1350,65 @@ class _Trimester1State extends State<Trimester1> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: skriningItems.map((item) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
+        return FormField(validator: (formState) {
+          if (item["groupValue"] == null) {
+            return "Silahkan pilih Skrining Kesehatan Jiwa";
+          }
+        }, builder: (formState) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 180,
-                child: Text(
-                  item["label"] ?? "",
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w400),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 180,
+                      child: Text(
+                        item["label"] ?? "",
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Row(
+                      children: (item["options"] as List<String>).map((option) {
+                        return Row(
+                          children: [
+                            Radio<String>(
+                              value: option,
+                              groupValue: item["groupValue"],
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              onChanged: (val) {
+                                item["onChanged"](val);
+                                formState.didChange(val);
+                              },
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                option,
+                                style: const TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: (item["options"] as List<String>).map((option) {
-                  return Row(
-                    children: [
-                      Radio<String>(
-                        value: option,
-                        groupValue: item["groupValue"],
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: item["onChanged"],
-                      ),
-                      SizedBox(
-                        width: 60,
-                        child: Text(
-                          option,
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  );
-                }).toList(),
-              ),
+              if (formState.hasError)
+                Text(formState.errorText ?? "",
+                    style: const TextStyle(color: Colors.red, fontSize: 12)),
             ],
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -1277,6 +1422,8 @@ class _Trimester1State extends State<Trimester1> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 4),
           TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
             controller: controller,
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
@@ -1302,6 +1449,8 @@ class _Trimester1State extends State<Trimester1> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 4),
           TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
             controller: controller,
             keyboardType: TextInputType.numberWithOptions(decimal: true),
             style: const TextStyle(fontSize: 13),
@@ -1332,55 +1481,76 @@ class _Trimester1State extends State<Trimester1> {
         children: [
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 4),
-          DropdownButtonFormField<String>(
-            value: selectedValue,
-            items: options
-                .map((opt) => DropdownMenuItem(
-                      value: opt,
-                      child: Text(opt, style: const TextStyle(fontSize: 13)),
-                    ))
-                .toList(),
-            onChanged: onChanged,
-            decoration: InputDecoration(
-              isDense: true,
-              contentPadding:
-                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
-              border:
-                  OutlineInputBorder(borderRadius: BorderRadius.circular(6)),
-            ),
-          ),
+          FormField(validator: (formState) {
+            if (selectedValue == null) {
+              return "Field Tidak Boleh Kosong";
+            }
+          }, builder: (formState) {
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                DropdownButtonFormField<String>(
+                  value: selectedValue,
+                  items: options
+                      .map((opt) => DropdownMenuItem(
+                            value: opt,
+                            child:
+                                Text(opt, style: const TextStyle(fontSize: 13)),
+                          ))
+                      .toList(),
+                  onChanged: (value) {
+                    onChanged(value);
+                    formState.didChange(value);
+                  },
+                  decoration: InputDecoration(
+                    isDense: true,
+                    contentPadding: const EdgeInsets.symmetric(
+                        vertical: 10, horizontal: 12),
+                    border: OutlineInputBorder(
+                        borderRadius: BorderRadius.circular(6)),
+                  ),
+                ),
+                if (formState.hasError)
+                  Text(formState.errorText ?? "",
+                      style: const TextStyle(color: Colors.red, fontSize: 12)),
+              ],
+            );
+          })
         ],
       ),
     );
   }
 
   Widget _buildStep4() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Pemeriksaan Laboratorium",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah ${(_currentStep + 1).toString()} dari 4",
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        pemeriksaanLab(),
-        const SizedBox(height: 20),
-        const Text(
-          "Skrining Kesehatan Jiwa",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 10),
-        SkriningView(),
-      ],
+    return Form(
+      key: _formKeyStep4,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Pemeriksaan Laboratorium",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "Langkah ${(_currentStep + 1).toString()} dari 4",
+                style: TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          pemeriksaanLab(),
+          const SizedBox(height: 20),
+          const Text(
+            "Skrining Kesehatan Jiwa",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 10),
+          SkriningView(),
+        ],
+      ),
     );
   }
 
@@ -1388,6 +1558,8 @@ class _Trimester1State extends State<Trimester1> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         controller: controller,
         decoration: InputDecoration(
@@ -1406,6 +1578,8 @@ class _Trimester1State extends State<Trimester1> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         keyboardType: TextInputType.number,
         controller: controller,
@@ -1426,6 +1600,8 @@ class _Trimester1State extends State<Trimester1> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         controller: controller,
         readOnly: true,
         onTap: onTap,
@@ -1447,6 +1623,8 @@ class _Trimester1State extends State<Trimester1> {
       padding: const EdgeInsets.only(bottom: 10),
       child: DropdownButtonFormField<String>(
         value: controller.text.isNotEmpty ? controller.text : null,
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         decoration: InputDecoration(
           labelText: label,
           labelStyle: const TextStyle(fontSize: 13),

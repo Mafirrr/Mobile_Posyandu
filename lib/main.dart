@@ -97,8 +97,8 @@ void main() async {
         ChangeNotifierProvider(create: (_) => ArtikelViewModel()..getArtikel()),
         ChangeNotifierProvider(create: (_) => KategoriViewmodel()),
         ChangeNotifierProvider(create: (_) => JadwalkaderViewmodel()),
-          ChangeNotifierProvider(create: (_) => AnggotaViewModel()),
-           ChangeNotifierProvider(create: (_) => PetugasViewModel()),
+        ChangeNotifierProvider(create: (_) => AnggotaViewModel()),
+        ChangeNotifierProvider(create: (_) => PetugasViewModel()),
       ],
       child: const MyApp(),
     ),
@@ -110,7 +110,10 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return const MaterialApp(
+    return  MaterialApp(
+      theme: ThemeData(
+          colorScheme: ColorScheme.fromSeed(seedColor: Colors.blue),
+          useMaterial3: true),
       debugShowCheckedModeBanner: false,
       home: SplashScreen(),
     );
