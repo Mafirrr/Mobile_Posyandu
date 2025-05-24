@@ -19,11 +19,11 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
     final result = await authProvider.logout(context);
 
-    if (result) {
-      Navigator.of(context).pushReplacement(
-        MaterialPageRoute(builder: (context) => const LoginScreen()),
-      );
-    }
+    Navigator.of(context).pushReplacement(
+      MaterialPageRoute(builder: (context) => const LoginScreen()),
+    );
+    // if (result) {
+    // }
   }
 
   @override

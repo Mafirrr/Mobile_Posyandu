@@ -25,6 +25,9 @@ class Trimestr3 extends StatefulWidget {
 class _Trimestr3State extends State<Trimestr3> {
   late TabController _tabController;
   int _currentStep = 0;
+  final _formKeyStep1 = GlobalKey<FormState>();
+  final _formKeyStep2 = GlobalKey<FormState>();
+  final _formKeyStep3 = GlobalKey<FormState>();
 
   // State checkbox
   List<String> _selectedRiwayatKesehatan = [];
@@ -134,7 +137,10 @@ class _Trimestr3State extends State<Trimestr3> {
   }
 
   void _nextStep() {
-    if (_currentStep < 2) {
+    if (_currentStep == 0 && _formKeyStep1.currentState!.validate()) {
+      setState(() => _currentStep++);
+    }
+    if (_currentStep == 1 && _formKeyStep2.currentState!.validate()) {
       setState(() => _currentStep++);
     }
   }
@@ -162,6 +168,9 @@ class _Trimestr3State extends State<Trimestr3> {
   }
 
   void _saveData() async {
+    if (_currentStep == 2 && !_formKeyStep3.currentState!.validate()) {
+      return;
+    }
     setState(() {
       isLoading = true;
     });
@@ -284,6 +293,7 @@ class _Trimestr3State extends State<Trimestr3> {
         );
       }
     } catch (e) {
+      print(e);
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Terjadi kesalahan: $e')),
       );
@@ -359,39 +369,43 @@ class _Trimestr3State extends State<Trimestr3> {
   }
 
   Widget _buildStep1() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Catatan Pemeriksaan",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah ${(_currentStep + 1).toString()} dari 3",
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 12),
-        _buildSuggestion(),
-        const SizedBox(height: 12),
-        _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
-            () => _selectDate(context)),
-        _buildTextField("Tempat Periksa", _tempatPeriksaController),
-        _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
-        _buildTextField("Lingkar Lengan", _lilaController),
-        _buildBloodPressureField(),
-        _buildTextField("Tinggi Rahim", _tinggiRahimController),
-        _buildTextField("Denyut Jantung Janin", _denyutJantungJaninController),
-        _buildTextField("Konseling", _konselingController),
-        _buildTextField("Skrining Dokter", _skriningController),
-        _buildTextField("Tablet Tambah Darah", _tabletDarahController),
-        _buildTextField("Tes Lab Protein Urine", _proteinUrinController),
-        _buildTextField("Tes Lab Gula Darah", _testLabController),
-      ],
+    return Form(
+      key: _formKeyStep1,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Catatan Pemeriksaan",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "Langkah ${(_currentStep + 1).toString()} dari 3",
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          _buildSuggestion(),
+          const SizedBox(height: 12),
+          _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
+              () => _selectDate(context)),
+          _buildTextField("Tempat Periksa", _tempatPeriksaController),
+          _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
+          _buildTextFieldWithSuffix("Lingkar Lengan", "Cm", _lilaController),
+          _buildBloodPressureField(),
+          _buildTextField("Tinggi Rahim", _tinggiRahimController),
+          _buildTextField(
+              "Denyut Jantung Janin", _denyutJantungJaninController),
+          _buildTextField("Konseling", _konselingController),
+          _buildTextField("Skrining Dokter", _skriningController),
+          _buildTextField("Tablet Tambah Darah", _tabletDarahController),
+          _buildTextField("Tes Lab Protein Urine", _proteinUrinController),
+          _buildTextField("Tes Lab Gula Darah", _testLabController),
+        ],
+      ),
     );
   }
 
@@ -408,32 +422,35 @@ class _Trimestr3State extends State<Trimestr3> {
   String? _selectedTungkai;
 
   Widget _buildStep2() {
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            const Text(
-              "Pemeriksaan Fisik",
-              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-            ),
-            Text(
-              "Langkah ${(_currentStep + 1).toString()} dari 3",
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-        const SizedBox(height: 20),
-        pemeriksaanFisikView(),
-        const SizedBox(height: 20),
-        const Text(
-          "USG Trimester III",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 10),
-        usgTrimester3InputView(),
-      ],
+    return Form(
+      key: _formKeyStep2,
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              const Text(
+                "Pemeriksaan Fisik",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              ),
+              Text(
+                "Langkah ${(_currentStep + 1).toString()} dari 3",
+                style: const TextStyle(fontSize: 12, color: Colors.grey),
+              ),
+            ],
+          ),
+          const SizedBox(height: 20),
+          pemeriksaanFisikView(),
+          const SizedBox(height: 20),
+          const Text(
+            "USG Trimester III",
+            style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+          ),
+          const SizedBox(height: 10),
+          usgTrimester3InputView(),
+        ],
+      ),
     );
   }
 
@@ -449,86 +466,88 @@ class _Trimestr3State extends State<Trimestr3> {
       "Lain-lain",
     ];
 
-    return Column(
-      crossAxisAlignment: CrossAxisAlignment.start,
-      children: [
-        Row(
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+    return Form(
+        key: _formKeyStep3,
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                const Text(
+                  "Pemeriksaan Laboratorium",
+                  style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                ),
+                Text(
+                  "Langkah ${_currentStep + 1} dari 3",
+                  style: const TextStyle(fontSize: 12, color: Colors.grey),
+                ),
+              ],
+            ),
+            const SizedBox(height: 20),
+            pemeriksaanLabView(),
+            const SizedBox(height: 20),
             const Text(
-              "Pemeriksaan Laboratorium",
+              "Skrining Kesehatan Jiwa",
               style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
-            Text(
-              "Langkah ${_currentStep + 1} dari 3",
-              style: const TextStyle(fontSize: 12, color: Colors.grey),
+            SkriningView(),
+            const SizedBox(height: 20),
+            const Text(
+              "Rencana Konsultasi Lanjut",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
             ),
+            const SizedBox(height: 10),
+            Wrap(
+              spacing: 6,
+              runSpacing: 0,
+              children: rencanaKonsultasi.map((item) {
+                return SizedBox(
+                  width: MediaQuery.of(context).size.width * 0.33,
+                  child: CheckboxListTile(
+                    value: _selectedRiwayatKesehatan.contains(item),
+                    onChanged: (bool? value) {
+                      setState(() {
+                        if (value == true) {
+                          _selectedRiwayatKesehatan.add(item);
+                        } else {
+                          _selectedRiwayatKesehatan.remove(item);
+                        }
+                      });
+                    },
+                    controlAffinity: ListTileControlAffinity.leading,
+                    title: Text(
+                      item,
+                      style: const TextStyle(fontSize: 12),
+                    ),
+                    contentPadding:
+                        const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
+                    dense: true,
+                    visualDensity: VisualDensity.compact,
+                  ),
+                );
+              }).toList(),
+            ),
+            const SizedBox(height: 20),
+            const Text(
+              "Rencana Proses Melahirkan",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            prosesMelahirkan(),
+            const SizedBox(height: 6),
+            const Text(
+              "Rencana Kontrasepsi",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            rencanaKontrasepsi(),
+            const SizedBox(height: 8),
+            const Text(
+              "Kebutuhan Konseling",
+              style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+            ),
+            Konseling(),
           ],
-        ),
-        const SizedBox(height: 20),
-        pemeriksaanLabView(),
-        const SizedBox(height: 20),
-        const Text(
-          "Skrining Kesehatan Jiwa",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        SkriningView(),
-        const SizedBox(height: 20),
-        const Text(
-          "Rencana Konsultasi Lanjut",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        const SizedBox(height: 10),
-        Wrap(
-          spacing: 6,
-          runSpacing: 0,
-          children: rencanaKonsultasi.map((item) {
-            return SizedBox(
-              width: MediaQuery.of(context).size.width * 0.33,
-              child: CheckboxListTile(
-                value: _selectedRiwayatKesehatan.contains(item),
-                onChanged: (bool? value) {
-                  setState(() {
-                    if (value == true) {
-                      _selectedRiwayatKesehatan.add(item);
-                    } else {
-                      _selectedRiwayatKesehatan.remove(item);
-                    }
-                  });
-                },
-                controlAffinity: ListTileControlAffinity.leading,
-                title: Text(
-                  item,
-                  style: const TextStyle(fontSize: 12),
-                ),
-                contentPadding:
-                    const EdgeInsets.symmetric(horizontal: 0, vertical: 0),
-                dense: true,
-                visualDensity: VisualDensity.compact,
-              ),
-            );
-          }).toList(),
-        ),
-        const SizedBox(height: 20),
-        const Text(
-          "Rencana Proses Melahirkan",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        prosesMelahirkan(),
-        const SizedBox(height: 6),
-        const Text(
-          "Rencana Kontrasepsi",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        rencanaKontrasepsi(),
-        const SizedBox(height: 8),
-        const Text(
-          "Kebutuhan Konseling",
-          style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
-        ),
-        Konseling(),
-      ],
-    );
+        ));
   }
 
   String urineReduksiValue = "Negatif";
@@ -542,6 +561,8 @@ class _Trimestr3State extends State<Trimestr3> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
         const SizedBox(height: 4),
         TextFormField(
+          validator: (value) =>
+              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Nilai",
             suffixText: "g/dL",
@@ -554,6 +575,8 @@ class _Trimestr3State extends State<Trimestr3> {
         ),
         const SizedBox(height: 4),
         TextFormField(
+          validator: (value) =>
+              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Rencana Tindak Lanjut",
             border: OutlineInputBorder(),
@@ -570,6 +593,8 @@ class _Trimestr3State extends State<Trimestr3> {
             style: TextStyle(fontWeight: FontWeight.w600, fontSize: 14)),
         const SizedBox(height: 4),
         TextFormField(
+          validator: (value) =>
+              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Nilai",
             suffixText: "Mg/dL",
@@ -582,6 +607,8 @@ class _Trimestr3State extends State<Trimestr3> {
         ),
         const SizedBox(height: 4),
         TextFormField(
+          validator: (value) =>
+              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Rencana Tindak Lanjut",
             border: OutlineInputBorder(),
@@ -704,110 +731,136 @@ class _Trimestr3State extends State<Trimestr3> {
         String formattedLabel2 =
             label2[0].toUpperCase() + label2.substring(1).toLowerCase();
 
-        return SizedBox(
-          width: 170,
-          child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              border: Border.all(color: Colors.white),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.grey.withOpacity(0.5),
-                  spreadRadius: 1,
-                  blurRadius: 4,
-                  offset: const Offset(2, 2),
-                ),
-              ],
-              borderRadius: BorderRadius.circular(8),
-            ),
+        return FormField(validator: (formState) {
+          if (getGroupValueFisik(index) == "" ||
+              getGroupValueFisik(index) == null) {
+            return "Silahkan pilih Pemeriksaan Fisik ";
+          }
+        }, builder: (formState) {
+          return SizedBox(
+            width: 170,
             child: Column(
               children: [
-                Container(
+                SizedBox(
                   width: double.infinity,
-                  padding: const EdgeInsets.symmetric(vertical: 8),
-                  decoration: const BoxDecoration(
-                    color: Color.fromARGB(255, 137, 179, 243),
-                    borderRadius: BorderRadius.only(
-                      topLeft: Radius.circular(8),
-                      topRight: Radius.circular(8),
+                  child: Container(
+                    decoration: BoxDecoration(
+                      color: Colors.white,
+                      border: Border.all(color: Colors.white),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.grey.withOpacity(0.5),
+                          spreadRadius: 1,
+                          blurRadius: 4,
+                          offset: const Offset(2, 2),
+                        ),
+                      ],
+                      borderRadius: BorderRadius.circular(8),
                     ),
-                  ),
-                  child: Center(
-                    child: Text(
-                      label,
-                      style: const TextStyle(
-                        color: Colors.white,
-                        fontWeight: FontWeight.bold,
-                        fontSize: 14,
-                      ),
+                    child: Column(
+                      children: [
+                        Container(
+                          width: double.infinity,
+                          padding: const EdgeInsets.symmetric(vertical: 8),
+                          decoration: const BoxDecoration(
+                            color: Color.fromARGB(255, 137, 179, 243),
+                            borderRadius: BorderRadius.only(
+                              topLeft: Radius.circular(8),
+                              topRight: Radius.circular(8),
+                            ),
+                          ),
+                          child: Center(
+                            child: Text(
+                              label,
+                              style: const TextStyle(
+                                color: Colors.white,
+                                fontWeight: FontWeight.bold,
+                                fontSize: 14,
+                              ),
+                            ),
+                          ),
+                        ),
+                        Row(
+                          children: [
+                            Expanded(
+                              child: Container(
+                                decoration: const BoxDecoration(
+                                  color: Colors.white,
+                                  border: const Border(
+                                    right: BorderSide(
+                                        color:
+                                            Color.fromARGB(255, 180, 180, 180),
+                                        width: 1),
+                                  ),
+                                ),
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: val1,
+                                        groupValue: getGroupValueFisik(index),
+                                        onChanged: (val) {
+                                          setGroupValueFisik(index, val1);
+                                          formState.didChange(val1);
+                                        },
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      Text(formattedLabel1,
+                                          style: const TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                            Expanded(
+                              child: Container(
+                                color: Colors.white,
+                                padding:
+                                    const EdgeInsets.symmetric(vertical: 6),
+                                child: FittedBox(
+                                  fit: BoxFit.scaleDown,
+                                  child: Row(
+                                    children: [
+                                      Radio<String>(
+                                        value: val2,
+                                        groupValue: getGroupValueFisik(index),
+                                        onChanged: (val) {
+                                          setGroupValueFisik(index, val2);
+                                          formState.didChange(val2);
+                                        },
+                                        visualDensity: const VisualDensity(
+                                            horizontal: -4, vertical: -4),
+                                        materialTapTargetSize:
+                                            MaterialTapTargetSize.shrinkWrap,
+                                      ),
+                                      Text(formattedLabel2,
+                                          style: const TextStyle(fontSize: 12)),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
                     ),
                   ),
                 ),
-                Row(
-                  children: [
-                    Expanded(
-                      child: Container(
-                        decoration: const BoxDecoration(
-                          color: Colors.white,
-                          border: const Border(
-                            right: BorderSide(
-                                color: Color.fromARGB(255, 180, 180, 180),
-                                width: 1),
-                          ),
-                        ),
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            children: [
-                              Radio<String>(
-                                value: val1,
-                                groupValue: getGroupValueFisik(index),
-                                onChanged: (val) =>
-                                    setGroupValueFisik(index, val1),
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4, vertical: -4),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              Text(formattedLabel1,
-                                  style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                    Expanded(
-                      child: Container(
-                        color: Colors.white,
-                        padding: const EdgeInsets.symmetric(vertical: 6),
-                        child: FittedBox(
-                          fit: BoxFit.scaleDown,
-                          child: Row(
-                            children: [
-                              Radio<String>(
-                                value: val2,
-                                groupValue: getGroupValueFisik(index),
-                                onChanged: (val) =>
-                                    setGroupValueFisik(index, val2),
-                                visualDensity: const VisualDensity(
-                                    horizontal: -4, vertical: -4),
-                                materialTapTargetSize:
-                                    MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              Text(formattedLabel2,
-                                  style: const TextStyle(fontSize: 12)),
-                            ],
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
+                if (formState.hasError)
+                  Text(
+                    formState.errorText!,
+                    style: const TextStyle(color: Colors.red),
+                  ),
               ],
             ),
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -905,51 +958,70 @@ class _Trimestr3State extends State<Trimestr3> {
         },
       },
     ];
-
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: konselingItems.map((item) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
+        return FormField(validator: (formState) {
+          if (item["groupValue"] == null) {
+            return 'Field Tidak Boleh Kosong';
+          }
+        }, builder: (formState) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 180,
-                child: Text(
-                  item["label"] ?? "",
-                  style: const TextStyle(
-                      fontSize: 12, fontWeight: FontWeight.w400),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 180,
+                      child: Text(
+                        item["label"] ?? "",
+                        style: const TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Row(
+                      children: (item["options"] as List<String>).map((option) {
+                        return Row(
+                          children: [
+                            Radio<String>(
+                              value: option,
+                              groupValue: item["groupValue"],
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              onChanged: (val) {
+                                item["onChanged"](val);
+                                formState.didChange(val);
+                              },
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                option,
+                                style: const TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: (item["options"] as List<String>).map((option) {
-                  return Row(
-                    children: [
-                      Radio<String>(
-                        value: option,
-                        groupValue: item["groupValue"],
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: item["onChanged"],
-                      ),
-                      SizedBox(
-                        width: 60,
-                        child: Text(
-                          option,
-                          style: const TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  );
-                }).toList(),
-              ),
+              if (formState.hasError)
+                Text(
+                  formState.errorText!,
+                  style: const TextStyle(color: Colors.red),
+                ),
             ],
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -959,12 +1031,12 @@ class _Trimestr3State extends State<Trimestr3> {
       children: [
         buildDropdownFieldVertical("USG Trimester III telah dilakukan",
             ["Ya", "Tidak"], _usgTrimester3),
-        buildInputFieldVertical(
+        _buildInputFieldNumber(
             "Umur Kehamilan berdasarkan USG Trimester I (minggu)",
             _umurUsgTrimester1Controller),
-        buildInputFieldVertical("Umur Kehamilan berdasarkan HPHT (minggu)",
+        _buildInputFieldNumber("Umur Kehamilan berdasarkan HPHT (minggu)",
             _umurUsgTrimester1Controller),
-        buildInputFieldVertical(
+        _buildInputFieldNumber(
             "Umur Kehamilan berdasarkan biometrik bayi USG Trimester III (minggu)",
             _umurUsgTrimester3Controller),
         buildDropdownFieldVertical(
@@ -981,14 +1053,14 @@ class _Trimestr3State extends State<Trimestr3> {
             ["Kepala", "Bokong", "Letak Lintang"], _presentasiController),
         buildDropdownFieldVertical(
             "Keadaan Bayi", ["Hidup", "Meninggal"], _keadaanBayiController),
-        buildInputFieldVertical("DJJ (X/menit)", _djjController),
+        _buildInputFieldNumber("DJJ (X/menit)", _djjController),
         buildDropdownFieldVertical(
             "Kondisi DJJ", ["Normal", "Tidak Normal"], _djjStatusController),
         buildDropdownFieldVertical(
             "Lokasi Plasenta",
             ["Fundus", "Corpus", "Letak Rendah", "Previa"],
             _lokasiPlasentaController),
-        buildInputFieldVertical("SDP (cm)", _sdpController),
+        _buildInputFieldNumber("SDP (cm)", _sdpController),
         buildDropdownFieldVertical("Kondisi Cairan Ketuban",
             ["Cukup", "Kurang", "Berlebih"], _jumlahCairanController),
         buildBiometriRow("BPD", "cm", _bpdController, _bpdMingguController),
@@ -1008,11 +1080,40 @@ class _Trimestr3State extends State<Trimestr3> {
       TextEditingController controller1, TextEditingController controller2) {
     return Row(
       children: [
-        Expanded(child: buildInputFieldVertical("$label ($unit)", controller1)),
+        Expanded(child: _buildInputFieldNumber("$label ($unit)", controller1)),
         const SizedBox(width: 10),
         Expanded(
-            child: buildInputFieldVertical("Sesuai: ... minggu", controller2)),
+            child: _buildInputFieldNumber("Sesuai: ... minggu", controller2)),
       ],
+    );
+  }
+
+  Widget _buildInputFieldNumber(
+      String label, TextEditingController controller) {
+    return Padding(
+      padding: const EdgeInsets.only(bottom: 12),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(label, style: const TextStyle(fontSize: 13)),
+          const SizedBox(height: 6),
+          TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
+            style: const TextStyle(fontSize: 13),
+            keyboardType: TextInputType.number,
+            controller: controller,
+            decoration: InputDecoration(
+              isDense: true,
+              contentPadding:
+                  const EdgeInsets.symmetric(vertical: 10, horizontal: 12),
+              border: OutlineInputBorder(
+                borderRadius: BorderRadius.circular(6),
+              ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 
@@ -1026,6 +1127,8 @@ class _Trimestr3State extends State<Trimestr3> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 6),
           TextFormField(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
             style: const TextStyle(fontSize: 13),
             controller: controller,
             decoration: InputDecoration(
@@ -1054,6 +1157,8 @@ class _Trimestr3State extends State<Trimestr3> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 6),
           DropdownButtonFormField<String>(
+            validator: (value) =>
+                value == null ? 'Field Tidak Boleh Kosong' : null,
             value: selectedValue,
             onChanged: (value) {
               selectedValue = value;
@@ -1120,46 +1225,67 @@ class _Trimestr3State extends State<Trimestr3> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: skriningItems.map((item) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(vertical: 6),
-          child: Row(
+        return FormField(validator: (formState) {
+          if (item["groupValue"] == null) {
+            return 'Field Tidak Boleh Kosong';
+          }
+        }, builder: (formState) {
+          return Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              SizedBox(
-                width: 180,
-                child: Text(
-                  item["label"] ?? "",
-                  style: TextStyle(fontSize: 12, fontWeight: FontWeight.w400),
+              Padding(
+                padding: const EdgeInsets.symmetric(vertical: 6),
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    SizedBox(
+                      width: 180,
+                      child: Text(
+                        item["label"] ?? "",
+                        style: TextStyle(
+                            fontSize: 12, fontWeight: FontWeight.w400),
+                      ),
+                    ),
+                    Row(
+                      children: (item["options"] as List<String>).map((option) {
+                        return Row(
+                          children: [
+                            Radio<String>(
+                              value: option,
+                              groupValue: item["groupValue"],
+                              visualDensity: const VisualDensity(
+                                  horizontal: -4, vertical: -4),
+                              materialTapTargetSize:
+                                  MaterialTapTargetSize.shrinkWrap,
+                              onChanged: (val) {
+                                item["onChanged"](val);
+                                formState.didChange(val);
+                              },
+                            ),
+                            SizedBox(
+                              width: 60,
+                              child: Text(
+                                option,
+                                style: TextStyle(
+                                    fontSize: 12, fontWeight: FontWeight.w400),
+                              ),
+                            ),
+                            const SizedBox(width: 10),
+                          ],
+                        );
+                      }).toList(),
+                    ),
+                  ],
                 ),
               ),
-              Row(
-                children: (item["options"] as List<String>).map((option) {
-                  return Row(
-                    children: [
-                      Radio<String>(
-                        value: option,
-                        groupValue: item["groupValue"],
-                        visualDensity:
-                            const VisualDensity(horizontal: -4, vertical: -4),
-                        materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                        onChanged: item["onChanged"],
-                      ),
-                      SizedBox(
-                        width: 60,
-                        child: Text(
-                          option,
-                          style: TextStyle(
-                              fontSize: 12, fontWeight: FontWeight.w400),
-                        ),
-                      ),
-                      const SizedBox(width: 10),
-                    ],
-                  );
-                }).toList(),
-              ),
+              if (formState.hasError)
+                Text(
+                  formState.errorText!,
+                  style: const TextStyle(color: Colors.red),
+                ),
             ],
-          ),
-        );
+          );
+        });
       }).toList(),
     );
   }
@@ -1229,6 +1355,8 @@ class _Trimestr3State extends State<Trimestr3> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 4),
           DropdownButtonFormField<String>(
+            validator: (value) =>
+                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
             value: selectedValue,
             items: options
                 .map((opt) => DropdownMenuItem(
@@ -1254,6 +1382,8 @@ class _Trimestr3State extends State<Trimestr3> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         controller: controller,
         decoration: InputDecoration(
@@ -1272,6 +1402,8 @@ class _Trimestr3State extends State<Trimestr3> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         keyboardType: TextInputType.number,
         controller: controller,
@@ -1292,6 +1424,8 @@ class _Trimestr3State extends State<Trimestr3> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         controller: controller,
         readOnly: true,
         onTap: onTap,

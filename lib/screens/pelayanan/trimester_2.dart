@@ -13,6 +13,7 @@ class Trimester2 extends StatefulWidget {
 }
 
 class _Trimester2State extends State<Trimester2> {
+  final _formKeyTrim2 = GlobalKey<FormState>();
   final TextEditingController _tanggalPeriksaController =
       TextEditingController();
   final TextEditingController _tempatPeriksaController =
@@ -66,6 +67,9 @@ class _Trimester2State extends State<Trimester2> {
   }
 
   void _saveData() async {
+    if (!_formKeyTrim2.currentState!.validate()) {
+      return;
+    }
     try {
       await _getID();
 
@@ -110,6 +114,7 @@ class _Trimester2State extends State<Trimester2> {
         );
       }
     } catch (e) {
+      print('Terjadi kesalahan: $e');
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(content: Text('Terjadi kesalahan: $e')),
       );
@@ -161,43 +166,47 @@ class _Trimester2State extends State<Trimester2> {
 
   Widget _buildTrimester2Step() {
     return SingleChildScrollView(
-      padding: const EdgeInsets.all(16),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          const Row(
-            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        padding: const EdgeInsets.all(16),
+        child: Form(
+          key: _formKeyTrim2,
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                "Catatan Pemeriksaan",
-                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+              const Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    "Catatan Pemeriksaan",
+                    style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+                  ),
+                  Text(
+                    "Langkah 1",
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  ),
+                ],
               ),
-              Text(
-                "Langkah 1",
-                style: TextStyle(fontSize: 12, color: Colors.grey),
-              ),
+              const SizedBox(height: 12),
+              _buildSuggestion(),
+              const SizedBox(height: 12),
+              _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
+                  () => _selectDate(context)),
+              _buildTextField("Tempat Periksa", _tempatPeriksaController),
+              _buildTextFieldWithSuffix(
+                  "Timbang BB", "Kg", _beratBadanController),
+              _buildTextFieldWithSuffix(
+                  "Lingkar Lengan", "Cm", _lilaController),
+              _buildBloodPressureField(),
+              _buildTextField("Tinggi Rahim", _tinggiRahimController),
+              _buildTextField(
+                  "Denyut Jantung Janin", _denyutJantungJaninController),
+              _buildTextField("Konseling", _konselingController),
+              _buildTextField("Skrining Dokter", _skriningController),
+              _buildTextField("Tablet Tambah Darah", _tabletDarahController),
+              const SizedBox(height: 20),
+              _buildSaveButton(),
             ],
           ),
-          const SizedBox(height: 12),
-          _buildSuggestion(),
-          const SizedBox(height: 12),
-          _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
-              () => _selectDate(context)),
-          _buildTextField("Tempat Periksa", _tempatPeriksaController),
-          _buildTextFieldWithSuffix("Timbang BB", "Kg", _beratBadanController),
-          _buildTextField("Lingkar Lengan", _lilaController),
-          _buildBloodPressureField(),
-          _buildTextField("Tinggi Rahim", _tinggiRahimController),
-          _buildTextField(
-              "Denyut Jantung Janin", _denyutJantungJaninController),
-          _buildTextField("Konseling", _konselingController),
-          _buildTextField("Skrining Dokter", _skriningController),
-          _buildTextField("Tablet Tambah Darah", _tabletDarahController),
-          const SizedBox(height: 20),
-          _buildSaveButton(),
-        ],
-      ),
-    );
+        ));
   }
 
   Widget _buildTextFieldWithSuffix(
@@ -205,6 +214,8 @@ class _Trimester2State extends State<Trimester2> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         keyboardType: TextInputType.number,
         controller: controller,
@@ -225,6 +236,8 @@ class _Trimester2State extends State<Trimester2> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         controller: controller,
         readOnly: true,
         onTap: onTap,
@@ -245,6 +258,8 @@ class _Trimester2State extends State<Trimester2> {
     return Padding(
       padding: const EdgeInsets.only(bottom: 10),
       child: TextFormField(
+        validator: (value) =>
+            value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
         style: const TextStyle(fontSize: 14),
         controller: controller,
         decoration: InputDecoration(
