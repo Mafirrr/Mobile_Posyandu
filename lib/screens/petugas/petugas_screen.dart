@@ -14,6 +14,8 @@ class _PetugasScreenState extends State<PetugasScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
+  Color primaryColor = const Color.fromARGB(255, 33, 150, 243);
+
   @override
   void initState() {
     super.initState();
@@ -30,25 +32,32 @@ class _PetugasScreenState extends State<PetugasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: Text(
-          'Daftar Petugas',
-          style: TextStyle(color: Colors.white),
-        ),
+        title: const Text('Daftar Petugas'),
         centerTitle: true,
-        backgroundColor: const Color.fromARGB(255, 33, 150, 243), // contoh warna biru
+        backgroundColor: primaryColor,
+        elevation: 0,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Cari petugas...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                hintText: 'Cari Nama atau NIP...',
+                prefixIcon: Icon(Icons.search, color: primaryColor),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: const BorderSide(color: Color(0xFFD3D3D3)),
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide: BorderSide(color: primaryColor),
                 ),
               ),
               onChanged: (value) {
@@ -62,54 +71,60 @@ class _PetugasScreenState extends State<PetugasScreen> {
             child: Consumer<PetugasViewModel>(
               builder: (context, vm, _) {
                 if (vm.loading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (vm.error != null) {
                   return Center(child: Text('Error: ${vm.error}'));
                 }
 
                 final filteredList = vm.PetugasList.where((petugas) {
-  final role = petugas['role']?.toLowerCase() ?? '';
-  final nama = petugas['nama'].toLowerCase();
-  final nip = petugas['nip'].toLowerCase();
-  
-  final matchesSearch = nama.contains(_searchQuery) || nip.contains(_searchQuery);
-  final isBidan = role == 'bidan';
+                  final role = petugas['role']?.toLowerCase() ?? '';
+                  final nama = petugas['nama'].toLowerCase();
+                  final nip = petugas['nip'].toLowerCase();
 
-  return isBidan && matchesSearch;
+                  final matchesSearch =
+                      nama.contains(_searchQuery) || nip.contains(_searchQuery);
+                  final isBidan = role == 'bidan';
 
+                  return isBidan && matchesSearch;
                 }).toList();
 
                 if (filteredList.isEmpty) {
-                  return Center(child: Text('Tidak ada data petugas yang sesuai'));
+                  return const Center(
+                      child: Text('Tidak ada data petugas yang sesuai'));
                 }
 
                 return ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  padding: const EdgeInsets.all(16),
                   itemCount: filteredList.length,
-                  separatorBuilder: (_, __) => Divider(color: Colors.grey[300]),
+                  separatorBuilder: (_, __) => const SizedBox(height: 6),
                   itemBuilder: (context, index) {
                     final petugas = filteredList[index];
                     return Card(
-                      elevation: 2,
+                      color: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
                       child: ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: primaryColor.withOpacity(0.2),
+                          child: Icon(Icons.person, color: primaryColor),
+                        ),
                         title: Text(
                           petugas['nama'],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
                         subtitle: Text('EMAIL: ${petugas['email']}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              icon: Icon(Icons.edit,
-                                  color: const Color.fromARGB(255, 33, 150, 243)),
-                              onPressed: () async {
+                            GestureDetector(
+                              onTap: () async {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -123,24 +138,34 @@ class _PetugasScreenState extends State<PetugasScreen> {
                                   vm.fetchPetugas();
                                 }
                               },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: primaryColor),
+                                ),
+                                child: Icon(Icons.edit,
+                                    color: primaryColor, size: 20),
+                              ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () async {
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () async {
                                 final confirmed = await showDialog<bool>(
                                   context: context,
                                   builder: (_) => AlertDialog(
-                                    title: Text('Konfirmasi'),
+                                    title: const Text('Konfirmasi'),
                                     content: Text(
                                         'Hapus petugas ${petugas['nama']}?'),
                                     actions: [
                                       TextButton(
-                                        child: Text('Batal'),
+                                        child: const Text('Batal'),
                                         onPressed: () =>
                                             Navigator.pop(context, false),
                                       ),
                                       TextButton(
-                                        child: Text('Hapus'),
+                                        child: const Text('Hapus'),
                                         onPressed: () =>
                                             Navigator.pop(context, true),
                                       ),
@@ -148,9 +173,20 @@ class _PetugasScreenState extends State<PetugasScreen> {
                                   ),
                                 );
                                 if (confirmed == true) {
-                                  await vm.deletePetugas(petugas['id'].toString());
+                                  await vm
+                                      .deletePetugas(petugas['id'].toString());
                                 }
                               },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: primaryColor),
+                                ),
+                                child: const Icon(Icons.delete,
+                                    color: Colors.red, size: 20),
+                              ),
                             ),
                           ],
                         ),
@@ -164,8 +200,8 @@ class _PetugasScreenState extends State<PetugasScreen> {
         ],
       ),
       floatingActionButton: FloatingActionButton(
-        child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: const Color.fromARGB(255, 33, 150, 243),
+        child: const Icon(Icons.add, color: Colors.white),
+        backgroundColor: primaryColor,
         onPressed: () async {
           final result = await Navigator.push(
             context,

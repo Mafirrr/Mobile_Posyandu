@@ -14,6 +14,8 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = "";
 
+  Color primaryColor = const Color.fromARGB(255, 33, 150, 243);
+
   @override
   void initState() {
     super.initState();
@@ -30,25 +32,34 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      backgroundColor: const Color(0xFFF5F7FA),
       appBar: AppBar(
-        title: Text(
-          'Daftar Anggota',
-          style: TextStyle(color: const Color.fromARGB(255, 255, 255, 255)),
-        ),
+        title: const Text('Daftar Anggota'),
         centerTitle: true,
-        backgroundColor: const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
+        backgroundColor: primaryColor,
+        elevation: 0,
       ),
       body: Column(
         children: [
-          Padding(
-            padding: const EdgeInsets.all(16.0),
+          Container(
+            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             child: TextField(
               controller: _searchController,
               decoration: InputDecoration(
-                labelText: 'Cari anggota...',
-                prefixIcon: Icon(Icons.search),
-                border: OutlineInputBorder(
-                  borderRadius: BorderRadius.circular(8),
+                hintText: 'Cari Nama atau NIK...',
+                prefixIcon: Icon(Icons.search, color: primaryColor),
+                filled: true,
+                fillColor: Colors.white,
+                contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                enabledBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      const BorderSide(color: Color(0xFFD3D3D3)), 
+                ),
+                focusedBorder: OutlineInputBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  borderSide:
+                      BorderSide(color: primaryColor), 
                 ),
               ),
               onChanged: (value) {
@@ -62,7 +73,7 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
             child: Consumer<AnggotaViewModel>(
               builder: (context, vm, _) {
                 if (vm.loading) {
-                  return Center(child: CircularProgressIndicator());
+                  return const Center(child: CircularProgressIndicator());
                 }
                 if (vm.error != null) {
                   return Center(child: Text('Error: ${vm.error}'));
@@ -71,40 +82,46 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                 final filteredList = vm.anggotaList.where((anggota) {
                   final nama = anggota['nama'].toLowerCase();
                   final nik = anggota['nik'].toLowerCase();
-                  return nama.contains(_searchQuery) || nik.contains(_searchQuery);
+                  return nama.contains(_searchQuery) ||
+                      nik.contains(_searchQuery);
                 }).toList();
 
                 if (filteredList.isEmpty) {
-                  return Center(child: Text('Tidak ada data anggota yang sesuai'));
+                  return const Center(
+                      child: Text('Tidak ada data anggota yang sesuai'));
                 }
 
                 return ListView.separated(
-                  padding: EdgeInsets.symmetric(vertical: 8, horizontal: 12),
+                  padding: const EdgeInsets.all(16),
                   itemCount: filteredList.length,
-                  separatorBuilder: (_, __) => Divider(color: Colors.grey[300]),
+                  separatorBuilder: (_, __) => const SizedBox(height: 6),
                   itemBuilder: (context, index) {
                     final anggota = filteredList[index];
                     return Card(
-                      elevation: 2,
+                      color: Colors.white,
                       shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(8)),
+                        borderRadius: BorderRadius.circular(16),
+                      ),
+                      elevation: 0,
                       child: ListTile(
-                        contentPadding:
-                            EdgeInsets.symmetric(vertical: 8, horizontal: 16),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 12, horizontal: 16),
+                        leading: CircleAvatar(
+                          radius: 24,
+                          backgroundColor: primaryColor.withOpacity(0.2),
+                          child: Icon(Icons.person, color: primaryColor),
+                        ),
                         title: Text(
                           anggota['nama'],
-                          style: TextStyle(
-                              fontWeight: FontWeight.bold, fontSize: 18),
+                          style: const TextStyle(
+                              fontWeight: FontWeight.bold, fontSize: 16),
                         ),
-                        subtitle: Text('nik: ${anggota['nik']}'),
+                        subtitle: Text('NIK: ${anggota['nik']}'),
                         trailing: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            IconButton(
-                              icon: Icon(Icons.edit,
-                                  color: const Color.from(
-                                      alpha: 1, red: 0.129, green: 0.588, blue: 0.953)),
-                              onPressed: () async {
+                            GestureDetector(
+                              onTap: () async {
                                 final result = await Navigator.push(
                                   context,
                                   MaterialPageRoute(
@@ -118,24 +135,34 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                                   vm.fetchAnggota();
                                 }
                               },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: primaryColor),
+                                ),
+                                child: Icon(Icons.edit,
+                                    color: primaryColor, size: 20),
+                              ),
                             ),
-                            IconButton(
-                              icon: Icon(Icons.delete, color: Colors.red),
-                              onPressed: () async {
+                            const SizedBox(width: 8),
+                            GestureDetector(
+                              onTap: () async {
                                 final confirmed = await showDialog<bool>(
                                   context: context,
                                   builder: (_) => AlertDialog(
-                                    title: Text('Konfirmasi'),
+                                    title: const Text('Konfirmasi'),
                                     content: Text(
                                         'Hapus anggota ${anggota['nama']}?'),
                                     actions: [
                                       TextButton(
-                                        child: Text('Batal'),
+                                        child: const Text('Batal'),
                                         onPressed: () =>
                                             Navigator.pop(context, false),
                                       ),
                                       TextButton(
-                                        child: Text('Hapus'),
+                                        child: const Text('Hapus'),
                                         onPressed: () =>
                                             Navigator.pop(context, true),
                                       ),
@@ -143,9 +170,20 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                                   ),
                                 );
                                 if (confirmed == true) {
-                                  await vm.deleteAnggota(anggota['id'].toString());
+                                  await vm
+                                      .deleteAnggota(anggota['id'].toString());
                                 }
                               },
+                              child: Container(
+                                padding: const EdgeInsets.all(8),
+                                decoration: BoxDecoration(
+                                  color: Colors.white,
+                                  borderRadius: BorderRadius.circular(8),
+                                  border: Border.all(color: primaryColor),
+                                ),
+                                child: const Icon(Icons.delete,
+                                    color: Colors.red, size: 20),
+                              ),
                             ),
                           ],
                         ),
@@ -160,7 +198,8 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
       ),
       floatingActionButton: FloatingActionButton(
         child: Icon(Icons.add, color: Colors.white),
-        backgroundColor: const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
+        backgroundColor:
+            const Color.from(alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
         onPressed: () async {
           final result = await Navigator.push(
             context,

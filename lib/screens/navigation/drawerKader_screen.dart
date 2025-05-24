@@ -1,9 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/models/Petugas.dart';
+import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 import 'package:posyandu_mob/screens/anggota/anggota_screen.dart';
 import 'package:posyandu_mob/screens/petugas/petugas_screen.dart';
+
 class DrawerkaderScreen extends StatefulWidget {
   const DrawerkaderScreen({super.key});
 
@@ -88,7 +90,7 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                   drawerItem(Icons.home_outlined, "Dashboard", () {}),
                   sectionTitle("Data Pengguna"),
                   drawerItem(Icons.people, "Ibu Hamil", () {
-                     Navigator.push(
+                    Navigator.push(
                       context,
                       MaterialPageRoute(
                         builder: (context) => const AnggotaScreen(),
@@ -126,7 +128,13 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton.icon(
-                onPressed: () {},
+                onPressed: () {
+                  Navigator.pushAndRemoveUntil(
+                    context,
+                    MaterialPageRoute(builder: (context) => LoginScreen()),
+                    (route) => false,
+                  );
+                },
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
