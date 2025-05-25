@@ -7,6 +7,7 @@ import 'package:posyandu_mob/screens/pelayanan/jadwal_posyandu.dart';
 import 'package:posyandu_mob/screens/anggota/anggota_screen.dart';
 import 'package:posyandu_mob/screens/petugas/petugas_screen.dart';
 import 'package:posyandu_mob/screens/profil/ubah_password_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/dashboard_pe.dart';
 import 'package:provider/provider.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
@@ -119,7 +120,14 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
               child: ListView(
                 children: [
                   sectionTitle("Home"),
-                  drawerItem(Icons.home_outlined, "Dashboard", () {}),
+                  drawerItem(Icons.people, "Dashboard", () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const DashboardPe(),
+                    ),
+                  );
+                }),
                   sectionTitle("Data Pengguna"),
                   drawerItem(Icons.people, "Ibu Hamil", () {
                     Navigator.push(
