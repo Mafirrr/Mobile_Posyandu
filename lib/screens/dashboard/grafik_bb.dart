@@ -507,7 +507,7 @@ class _GrafikBeratBadanPageState extends State<GrafikBeratBadanPage> {
                               LineChartBarData(
                                 spots: generateSpots(underweightMax),
                                 isCurved: false,
-                                color: Colors.green,
+                                color: Colors.black,
                                 barWidth: 2,
                                 dotData: FlDotData(show: false),
                                 dashArray: [5, 5],
