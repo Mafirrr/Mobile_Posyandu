@@ -9,6 +9,7 @@ import 'package:posyandu_mob/core/models/Artikel.dart';
 import 'package:posyandu_mob/core/services/jadwal_service.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
 import 'notification_page.dart';
+import 'grafik_bb.dart';
 
 class DashboardPage extends StatefulWidget {
   const DashboardPage({super.key});
@@ -242,7 +243,37 @@ class _DashboardPageState extends State<DashboardPage> {
                     const SizedBox(height: 24),
                     SizedBox(
                       height: 200,
-                      child: PageView.builder(
+                      child: highlightArtikels.isEmpty
+                          ? Container(
+                        decoration: BoxDecoration(
+                          color: Colors.grey.shade50,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(color: Colors.grey.shade200),
+                        ),
+                        child: const Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Icon(
+                                Icons.article_outlined,
+                                size: 48,
+                                color: Colors.grey,
+                              ),
+                              SizedBox(height: 8),
+                              Text(
+                                'Tidak ada edukasi terbaru',
+                                style: TextStyle(
+                                  fontSize: 16,
+                                  color: Colors.grey,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                              ),
+                              SizedBox(height: 4),
+                            ],
+                          ),
+                        ),
+                      )
+                          : PageView.builder(
                         controller: _pageController,
                         itemCount: highlightArtikels.length,
                         itemBuilder: (context, index) {
@@ -252,25 +283,25 @@ class _DashboardPageState extends State<DashboardPage> {
                     ),
                     const SizedBox(height: 8),
 
-                    // Indicator
-                    Center(
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: List.generate(4, (index) {
-                          return Container(
-                            width: 8,
-                            height: 8,
-                            margin: const EdgeInsets.all(2),
-                            decoration: BoxDecoration(
-                              color: selectedKategoriId == index
-                                  ? Colors.blue
-                                  : Colors.grey.shade300,
-                              shape: BoxShape.circle,
-                            ),
-                          );
-                        }),
+                    if (highlightArtikels.isNotEmpty)
+                      Center(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: List.generate(highlightArtikels.length, (index) {
+                            return Container(
+                              width: 8,
+                              height: 8,
+                              margin: const EdgeInsets.all(2),
+                              decoration: BoxDecoration(
+                                color: selectedKategoriId == index
+                                    ? Colors.blue
+                                    : Colors.grey.shade300,
+                                shape: BoxShape.circle,
+                              ),
+                            );
+                          }),
+                        ),
                       ),
-                    ),
                     const SizedBox(height: 24),
 
                     const Padding(
@@ -478,46 +509,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                       style: TextStyle(
                                           fontWeight: FontWeight.bold),
                                     ),
-                                    Text(
-                                      'Normal',
-                                      style: TextStyle(color: Colors.green),
-                                    ),
-                                  ],
-                                ),
-                                const SizedBox(height: 8),
-                                Row(
-                                  children: [
-                                    Container(
-                                      width: 6,
-                                      height: 14,
-                                      decoration: BoxDecoration(
-                                        color: Colors.purple,
-                                        borderRadius: BorderRadius.circular(3),
-                                      ),
-                                    ),
-                                    const SizedBox(width: 6),
-                                    const Text(
-                                      '50.2 Kg',
-                                      style: TextStyle(
-                                        fontSize: 16,
-                                        fontWeight: FontWeight.bold,
-                                      ),
-                                    ),
                                   ],
                                 ),
                                 const SizedBox(height: 16),
                                 Center(
                                   child: SizedBox(
-                                    width: double.infinity, // Lebih lebar
+                                    width: double.infinity,
                                     height:
-                                        40, // Lebih tinggi agar tidak terlihat lancip
+                                        40,
                                     child: ElevatedButton(
                                       onPressed: () {
                                         showDialog(
                                           context: context,
                                           builder: (context) =>
-                                              const GrafikPopup(
-                                            title: "Grafik Berat Badan",
+                                              const GrafikBeratBadanPage(
                                           ),
                                         );
                                       },
@@ -525,7 +530,7 @@ class _DashboardPageState extends State<DashboardPage> {
                                         backgroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
                                           borderRadius: BorderRadius.circular(
-                                              6), // Sedikit membulat
+                                              6),
                                         ),
                                       ),
                                       child: const Text(
