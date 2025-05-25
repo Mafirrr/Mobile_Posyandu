@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
@@ -16,15 +17,33 @@ class DrawerkaderScreen extends StatefulWidget {
 }
 
 class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
+  String nama = "user";
+  String email = "example@email.com";
+
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
-    final result = await authProvider.logout(context);
+    await authProvider.logout(context);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
-    // if (result) {
-    // }
+  }
+
+  Future<void> _getData() async {
+    final user = await UserDatabase().readPetugas();
+
+    if (user != null) {
+      setState(() {
+        nama = user.petugas.nama!;
+        email = user.petugas.email!;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
   }
 
   @override
@@ -74,18 +93,18 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          "Mafira",
-                          style: TextStyle(
+                        Text(
+                          nama,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          "mafira@email.com",
-                          style: TextStyle(
+                        Text(
+                          email,
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                           ),
