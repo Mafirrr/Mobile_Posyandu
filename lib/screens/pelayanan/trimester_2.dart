@@ -5,6 +5,7 @@ import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 
 class Trimester2 extends StatefulWidget {
@@ -104,7 +105,11 @@ class _Trimester2State extends State<Trimester2> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PemeriksaanScreen()),
+          MaterialPageRoute(
+            builder: (_) => const DrawerkaderScreen(
+              initialScreen: PemeriksaanScreen(),
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(

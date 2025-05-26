@@ -1,10 +1,15 @@
+import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:path_provider/path_provider.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Kehamilan.dart';
+import 'package:posyandu_mob/core/services/KehamilanService.dart';
+import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/dashboard/EdukasiCard.dart';
 import 'package:posyandu_mob/core/services/artikel_service.dart';
-import 'notification_dialog.dart';
-import 'grafik_popup.dart';
+import 'package:provider/provider.dart';
 import 'package:posyandu_mob/core/models/Artikel.dart';
 import 'package:posyandu_mob/core/services/jadwal_service.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
@@ -30,6 +35,8 @@ class _DashboardPageState extends State<DashboardPage> {
   bool _isExpanded = false;
   String? nama;
   DateTime? selectedJadwal;
+  File? localImg;
+  late List<Kehamilan> kehamilanData = [];
 
   String formatJamMenit(String jam) {
     try {
@@ -37,6 +44,48 @@ class _DashboardPageState extends State<DashboardPage> {
       return DateFormat("HH:mm").format(time);
     } catch (e) {
       return jam;
+    }
+  }
+
+  Future<void> _loadKehamilanData() async {
+    try {
+      final pemeriksaanService = KehamilanService();
+
+      List<Kehamilan> localData = await UserDatabase().getAllKehamilan();
+      if (localData.isNotEmpty) {
+        setState(() {
+          kehamilanData = localData;
+          isLoading = false;
+        });
+      } else {
+        List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
+        setState(() {
+          kehamilanData = remoteData;
+          isLoading = false;
+        });
+      }
+    } catch (e) {
+      setState(() {
+        isLoading = false;
+      });
+      debugPrint("Error load kehamilan data: $e");
+    }
+  }
+
+  Future<void> _checkImage() async {
+    final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
+    final dir = await getApplicationDocumentsDirectory();
+    final file = File('${dir.path}/profile.jpg');
+
+    if (await file.exists()) {
+      setState(() {
+        localImg = file;
+      });
+    } else {
+      final url = await authProvider.checkImage();
+      setState(() {
+        localImg = File(url);
+      });
     }
   }
 
@@ -121,8 +170,10 @@ class _DashboardPageState extends State<DashboardPage> {
       }
     });
     _getUser();
+    _checkImage();
     fetchArtikels();
     fetchJadwal();
+    _loadKehamilanData();
   }
 
   Future<void> _getUser() async {
@@ -133,7 +184,7 @@ class _DashboardPageState extends State<DashboardPage> {
         nama = user.anggota.nama ?? '';
       });
     } else {
-      print("object not found");
+      throw ("object not found");
     }
   }
 
@@ -198,9 +249,13 @@ class _DashboardPageState extends State<DashboardPage> {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         ClipRRect(
-                          borderRadius: BorderRadius.all(Radius.circular(50)),
-                          child: Image.asset(
-                            'assets/images/picture.jpg',
+                          borderRadius: BorderRadius.circular(50),
+                          child: Image(
+                            image: (localImg != null &&
+                                    localImg!.path.isNotEmpty)
+                                ? FileImage(localImg!)
+                                : const AssetImage('assets/images/picture.jpg')
+                                    as ImageProvider,
                             width: 50,
                             height: 50,
                             fit: BoxFit.cover,

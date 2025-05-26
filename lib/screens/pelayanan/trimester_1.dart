@@ -11,6 +11,7 @@ import 'package:posyandu_mob/core/models/pemeriksaan/SkriningKesehatan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimestr1.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester1.dart';
 import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
 import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
@@ -273,7 +274,11 @@ class _Trimester1State extends State<Trimester1> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PemeriksaanScreen()),
+          MaterialPageRoute(
+            builder: (_) => const DrawerkaderScreen(
+              initialScreen: PemeriksaanScreen(),
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -1145,7 +1150,8 @@ class _Trimester1State extends State<Trimester1> {
             "Pulsasi Jantung", ["Tampak", "Tidak Tampak"], _pulsasiController),
         buildDropdownFieldVertical("Kecurigaan Temuan Abnormal",
             ["Ya", "Tidak"], _kecurigaanController),
-        buildInputFieldVertical("Keterangan", _alasanController),
+        buildInputFieldVertical("Keterangan", _alasanController,
+            isRequired: false),
       ],
     );
   }
@@ -1180,7 +1186,10 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   Widget buildInputFieldVertical(
-      String label, TextEditingController controller) {
+    String label,
+    TextEditingController controller, {
+    bool isRequired = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -1189,8 +1198,9 @@ class _Trimester1State extends State<Trimester1> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 6),
           TextFormField(
-            validator: (value) =>
-                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
+            validator: (value) => (value!.isEmpty && isRequired)
+                ? 'Field Tidak Boleh Kosong'
+                : null,
             style: const TextStyle(fontSize: 13),
             controller: controller,
             decoration: InputDecoration(
@@ -1287,9 +1297,9 @@ class _Trimester1State extends State<Trimester1> {
         buildInputFieldNumber("Hemoglobin", hemoglobinController),
         buildInputField("Golongan Darah dan Rhesus", golonganDarahDanRhesus),
         buildInputFieldNumber("Gula Darah", gulaDarahController),
-        buildInputField("Hemoglobin RTL", hemoglobinRtl),
-        buildInputField("Rhesus RTL", rhesusRtl),
-        buildInputField("Gula Darah RTL", gulaDarahRtl),
+        buildInputField("Hemoglobin RTL", hemoglobinRtl, isRequired: false),
+        buildInputField("Rhesus RTL", rhesusRtl, isRequired: false),
+        buildInputField("Gula Darah RTL", gulaDarahRtl, isRequired: false),
         buildDropdownField(
           "HIV",
           ["Reaktif", "Non Reaktif"],
@@ -1413,7 +1423,11 @@ class _Trimester1State extends State<Trimester1> {
     );
   }
 
-  Widget buildInputField(String label, TextEditingController controller) {
+  Widget buildInputField(
+    String label,
+    TextEditingController controller, {
+    bool isRequired = true,
+  }) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Column(
@@ -1422,8 +1436,9 @@ class _Trimester1State extends State<Trimester1> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 4),
           TextFormField(
-            validator: (value) =>
-                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
+            validator: (value) => (isRequired && value!.isEmpty)
+                ? 'Field Tidak Boleh Kosong'
+                : null,
             controller: controller,
             style: const TextStyle(fontSize: 13),
             decoration: InputDecoration(
