@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:posyandu_mob/core/viewmodel/Petugas_viewmodel.dart';
+import 'package:flutter/services.dart';
 
 class TambahPetugasScreen extends StatefulWidget {
   final Map<String, dynamic>? petugas; // data untuk edit
@@ -101,9 +102,18 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   labelText: 'NIP',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) => val == null || val.isEmpty
-                    ? 'NIP tidak boleh kosong'
-                    : null,
+                keyboardType:
+                    TextInputType.number, // Membatasi input hanya angka
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ], // Hanya angka
+                validator: (val) {
+                  if (val == null || val.isEmpty)
+                    return 'NIP tidak boleh kosong';
+                  if (!RegExp(r'^\d+$').hasMatch(val))
+                    return 'NIP hanya boleh berisi angka';
+                  return null;
+                },
               ),
               SizedBox(height: 16),
 
@@ -114,9 +124,14 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   labelText: 'Nama',
                   border: OutlineInputBorder(),
                 ),
-                validator: (val) => val == null || val.isEmpty
-                    ? 'Nama tidak boleh kosong'
-                    : null,
+                validator: (val) {
+                  if (val == null || val.isEmpty)
+                    return 'Nama tidak boleh kosong';
+                  if (val.length < 3) return 'Nama harus minimal 3 karakter';
+                  if (!RegExp(r'^[a-zA-Z ]+$').hasMatch(val))
+                    return 'Nama hanya boleh berisi huruf';
+                  return null;
+                },
               ),
               SizedBox(height: 16),
 
@@ -127,14 +142,23 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
                   labelText: 'No Telepon',
                   border: OutlineInputBorder(),
                 ),
-                keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty
-                    ? 'No telepon wajib diisi'
-                    : null,
+                keyboardType: TextInputType
+                    .phone, // Membatasi tipe input ke angka (telepon)
+                inputFormatters: [
+                  FilteringTextInputFormatter.digitsOnly
+                ], // Hanya angka yang diizinkan
+                validator: (val) {
+                  if (val == null || val.isEmpty)
+                    return 'No telepon wajib diisi';
+                  if (!RegExp(r'^\d+$').hasMatch(val))
+                    return 'No telepon hanya boleh berisi angka';
+                  if (val.length < 10) return 'No telepon minimal 10 digit';
+                  if (val.length > 13) return 'No telepon maksimal 13 digit';
+                  return null;
+                },
+              
               ),
-              SizedBox(height: 16),
-
-              // Email
+   SizedBox(height: 16), 
               TextFormField(
                 controller: _emailController,
                 decoration: InputDecoration(
@@ -154,8 +178,7 @@ class _TambahPetugasScreenState extends State<TambahPetugasScreen> {
 
               ElevatedButton.icon(
                 style: ElevatedButton.styleFrom(
-                  backgroundColor: const Color.from(
-                      alpha: 1, red: 0.129, green: 0.588, blue: 0.953),
+                  backgroundColor: const Color.fromARGB(255, 33, 150, 243),
                   minimumSize: Size(double.infinity, 50),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(6),

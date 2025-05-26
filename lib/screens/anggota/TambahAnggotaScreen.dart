@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Untuk input formatter
 import 'package:provider/provider.dart';
 import 'package:posyandu_mob/core/viewmodel/Anggota_viewmodel.dart';
 
 class TambahAnggotaScreen extends StatefulWidget {
-  final Map<String, dynamic>? anggota; // data untuk edit
+  final Map<String, dynamic>? anggota;
   final bool isEdit;
 
   const TambahAnggotaScreen({Key? key, this.anggota, required this.isEdit})
@@ -177,9 +178,14 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (val) {
-                  if (val == null || val.isEmpty)
+                  if (val == null || val.isEmpty) {
                     return 'NIK tidak boleh kosong';
+                  }
+                  if (val.length != 16) {
+                    return 'NIK harus 16 digit';
+                  }
                   return null;
                 },
               ),
@@ -193,9 +199,11 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (val) {
-                  if (val == null || val.isEmpty)
+                  if (val == null || val.isEmpty) {
                     return 'No JKN tidak boleh kosong';
+                  }
                   return null;
                 },
               ),
@@ -226,6 +234,8 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     : null,
               ),
               SizedBox(height: 16),
+
+              // Tanggal Lahir
               TextFormField(
                 controller: _tanggalLahirController,
                 decoration: InputDecoration(
@@ -286,9 +296,16 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty
-                    ? 'No telepon wajib diisi'
-                    : null,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return 'No telepon wajib diisi';
+                  }
+                  if (val.length < 10 || val.length > 13) {
+                    return 'No telepon harus 10-13 digit';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
 
