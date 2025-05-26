@@ -33,12 +33,6 @@ class _PetugasScreenState extends State<PetugasScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('Daftar Petugas'),
-        centerTitle: true,
-        backgroundColor: primaryColor,
-        elevation: 0,
-      ),
       body: Column(
         children: [
           Container(

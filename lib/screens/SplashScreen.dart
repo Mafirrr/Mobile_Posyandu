@@ -4,6 +4,7 @@ import 'package:posyandu_mob/core/services/KehamilanService.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/dashboard_pe.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -131,7 +132,11 @@ class _SplashScreenState extends State<SplashScreen>
       } else {
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const DrawerkaderScreen()),
+          MaterialPageRoute(
+            builder: (context) => DrawerkaderScreen(
+              initialScreen: const DashboardPe(),
+            ),
+          ),
         );
       }
     } else {

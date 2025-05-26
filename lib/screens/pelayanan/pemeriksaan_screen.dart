@@ -34,10 +34,9 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Pemeriksaan Kehamilan'),
         backgroundColor: Colors.blue,
         bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(48),
+          preferredSize: const Size.fromHeight(0),
           child: Container(
             color: Colors.blue,
             child: TabBar(

@@ -4,6 +4,7 @@ import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/dashboard_pe.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
@@ -176,8 +177,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const DrawerkaderScreen()),
+                                        builder: (context) => DrawerkaderScreen(
+                                          initialScreen: DashboardPe(),
+                                        ),
+                                      ),
                                     );
                                   } else {
                                     Navigator.pushReplacement(

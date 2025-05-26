@@ -47,23 +47,22 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
         TextEditingController(text: widget.anggota?['nama'] ?? '');
     _nikController = TextEditingController(text: widget.anggota?['nik'] ?? '');
     _noJknController =
-        TextEditingController(text: widget.anggota?['noJkn'] ?? '');
+        TextEditingController(text: widget.anggota?['no_jkn'] ?? '');
     _faskesTk1Controller =
-        TextEditingController(text: widget.anggota?['faskesTk1'] ?? '');
+        TextEditingController(text: widget.anggota?['faskes_tk1'] ?? '');
     _faskesRujukanController =
-        TextEditingController(text: widget.anggota?['faskesRujukan'] ?? '');
+        TextEditingController(text: widget.anggota?['faskes_rujukan'] ?? '');
     _tanggalLahirController =
-        TextEditingController(text: widget.anggota?['tanggalLahir'] ?? '');
+        TextEditingController(text: widget.anggota?['tanggal_lahir'] ?? '');
     _tempatLahirController =
-        TextEditingController(text: widget.anggota?['tempatLahir'] ?? '');
+        TextEditingController(text: widget.anggota?['tempat_lahir'] ?? '');
     _pekerjaanController =
         TextEditingController(text: widget.anggota?['pekerjaan'] ?? '');
     _alamatController =
         TextEditingController(text: widget.anggota?['alamat'] ?? '');
     _noTeleponController =
-        TextEditingController(text: widget.anggota?['noTelepon'] ?? '');
-
-    _selectedGolonganDarah = widget.anggota?['golonganDarah'];
+        TextEditingController(text: widget.anggota?['no_telepon'] ?? '');
+    _selectedGolonganDarah = widget.anggota?['golongan_darah'];
   }
 
   @override

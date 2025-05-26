@@ -81,19 +81,6 @@ class _UbahPasswordScreenState extends State<UbahPasswordScreen> {
     return Scaffold(
       resizeToAvoidBottomInset: true,
       backgroundColor: Colors.white,
-      appBar: AppBar(
-        backgroundColor: Colors.white,
-        elevation: 0,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.black),
-          onPressed: () => Navigator.pop(context),
-        ),
-        title: const Text(
-          'Ganti Password',
-          style: TextStyle(color: Colors.black),
-        ),
-        centerTitle: true,
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return SingleChildScrollView(

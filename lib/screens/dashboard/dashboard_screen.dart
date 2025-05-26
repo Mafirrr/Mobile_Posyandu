@@ -234,7 +234,9 @@ class _DashboardPageState extends State<DashboardPage> {
                           onPressed: () {
                             Navigator.push(
                               context,
-                              MaterialPageRoute(builder: (context) => const NotificationPage()),
+                              MaterialPageRoute(
+                                  builder: (context) =>
+                                      const NotificationPage()),
                             );
                           },
                         ),
@@ -245,41 +247,42 @@ class _DashboardPageState extends State<DashboardPage> {
                       height: 200,
                       child: highlightArtikels.isEmpty
                           ? Container(
-                        decoration: BoxDecoration(
-                          color: Colors.grey.shade50,
-                          borderRadius: BorderRadius.circular(12),
-                          border: Border.all(color: Colors.grey.shade200),
-                        ),
-                        child: const Center(
-                          child: Column(
-                            mainAxisAlignment: MainAxisAlignment.center,
-                            children: [
-                              Icon(
-                                Icons.article_outlined,
-                                size: 48,
-                                color: Colors.grey,
+                              decoration: BoxDecoration(
+                                color: Colors.grey.shade50,
+                                borderRadius: BorderRadius.circular(12),
+                                border: Border.all(color: Colors.grey.shade200),
                               ),
-                              SizedBox(height: 8),
-                              Text(
-                                'Tidak ada edukasi terbaru',
-                                style: TextStyle(
-                                  fontSize: 16,
-                                  color: Colors.grey,
-                                  fontWeight: FontWeight.w500,
+                              child: const Center(
+                                child: Column(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: [
+                                    Icon(
+                                      Icons.article_outlined,
+                                      size: 48,
+                                      color: Colors.grey,
+                                    ),
+                                    SizedBox(height: 8),
+                                    Text(
+                                      'Tidak ada edukasi terbaru',
+                                      style: TextStyle(
+                                        fontSize: 16,
+                                        color: Colors.grey,
+                                        fontWeight: FontWeight.w500,
+                                      ),
+                                    ),
+                                    SizedBox(height: 4),
+                                  ],
                                 ),
                               ),
-                              SizedBox(height: 4),
-                            ],
-                          ),
-                        ),
-                      )
+                            )
                           : PageView.builder(
-                        controller: _pageController,
-                        itemCount: highlightArtikels.length,
-                        itemBuilder: (context, index) {
-                          return EdukasiCard(artikel: highlightArtikels[index]);
-                        },
-                      ),
+                              controller: _pageController,
+                              itemCount: highlightArtikels.length,
+                              itemBuilder: (context, index) {
+                                return EdukasiCard(
+                                    artikel: highlightArtikels[index]);
+                              },
+                            ),
                     ),
                     const SizedBox(height: 8),
 
@@ -287,7 +290,8 @@ class _DashboardPageState extends State<DashboardPage> {
                       Center(
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
-                          children: List.generate(highlightArtikels.length, (index) {
+                          children:
+                              List.generate(highlightArtikels.length, (index) {
                             return Container(
                               width: 8,
                               height: 8,
@@ -515,22 +519,20 @@ class _DashboardPageState extends State<DashboardPage> {
                                 Center(
                                   child: SizedBox(
                                     width: double.infinity,
-                                    height:
-                                        40,
+                                    height: 40,
                                     child: ElevatedButton(
                                       onPressed: () {
                                         showDialog(
                                           context: context,
                                           builder: (context) =>
-                                              const GrafikBeratBadanPage(
-                                          ),
+                                              const GrafikBeratBadanPage(),
                                         );
                                       },
                                       style: ElevatedButton.styleFrom(
                                         backgroundColor: Colors.blue,
                                         shape: RoundedRectangleBorder(
-                                          borderRadius: BorderRadius.circular(
-                                              6),
+                                          borderRadius:
+                                              BorderRadius.circular(6),
                                         ),
                                       ),
                                       child: const Text(

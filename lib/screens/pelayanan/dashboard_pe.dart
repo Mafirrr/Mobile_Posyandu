@@ -103,26 +103,6 @@ class _DashboardPeState extends State<DashboardPe> {
     final maxY = (values.reduce((a, b) => a > b ? a : b)) + 10;
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text(
-          'Dashboard',
-          style: TextStyle(
-            fontSize: isTablet ? 22 : 18,
-            fontWeight: FontWeight.w600,
-          ),
-        ),
-        leading: IconButton(
-          icon: Icon(
-            Icons.arrow_back,
-            size: isTablet ? 28 : 24,
-          ),
-          onPressed: () => Navigator.pop(context),
-        ),
-        foregroundColor: Colors.black,
-        elevation: 0,
-        backgroundColor: Colors.white,
-        centerTitle: !isDesktop,
-      ),
       body: LayoutBuilder(
         builder: (context, constraints) {
           return RefreshIndicator(
@@ -138,7 +118,8 @@ class _DashboardPeState extends State<DashboardPe> {
     );
   }
 
-  Widget _buildContent(BoxConstraints constraints, bool isTablet, bool isDesktop) {
+  Widget _buildContent(
+      BoxConstraints constraints, bool isTablet, bool isDesktop) {
     if (isDesktop) {
       return Row(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -165,7 +146,8 @@ class _DashboardPeState extends State<DashboardPe> {
     }
   }
 
-  Widget _buildChartCard(BoxConstraints constraints, bool isTablet, bool isDesktop) {
+  Widget _buildChartCard(
+      BoxConstraints constraints, bool isTablet, bool isDesktop) {
     final values = grafik!.data.map((e) => e.toDouble()).toList();
     final minY = (values.reduce((a, b) => a < b ? a : b)) - 5;
     final maxY = (values.reduce((a, b) => a > b ? a : b)) + 10;
@@ -206,7 +188,8 @@ class _DashboardPeState extends State<DashboardPe> {
     );
   }
 
-  Widget _buildChart(BoxConstraints constraints, bool isTablet, bool isDesktop, double minY, double maxY) {
+  Widget _buildChart(BoxConstraints constraints, bool isTablet, bool isDesktop,
+      double minY, double maxY) {
     final chartHeight = isDesktop ? 400.0 : (isTablet ? 350.0 : 300.0);
     final needsHorizontalScroll = constraints.maxWidth < 600;
 
@@ -218,9 +201,13 @@ class _DashboardPeState extends State<DashboardPe> {
           maxY: maxY,
           lineBarsData: [
             LineChartBarData(
-              spots: grafik!.data.asMap().entries.map(
+              spots: grafik!.data
+                  .asMap()
+                  .entries
+                  .map(
                     (e) => FlSpot(e.key.toDouble(), e.value.toDouble()),
-              ).toList(),
+                  )
+                  .toList(),
               isCurved: true,
               barWidth: isTablet ? 4 : 3,
               color: Colors.blue,
@@ -259,8 +246,18 @@ class _DashboardPeState extends State<DashboardPe> {
                 reservedSize: isTablet ? 40 : 30,
                 getTitlesWidget: (value, _) {
                   const months = [
-                    'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-                    'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+                    'Jan',
+                    'Feb',
+                    'Mar',
+                    'Apr',
+                    'Mei',
+                    'Jun',
+                    'Jul',
+                    'Agu',
+                    'Sep',
+                    'Okt',
+                    'Nov',
+                    'Des'
                   ];
                   final i = value.toInt();
                   if (i < 0 || i >= months.length) return const Text('');
@@ -345,13 +342,24 @@ class _DashboardPeState extends State<DashboardPe> {
                 return touchedSpots.map((touchedSpot) {
                   final value = touchedSpot.y.toInt();
                   const months = [
-                    'Januari', 'Februari', 'Maret', 'April', 'Mei', 'Juni',
-                    'Juli', 'Agustus', 'September', 'Oktober', 'November', 'Desember'
+                    'Januari',
+                    'Februari',
+                    'Maret',
+                    'April',
+                    'Mei',
+                    'Juni',
+                    'Juli',
+                    'Agustus',
+                    'September',
+                    'Oktober',
+                    'November',
+                    'Desember'
                   ];
                   final monthIndex = touchedSpot.x.toInt();
-                  final monthName = monthIndex >= 0 && monthIndex < months.length
-                      ? months[monthIndex]
-                      : 'Bulan ${monthIndex + 1}';
+                  final monthName =
+                      monthIndex >= 0 && monthIndex < months.length
+                          ? months[monthIndex]
+                          : 'Bulan ${monthIndex + 1}';
 
                   return LineTooltipItem(
                     '$monthName\n$value Pengunjung',
@@ -382,7 +390,8 @@ class _DashboardPeState extends State<DashboardPe> {
     return chart;
   }
 
-  Widget _buildHistoryCard(BoxConstraints constraints, bool isTablet, bool isDesktop) {
+  Widget _buildHistoryCard(
+      BoxConstraints constraints, bool isTablet, bool isDesktop) {
     return Card(
       elevation: isTablet ? 4 : 3,
       shape: RoundedRectangleBorder(
@@ -448,7 +457,8 @@ class _DashboardPeState extends State<DashboardPe> {
     );
   }
 
-  Widget _buildHistoryTable(BoxConstraints constraints, bool isTablet, bool isDesktop) {
+  Widget _buildHistoryTable(
+      BoxConstraints constraints, bool isTablet, bool isDesktop) {
     final needsHorizontalScroll = constraints.maxWidth < 800;
 
     Widget table = DataTable(
@@ -574,8 +584,18 @@ class _DashboardPeState extends State<DashboardPe> {
     try {
       final date = DateTime.parse(dateString);
       final months = [
-        'Jan', 'Feb', 'Mar', 'Apr', 'Mei', 'Jun',
-        'Jul', 'Agu', 'Sep', 'Okt', 'Nov', 'Des'
+        'Jan',
+        'Feb',
+        'Mar',
+        'Apr',
+        'Mei',
+        'Jun',
+        'Jul',
+        'Agu',
+        'Sep',
+        'Okt',
+        'Nov',
+        'Des'
       ];
       return '${date.day} ${months[date.month - 1]} ${date.year}';
     } catch (e) {

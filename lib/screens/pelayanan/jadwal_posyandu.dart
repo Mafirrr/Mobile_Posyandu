@@ -227,10 +227,6 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
         TextStyle(color: Colors.black.withAlpha(179), fontSize: 10);
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pelayanan Posyandu', style: TextStyle(fontSize: 20)),
-        toolbarHeight: 48,
-      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
         child: Column(
