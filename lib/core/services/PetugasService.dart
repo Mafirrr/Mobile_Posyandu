@@ -7,7 +7,6 @@ class Petugasservice {
   Future<List<dynamic>> getAll() async {
     await _apiClient.setToken();
     final response = await _apiClient.dio.get('/petugas');
-    print("API Response: ${response.data}"); // Debug data
     return response.data;
   }
 
@@ -22,7 +21,6 @@ class Petugasservice {
 
     try {
       final response = await _apiClient.dio.post('/petugas', data: data);
-      print("Respons server: ${response.data}");
 
       if (response.statusCode == 201) {
         return response.data; // kembalikan data anggota dari server
