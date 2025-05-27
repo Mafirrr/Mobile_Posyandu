@@ -19,7 +19,7 @@ DataAnggota _$DataAnggotaFromJson(Map<String, dynamic> json) => DataAnggota(
       pekerjaan: json['pekerjaan'] as String,
       alamat: json['alamat'] as String,
       noTelepon: json['no_telepon'] as String?,
-      golonganDarah: json['golongan_darah'] as String?,
+      golonganDarah: json['golongan_Darah'] as String?,
     );
 
 Map<String, dynamic> _$DataAnggotaToJson(DataAnggota instance) =>
@@ -36,5 +36,5 @@ Map<String, dynamic> _$DataAnggotaToJson(DataAnggota instance) =>
       'pekerjaan': instance.pekerjaan,
       'alamat': instance.alamat,
       'no_telepon': instance.noTelepon,
-      'golongan_darah': instance.golonganDarah,
+      'golongan_Darah': instance.golonganDarah,
     };

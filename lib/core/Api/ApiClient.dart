@@ -8,7 +8,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: "http://192.168.0.3:8000/api",
+      baseUrl: "https://webfw23.myhost.id/gol_bws4/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {

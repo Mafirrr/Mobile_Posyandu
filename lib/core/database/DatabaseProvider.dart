@@ -241,6 +241,7 @@ class DatabaseProvider {
   CREATE TABLE usg_trimester_3 (
     id INTEGER PRIMARY KEY,
     usg_trimester3 TEXT,
+    umur_kehamilan_usg_trimester_1 REAL,
     umur_kehamilan_usg_trimester_3 REAL,
     selisih_uk_usg_1_hpht_dengan_trimester_3 TEXT,
     jumlah_bayi TEXT,
