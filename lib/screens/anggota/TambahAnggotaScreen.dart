@@ -324,10 +324,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     _selectedGolonganDarah = val;
                   });
                 },
-                validator: (val) => val == null || val.isEmpty
-                    ? 'Golongan darah wajib dipilih'
-                    : null,
+                validator: (val) =>
+                    null, // Validasi dihapus atau diubah agar selalu valid
               ),
+              SizedBox(height: 24),
               SizedBox(height: 24),
 
               ElevatedButton.icon(
