@@ -69,9 +69,9 @@ class AuthService {
         }
       }
 
-      return response;
+      return null;
     } on DioException catch (e) {
-      throw ("Dio error: ${e.response?.data ?? e.message}");
+      throw Exception("Dio error: ${e.response?.data ?? e.message}");
     }
   }
 

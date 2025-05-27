@@ -7,7 +7,6 @@ class AnggotaService {
   Future<List<dynamic>> getAll() async {
     await _apiClient.setToken();
     final response = await _apiClient.dio.get('/anggota');
-    print("API Response: ${response.data}"); // Debug data
     return response.data;
   }
 
@@ -22,7 +21,6 @@ class AnggotaService {
 
     try {
       final response = await _apiClient.dio.post('/anggota', data: data);
-      print("Respons server: ${response.data}");
 
       if (response.statusCode == 201) {
         return response.data; // kembalikan data anggota dari server
@@ -31,7 +29,7 @@ class AnggotaService {
       }
     } on DioException catch (e) {
       print("Error response: ${e.response?.data}");
-      rethrow; // lempar ulang error agar bisa ditangani di atasnya
+      rethrow;
     }
   }
 

@@ -13,17 +13,21 @@ class AuthViewModel extends ChangeNotifier {
 
   Future<bool> login(String nik, String password) async {
     _setLoading(true);
+    try {
+      final user = await _authService.login(nik, password);
+      _setLoading(false);
 
-    final user = await _authService.login(nik, password);
-    _setLoading(false);
-
-    if (user != null) {
-      _user = user;
-      notifyListeners();
-      return true;
+      if (user != null) {
+        _user = user;
+        notifyListeners();
+        return true;
+      }
+      return false;
+    } catch (e) {
+      _setLoading(false);
+      debugPrint("Login Error: $e");
+      return false;
     }
-
-    return false;
   }
 
   Future<bool> logout(BuildContext context) async {

@@ -1,9 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart'; // Untuk input formatter
 import 'package:provider/provider.dart';
 import 'package:posyandu_mob/core/viewmodel/Anggota_viewmodel.dart';
 
 class TambahAnggotaScreen extends StatefulWidget {
-  final Map<String, dynamic>? anggota; // data untuk edit
+  final Map<String, dynamic>? anggota;
   final bool isEdit;
 
   const TambahAnggotaScreen({Key? key, this.anggota, required this.isEdit})
@@ -47,23 +48,22 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
         TextEditingController(text: widget.anggota?['nama'] ?? '');
     _nikController = TextEditingController(text: widget.anggota?['nik'] ?? '');
     _noJknController =
-        TextEditingController(text: widget.anggota?['noJkn'] ?? '');
+        TextEditingController(text: widget.anggota?['no_jkn'] ?? '');
     _faskesTk1Controller =
-        TextEditingController(text: widget.anggota?['faskesTk1'] ?? '');
+        TextEditingController(text: widget.anggota?['faskes_tk1'] ?? '');
     _faskesRujukanController =
-        TextEditingController(text: widget.anggota?['faskesRujukan'] ?? '');
+        TextEditingController(text: widget.anggota?['faskes_rujukan'] ?? '');
     _tanggalLahirController =
-        TextEditingController(text: widget.anggota?['tanggalLahir'] ?? '');
+        TextEditingController(text: widget.anggota?['tanggal_lahir'] ?? '');
     _tempatLahirController =
-        TextEditingController(text: widget.anggota?['tempatLahir'] ?? '');
+        TextEditingController(text: widget.anggota?['tempat_lahir'] ?? '');
     _pekerjaanController =
         TextEditingController(text: widget.anggota?['pekerjaan'] ?? '');
     _alamatController =
         TextEditingController(text: widget.anggota?['alamat'] ?? '');
     _noTeleponController =
-        TextEditingController(text: widget.anggota?['noTelepon'] ?? '');
-
-    _selectedGolonganDarah = widget.anggota?['golonganDarah'];
+        TextEditingController(text: widget.anggota?['no_telepon'] ?? '');
+    _selectedGolonganDarah = widget.anggota?['golongan_darah'];
   }
 
   @override
@@ -178,9 +178,14 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (val) {
-                  if (val == null || val.isEmpty)
+                  if (val == null || val.isEmpty) {
                     return 'NIK tidak boleh kosong';
+                  }
+                  if (val.length != 16) {
+                    return 'NIK harus 16 digit';
+                  }
                   return null;
                 },
               ),
@@ -194,9 +199,11 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.number,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
                 validator: (val) {
-                  if (val == null || val.isEmpty)
+                  if (val == null || val.isEmpty) {
                     return 'No JKN tidak boleh kosong';
+                  }
                   return null;
                 },
               ),
@@ -227,6 +234,8 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     : null,
               ),
               SizedBox(height: 16),
+
+              // Tanggal Lahir
               TextFormField(
                 controller: _tanggalLahirController,
                 decoration: InputDecoration(
@@ -287,9 +296,16 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   border: OutlineInputBorder(),
                 ),
                 keyboardType: TextInputType.phone,
-                validator: (val) => val == null || val.isEmpty
-                    ? 'No telepon wajib diisi'
-                    : null,
+                inputFormatters: [FilteringTextInputFormatter.digitsOnly],
+                validator: (val) {
+                  if (val == null || val.isEmpty) {
+                    return 'No telepon wajib diisi';
+                  }
+                  if (val.length < 10 || val.length > 13) {
+                    return 'No telepon harus 10-13 digit';
+                  }
+                  return null;
+                },
               ),
               SizedBox(height: 16),
 
@@ -308,10 +324,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     _selectedGolonganDarah = val;
                   });
                 },
-                validator: (val) => val == null || val.isEmpty
-                    ? 'Golongan darah wajib dipilih'
-                    : null,
+                validator: (val) =>
+                    null, // Validasi dihapus atau diubah agar selalu valid
               ),
+              SizedBox(height: 24),
               SizedBox(height: 24),
 
               ElevatedButton.icon(

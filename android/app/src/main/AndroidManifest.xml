@@ -12,7 +12,7 @@
     <uses-permission android:name="android.permission.CAMERA"/>
 
     <application
-        android:label="posyandu_mob"
+        android:label="Posyandu"
         android:name="${applicationName}"
         android:icon="@mipmap/ic_launcher">
 

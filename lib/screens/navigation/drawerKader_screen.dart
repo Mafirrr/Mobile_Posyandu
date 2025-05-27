@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/login_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
@@ -10,22 +11,49 @@ import 'package:posyandu_mob/screens/pelayanan/dashboard_pe.dart';
 import 'package:provider/provider.dart';
 
 class DrawerkaderScreen extends StatefulWidget {
-  const DrawerkaderScreen({super.key});
+  final Widget initialScreen;
+
+  const DrawerkaderScreen({
+    super.key,
+    required this.initialScreen,
+  });
 
   @override
   State<DrawerkaderScreen> createState() => _DrawerkaderScreenState();
 }
 
 class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
+  String nama = "user";
+  String email = "example@email.com";
+  String _title = "Dashboard";
+
+  late Widget _currentScreen;
+
   Future<void> _logout() async {
     final authProvider = Provider.of<AuthViewModel>(context, listen: false);
-    final result = await authProvider.logout(context);
+    await authProvider.logout(context);
 
     Navigator.of(context).pushReplacement(
       MaterialPageRoute(builder: (context) => const LoginScreen()),
     );
-    // if (result) {
-    // }
+  }
+
+  Future<void> _getData() async {
+    final user = await UserDatabase().readPetugas();
+
+    if (user != null) {
+      setState(() {
+        nama = user.petugas.nama!;
+        email = user.petugas.email!;
+      });
+    }
+  }
+
+  @override
+  void initState() {
+    super.initState();
+    _getData();
+    _currentScreen = widget.initialScreen;
   }
 
   @override
@@ -35,13 +63,13 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
         child: Column(
           children: [
             SizedBox(
-              height: 180,
+              height: 200,
               child: Stack(
                 children: [
                   ClipPath(
                     clipper: DoubleCurveClipper(),
                     child: Container(
-                      height: 180,
+                      height: 200,
                       decoration: const BoxDecoration(
                         gradient: LinearGradient(
                           colors: [Colors.blue, Colors.lightBlueAccent],
@@ -52,8 +80,8 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                     ),
                   ),
                   Padding(
-                    padding:
-                        const EdgeInsets.only(top: 40, left: 16.0, right: 16.0),
+                    padding: const EdgeInsets.symmetric(
+                        vertical: 36, horizontal: 16),
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
@@ -75,18 +103,18 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                           ],
                         ),
                         const SizedBox(height: 16),
-                        const Text(
-                          "Mafira",
-                          style: TextStyle(
+                        Text(
+                          nama,
+                          style: const TextStyle(
                             color: Colors.white,
                             fontWeight: FontWeight.bold,
                             fontSize: 16,
                           ),
                         ),
                         const SizedBox(height: 4),
-                        const Text(
-                          "mafira@email.com",
-                          style: TextStyle(
+                        Text(
+                          email,
+                          style: const TextStyle(
                             color: Colors.white70,
                             fontSize: 12,
                           ),
@@ -101,56 +129,50 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
               child: ListView(
                 children: [
                   sectionTitle("Home"),
-                  drawerItem(Icons.people, "Dashboard", () {
-                  Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const DashboardPe(),
-                    ),
-                  );
-                }),
+                  drawerItem(Icons.dashboard, "Dashboard", () {
+                    setState(() {
+                      _currentScreen = const DashboardPe();
+                      _title = "Dashboard";
+                    });
+                    Navigator.of(context).pop();
+                  }),
                   sectionTitle("Data Pengguna"),
-                  drawerItem(Icons.people, "Ibu Hamil", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AnggotaScreen(),
-                      ),
-                    );
+                  drawerItem(Icons.pregnant_woman, "Ibu Hamil", () {
+                    setState(() {
+                      _currentScreen = const AnggotaScreen();
+                      _title = "Data Ibu Hamil";
+                    });
+                    Navigator.of(context).pop();
                   }),
                   drawerItem(Icons.person, "Bidan", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PetugasScreen(),
-                      ),
-                    );
+                    setState(() {
+                      _currentScreen = const PetugasScreen();
+                      _title = "Data Bidan";
+                    });
+                    Navigator.of(context).pop();
                   }),
                   sectionTitle("Pelayanan Posyandu"),
                   drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const JadwalPosyanduView(),
-                      ),
-                    );
+                    setState(() {
+                      _currentScreen = const JadwalPosyanduView();
+                      _title = "Jadwal Posyandu";
+                    });
+                    Navigator.of(context).pop();
                   }),
                   drawerItem(Icons.medical_information, "Pemeriksaan", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const PemeriksaanScreen(),
-                      ),
-                    );
+                    setState(() {
+                      _currentScreen = const PemeriksaanScreen();
+                      _title = "Pemeriksaan";
+                    });
+                    Navigator.of(context).pop();
                   }),
                   sectionTitle("Lainnya"),
                   drawerItem(Icons.key, "Ubah Password", () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const UbahPasswordScreen(),
-                      ),
-                    );
+                    setState(() {
+                      _currentScreen = const UbahPasswordScreen();
+                      _title = "Ubah Password";
+                    });
+                    Navigator.of(context).pop();
                   }),
                 ],
               ),
@@ -158,9 +180,7 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
             Padding(
               padding: const EdgeInsets.all(12.0),
               child: ElevatedButton.icon(
-                onPressed: () {
-                  _logout();
-                },
+                onPressed: _logout,
                 style: ElevatedButton.styleFrom(
                   backgroundColor: Colors.red,
                   shape: RoundedRectangleBorder(
@@ -179,11 +199,14 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
         ),
       ),
       appBar: AppBar(
-        title: const Text("Drawer Kader"),
+        backgroundColor: Colors.blue,
+        iconTheme: const IconThemeData(color: Colors.white),
+        title: Text(
+          _title,
+          style: const TextStyle(color: Colors.white),
+        ),
       ),
-      body: const Center(
-        child: Text("Selamat Datang di Halaman Kader"),
-      ),
+      body: _currentScreen,
     );
   }
 
@@ -209,7 +232,6 @@ class DoubleCurveClipper extends CustomClipper<Path> {
   Path getClip(Size size) {
     final path = Path();
     path.lineTo(0, size.height * 0.85);
-
     path.quadraticBezierTo(
       size.width * 0.25,
       size.height,
@@ -222,7 +244,6 @@ class DoubleCurveClipper extends CustomClipper<Path> {
       size.width,
       size.height * 0.85,
     );
-
     path.lineTo(size.width, 0);
     path.close();
     return path;

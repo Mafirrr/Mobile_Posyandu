@@ -12,8 +12,8 @@ import 'package:posyandu_mob/core/models/pemeriksaan/SkriningKesehatan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester3.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
 import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
-import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 
 class Trimestr3 extends StatefulWidget {
   const Trimestr3({super.key});
@@ -283,7 +283,11 @@ class _Trimestr3State extends State<Trimestr3> {
         );
         Navigator.pushReplacement(
           context,
-          MaterialPageRoute(builder: (context) => const PemeriksaanScreen()),
+          MaterialPageRoute(
+            builder: (_) => const DrawerkaderScreen(
+              initialScreen: PemeriksaanScreen(),
+            ),
+          ),
         );
       } else {
         ScaffoldMessenger.of(context).showSnackBar(
@@ -575,8 +579,6 @@ class _Trimestr3State extends State<Trimestr3> {
         ),
         const SizedBox(height: 4),
         TextFormField(
-          validator: (value) =>
-              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Rencana Tindak Lanjut",
             border: OutlineInputBorder(),
@@ -607,8 +609,6 @@ class _Trimestr3State extends State<Trimestr3> {
         ),
         const SizedBox(height: 4),
         TextFormField(
-          validator: (value) =>
-              value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
           decoration: const InputDecoration(
             hintText: "Rencana Tindak Lanjut",
             border: OutlineInputBorder(),
@@ -1071,7 +1071,8 @@ class _Trimestr3State extends State<Trimestr3> {
             "EFW/TBJ", "gram", _efwController, _efwMingguController),
         buildDropdownFieldVertical("Kecurigaan Temuan Abnormal",
             ["Ya", "Tidak"], _kecuigaanController),
-        buildInputFieldVertical("Keterangan", _alasanController),
+        buildInputFieldVertical("Keterangan", _alasanController,
+            isRequired: false),
       ],
     );
   }
@@ -1117,8 +1118,8 @@ class _Trimestr3State extends State<Trimestr3> {
     );
   }
 
-  Widget buildInputFieldVertical(
-      String label, TextEditingController controller) {
+  Widget buildInputFieldVertical(String label, TextEditingController controller,
+      {bool isRequired = true}) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 12),
       child: Column(
@@ -1127,8 +1128,9 @@ class _Trimestr3State extends State<Trimestr3> {
           Text(label, style: const TextStyle(fontSize: 13)),
           const SizedBox(height: 6),
           TextFormField(
-            validator: (value) =>
-                value!.isEmpty ? 'Field Tidak Boleh Kosong' : null,
+            validator: (value) => (value!.isEmpty && isRequired)
+                ? 'Field Tidak Boleh Kosong'
+                : null,
             style: const TextStyle(fontSize: 13),
             controller: controller,
             decoration: InputDecoration(

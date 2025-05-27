@@ -77,6 +77,11 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
     final jamSelesaiController = TextEditingController(text: item.jam_selesai);
     final tanggalController = TextEditingController(text: item.tanggal);
     DateTime? selectedDate = DateTime.tryParse(item.tanggal);
+    String formatTimeTo24Hour(TimeOfDay time) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      return '$hour:$minute';
+    }
 
     final editFormKey = GlobalKey<FormState>();
 
@@ -114,7 +119,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                           TimeOfDay? picked = await showTimePicker(
                               context: context, initialTime: TimeOfDay.now());
                           if (picked != null) {
-                            jamMulaiController.text = picked.format(context);
+                            jamMulaiController.text =
+                                formatTimeTo24Hour(picked);
                           }
                         },
                         child: IgnorePointer(
@@ -141,7 +147,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                           TimeOfDay? picked = await showTimePicker(
                               context: context, initialTime: TimeOfDay.now());
                           if (picked != null) {
-                            jamSelesaiController.text = picked.format(context);
+                            jamSelesaiController.text =
+                                formatTimeTo24Hour(picked);
                           }
                         },
                         child: IgnorePointer(
@@ -225,12 +232,13 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
         color: Colors.black, fontWeight: FontWeight.bold, fontSize: 14);
     final TextStyle infoStyle =
         TextStyle(color: Colors.black.withAlpha(179), fontSize: 10);
+    String formatTimeTo24Hour(TimeOfDay time) {
+      final hour = time.hour.toString().padLeft(2, '0');
+      final minute = time.minute.toString().padLeft(2, '0');
+      return '$hour:$minute';
+    }
 
     return Scaffold(
-      appBar: AppBar(
-        title: Text('Pelayanan Posyandu', style: TextStyle(fontSize: 20)),
-        toolbarHeight: 48,
-      ),
       body: SingleChildScrollView(
         padding: EdgeInsets.all(10),
         child: Column(
@@ -272,7 +280,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                               initialTime: TimeOfDay.now(),
                             );
                             if (picked != null) {
-                              _jamMulaiController.text = picked.format(context);
+                              _jamMulaiController.text =
+                                  formatTimeTo24Hour(picked);
                             }
                           },
                           child: IgnorePointer(
@@ -302,7 +311,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                             );
                             if (picked != null) {
                               _jamSelesaiController.text =
-                                  picked.format(context);
+                                  formatTimeTo24Hour(picked);
                             }
                           },
                           child: IgnorePointer(

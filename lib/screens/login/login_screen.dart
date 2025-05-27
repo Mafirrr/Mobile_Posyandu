@@ -4,6 +4,7 @@ import 'package:posyandu_mob/core/viewmodel/auth_viewmodel.dart';
 import 'package:posyandu_mob/screens/login/lupa_password_screen.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/navigation/navAnggota_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/dashboard_pe.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
@@ -22,6 +23,15 @@ class _LoginScreenState extends State<LoginScreen> {
   final TextEditingController _passwordController = TextEditingController();
   bool isPass = true;
   String? alert;
+  String? input;
+
+  Future<void> _checkInput(String value) async {
+    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
+
+    setState(() {
+      input = emailRegex.hasMatch(value) ? "Email" : "NIK";
+    });
+  }
 
   Future<String> checkRole() async {
     dynamic user = await UserDatabase().readUser();
@@ -108,10 +118,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         CustomTextField(
                           controller: _nikController,
-                          label: "NIK",
+                          label: "NIK atau Email",
                           keyboardType: TextInputType.text,
                           validator: (value) => (value == null || value.isEmpty)
-                              ? "NIK harus diisi"
+                              ? "NIK atau Email harus diisi"
                               : null,
                         ),
                         const SizedBox(height: 14),
@@ -156,6 +166,8 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: "Masuk",
                             isLoading: authViewModel.isLoading,
                             onPressed: () async {
+                              await _checkInput(_nikController.text.trim());
+
                               if (_formKey.currentState!.validate()) {
                                 bool success = await authViewModel.login(
                                   _nikController.text.trim(),
@@ -176,8 +188,10 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                          builder: (context) =>
-                                              const DrawerkaderScreen()),
+                                        builder: (context) => DrawerkaderScreen(
+                                          initialScreen: DashboardPe(),
+                                        ),
+                                      ),
                                     );
                                   } else {
                                     Navigator.pushReplacement(
@@ -189,7 +203,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 } else {
                                   setState(() {
-                                    alert = "NIK atau Password salah!";
+                                    alert = "$input atau Password salah!";
                                   });
                                 }
                               }

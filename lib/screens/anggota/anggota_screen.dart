@@ -33,12 +33,6 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FA),
-      appBar: AppBar(
-        title: const Text('Daftar Anggota'),
-        centerTitle: true,
-        backgroundColor: primaryColor,
-        elevation: 0,
-      ),
       body: Column(
         children: [
           Container(
@@ -53,13 +47,11 @@ class _AnggotaScreenState extends State<AnggotaScreen> {
                 contentPadding: const EdgeInsets.symmetric(vertical: 10),
                 enabledBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      const BorderSide(color: Color(0xFFD3D3D3)), 
+                  borderSide: const BorderSide(color: Color(0xFFD3D3D3)),
                 ),
                 focusedBorder: OutlineInputBorder(
                   borderRadius: BorderRadius.circular(12),
-                  borderSide:
-                      BorderSide(color: primaryColor), 
+                  borderSide: BorderSide(color: primaryColor),
                 ),
               ),
               onChanged: (value) {

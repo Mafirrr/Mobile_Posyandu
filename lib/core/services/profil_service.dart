@@ -171,11 +171,13 @@ class ProfilService {
     try {
       await _api.setToken();
       int? id = await getID();
+      String? role = await checkRole();
 
       final response = await _api.dio.put(
         '/user/pass-change',
         data: {
           "id": id,
+          "type": role!.toLowerCase(),
           "password": password,
           "new_password": newPassword,
         },
@@ -193,11 +195,22 @@ class ProfilService {
   }
 
   Future<int?> getID() async {
-    dynamic userData = await _db.readUser();
-
-    if (userData != null) {
-      return userData.anggota.id;
+    final userData = await _db.readUser();
+    if (userData?.anggota.id != null) {
+      return userData!.anggota.id;
     }
-    return null;
+
+    final petugasData = await _db.readPetugas();
+    return petugasData?.petugas.id;
+  }
+
+  Future<String?> checkRole() async {
+    final userData = await _db.readUser();
+    if (userData?.role != null) {
+      return userData!.role;
+    }
+
+    final petugasData = await _db.readPetugas();
+    return petugasData?.role;
   }
 }
