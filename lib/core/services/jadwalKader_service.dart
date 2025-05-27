@@ -5,17 +5,17 @@ class JadwalkaderService {
   final _api = ApiClient();
 
   Future<List<Jadwal>> getAllJadwal() async {
-  final response = await _api.dio.get('/jadwal');
-  if (response.statusCode == 200) {
-    final List data = response.data;
-    return data.map((e) => Jadwal.fromJson(e)).toList();
-  } else {
-    throw Exception('Gagal memuat jadwal dari server');
+    final response = await _api.dio.get('/jadwal');
+    if (response.statusCode == 200) {
+      final List data = response.data;
+      return data.map((e) => Jadwal.fromJson(e)).toList();
+    } else {
+      throw Exception('Gagal memuat jadwal dari server');
+    }
   }
-}
-
 
   Future<Jadwal> createJadwal(Jadwal jadwal) async {
+    print("Mengirim data ke server: ${jadwal.toJson()}"); // Tambahkan ini
     final response = await _api.dio.post(
       '/jadwal',
       data: jadwal.toJson(),
