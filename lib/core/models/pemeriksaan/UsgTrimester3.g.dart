@@ -10,6 +10,8 @@ UsgTrimester3 _$UsgTrimester3FromJson(Map<String, dynamic> json) =>
     UsgTrimester3(
       id: (json['id'] as num?)?.toInt(),
       usgTrimester3: json['usg_trimester3'] as String?,
+      umurKehamilanUsgTrimester1:
+          (json['umur_kehamilan_usg_trimester_1'] as num?)?.toInt(),
       umurKehamilanUsgTrimester3:
           (json['umur_kehamilan_usg_trimester_3'] as num?)?.toInt(),
       selisihUkUsg1HphtDenganTrimester3:
@@ -35,8 +37,7 @@ UsgTrimester3 _$UsgTrimester3FromJson(Map<String, dynamic> json) =>
       keterangan: json['keterangan'] as String?,
       djj: json['djj'],
       sdp: json['sdp'],
-    )..umurKehamilanUsgTrimester1 =
-        (json['umur_kehamilan_usg_trimester_1'] as num?)?.toInt();
+    );
 
 Map<String, dynamic> _$UsgTrimester3ToJson(UsgTrimester3 instance) =>
     <String, dynamic>{

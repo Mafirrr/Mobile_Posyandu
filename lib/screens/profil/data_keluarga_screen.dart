@@ -216,7 +216,8 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                               await viewModel.updateKeluarga(updatedAnggota);
                           if (success) {
                             _showSnackbar('Profil berhasil diperbarui');
-                            Navigator.pop(context, true);
+                            Navigator.pop(
+                            context, true);
                           } else {
                             _showSnackbar('Gagal memperbarui profil');
                           }

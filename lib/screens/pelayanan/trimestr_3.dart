@@ -221,6 +221,8 @@ class _Trimestr3State extends State<Trimestr3> {
         ),
         usgTrimester3: UsgTrimester3(
           usgTrimester3: _usgTrimester3.text,
+          umurKehamilanUsgTrimester1:
+              int.parse(_umurUsgTrimester3Controller.text.trim()),
           umurKehamilanUsgTrimester3:
               int.parse(_umurUsgTrimester3Controller.text.trim()),
           selisihUkUsg1HphtDenganTrimester3:
