@@ -39,12 +39,12 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
   }
 
   Future<void> _getData() async {
-    final user = await UserDatabase().readPetugas();
+    final user = await UserDatabase().readUser();
 
     if (user != null) {
       setState(() {
-        nama = user.petugas.nama!;
-        email = user.petugas.email!;
+        nama = user.anggota.nama!;
+        email = user.anggota.no_telepon!;
       });
     }
   }

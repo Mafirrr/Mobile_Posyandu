@@ -31,15 +31,18 @@ class _NotificationPageState extends State<NotificationPage> {
       _isEligible = await _notificationService.checkKehamilanStatus();
 
       if (_isEligible) {
-        final dynamic notifications = await _notificationService.getJadwalNotifications();
-        final List<Jadwal> allNotifications = List<Jadwal>.from(notifications ?? []);
+        final dynamic notifications =
+            await _notificationService.getJadwalNotifications();
+        final List<Jadwal> allNotifications =
+            List<Jadwal>.from(notifications ?? []);
 
         final filteredNotifications = allNotifications.where((jadwal) {
           try {
             final jadwalDate = DateTime.parse(jadwal.tanggal);
             final now = DateTime.now();
             final today = DateTime(now.year, now.month, now.day);
-            final scheduleDay = DateTime(jadwalDate.year, jadwalDate.month, jadwalDate.day);
+            final scheduleDay =
+                DateTime(jadwalDate.year, jadwalDate.month, jadwalDate.day);
             final difference = scheduleDay.difference(today).inDays;
 
             return difference >= 0 && difference <= 30;
@@ -208,186 +211,201 @@ class _NotificationPageState extends State<NotificationPage> {
       body: _isLoading
           ? const Center(child: CircularProgressIndicator())
           : !_isEligible
-          ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.info_outline, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'Notifikasi tidak tersedia',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Anda tidak memiliki status kehamilan\nyang sedang dalam pemantauan',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 14, color: Colors.grey),
-            ),
-          ],
-        ),
-      )
-          : _notifications.isEmpty
-          ? const Center(
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(Icons.notifications_none, size: 64, color: Colors.grey),
-            SizedBox(height: 16),
-            Text(
-              'Belum ada jadwal',
-              style: TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w500,
-                color: Colors.grey,
-              ),
-            ),
-            SizedBox(height: 8),
-            Text(
-              'Jadwal posyandu akan muncul di sini\nuntuk 30 hari ke depan',
-              textAlign: TextAlign.center,
-              style: TextStyle(fontSize: 12, color: Colors.grey),
-            ),
-          ],
-        ),
-      )
-          : RefreshIndicator(
-        onRefresh: _loadNotifications,
-        child: ListView.builder(
-          padding: EdgeInsets.symmetric(
-            horizontal: MediaQuery.of(context).size.width * 0.04,
-            vertical: 12,
-          ),
-          itemCount: _notifications.length,
-          itemBuilder: (context, index) {
-            final jadwal = _notifications[index];
-            final screenWidth = MediaQuery.of(context).size.width;
-
-            return Container(
-              margin: const EdgeInsets.only(bottom: 12),
-              child: Card(
-                elevation: 3,
-                shadowColor: Colors.black26,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(16),
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(16),
-                  onTap: () => _showNotificationDetail(jadwal),
-                  child: Container(
-                    width: double.infinity,
-                    padding: EdgeInsets.all(screenWidth * 0.045),
-                    decoration: BoxDecoration(
-                      borderRadius: BorderRadius.circular(16),
-                      gradient: LinearGradient(
-                        colors: [
-                          _getTimeStatusColor(jadwal.tanggal).withOpacity(0.1),
-                          _getTimeStatusColor(jadwal.tanggal).withOpacity(0.05),
-                        ],
-                        begin: Alignment.topLeft,
-                        end: Alignment.bottomRight,
-                      ),
-                    ),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Jadwal Posyandu ${_formatDateFromString(jadwal.tanggal)}',
-                              style: TextStyle(
-                                fontWeight: FontWeight.bold,
-                                fontSize: screenWidth * 0.045,
-                                color: Colors.grey.shade800,
-                              ),
-                            ),
-                            SizedBox(height: screenWidth * 0.015),
-                            Text(
-                              _getReminderMessage(jadwal.tanggal),
-                              style: TextStyle(
-                                fontSize: screenWidth * 0.035,
-                                color: Colors.grey.shade600,
-                                fontStyle: FontStyle.italic,
-                              ),
-                            ),
-                          ],
+              ? const Center(
+                  child: Column(
+                    mainAxisAlignment: MainAxisAlignment.center,
+                    children: [
+                      Icon(Icons.info_outline, size: 64, color: Colors.grey),
+                      SizedBox(height: 16),
+                      Text(
+                        'Notifikasi tidak tersedia',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.grey,
                         ),
-
-                        SizedBox(height: screenWidth * 0.035),
-
-                        // Divider
-                        Container(
-                          height: 1,
-                          width: double.infinity,
-                          decoration: BoxDecoration(
-                            gradient: LinearGradient(
-                              colors: [
-                                Colors.transparent,
-                                _getTimeStatusColor(jadwal.tanggal).withOpacity(0.3),
-                                Colors.transparent,
-                              ],
+                      ),
+                      SizedBox(height: 8),
+                      Text(
+                        'Anda tidak memiliki status kehamilan\nyang sedang dalam pemantauan',
+                        textAlign: TextAlign.center,
+                        style: TextStyle(fontSize: 14, color: Colors.grey),
+                      ),
+                    ],
+                  ),
+                )
+              : _notifications.isEmpty
+                  ? const Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          Icon(Icons.notifications_none,
+                              size: 64, color: Colors.grey),
+                          SizedBox(height: 16),
+                          Text(
+                            'Belum ada jadwal',
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.grey,
                             ),
                           ),
+                          SizedBox(height: 8),
+                          Text(
+                            'Jadwal posyandu akan muncul di sini\nuntuk 30 hari ke depan',
+                            textAlign: TextAlign.center,
+                            style: TextStyle(fontSize: 12, color: Colors.grey),
+                          ),
+                        ],
+                      ),
+                    )
+                  : RefreshIndicator(
+                      onRefresh: _loadNotifications,
+                      child: ListView.builder(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: MediaQuery.of(context).size.width * 0.04,
+                          vertical: 12,
                         ),
+                        itemCount: _notifications.length,
+                        itemBuilder: (context, index) {
+                          final jadwal = _notifications[index];
+                          final screenWidth = MediaQuery.of(context).size.width;
 
-                        SizedBox(height: screenWidth * 0.025),
+                          return Container(
+                            margin: const EdgeInsets.only(bottom: 12),
+                            child: Card(
+                              elevation: 3,
+                              shadowColor: Colors.black26,
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(16),
+                              ),
+                              child: InkWell(
+                                borderRadius: BorderRadius.circular(16),
+                                onTap: () => _showNotificationDetail(jadwal),
+                                child: Container(
+                                  width: double.infinity,
+                                  padding: EdgeInsets.all(screenWidth * 0.045),
+                                  decoration: BoxDecoration(
+                                    borderRadius: BorderRadius.circular(16),
+                                    gradient: LinearGradient(
+                                      colors: [
+                                        _getTimeStatusColor(jadwal.tanggal)
+                                            .withOpacity(0.1),
+                                        _getTimeStatusColor(jadwal.tanggal)
+                                            .withOpacity(0.05),
+                                      ],
+                                      begin: Alignment.topLeft,
+                                      end: Alignment.bottomRight,
+                                    ),
+                                  ),
+                                  child: Column(
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
+                                    children: [
+                                      Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'Jadwal Posyandu ${_formatDateFromString(jadwal.tanggal)}',
+                                            style: TextStyle(
+                                              fontWeight: FontWeight.bold,
+                                              fontSize: screenWidth * 0.045,
+                                              color: Colors.grey.shade800,
+                                            ),
+                                          ),
+                                          SizedBox(height: screenWidth * 0.015),
+                                          Text(
+                                            _getReminderMessage(jadwal.tanggal),
+                                            style: TextStyle(
+                                              fontSize: screenWidth * 0.035,
+                                              color: Colors.grey.shade600,
+                                              fontStyle: FontStyle.italic,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
 
-                        // Quick info dan Tap indicator - sejajar
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: screenWidth * 0.025,
-                                vertical: screenWidth * 0.01,
-                              ),
-                              decoration: BoxDecoration(
-                                color: _getTimeStatusColor(jadwal.tanggal).withOpacity(0.15),
-                                borderRadius: BorderRadius.circular(20),
-                              ),
-                              child: Text(
-                                '${_formatTime(jadwal.jam_mulai)} WIB',
-                                style: TextStyle(
-                                  fontSize: screenWidth * 0.03,
-                                  color: _getTimeStatusColor(jadwal.tanggal),
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                            Row(
-                              children: [
-                                Text(
-                                  'Ketuk untuk detail lengkap',
-                                  style: TextStyle(
-                                    fontSize: screenWidth * 0.03,
-                                    color: _getTimeStatusColor(jadwal.tanggal),
-                                    fontWeight: FontWeight.w500,
+                                      SizedBox(height: screenWidth * 0.035),
+
+                                      // Divider
+                                      Container(
+                                        height: 1,
+                                        width: double.infinity,
+                                        decoration: BoxDecoration(
+                                          gradient: LinearGradient(
+                                            colors: [
+                                              Colors.transparent,
+                                              _getTimeStatusColor(
+                                                      jadwal.tanggal)
+                                                  .withOpacity(0.3),
+                                              Colors.transparent,
+                                            ],
+                                          ),
+                                        ),
+                                      ),
+
+                                      SizedBox(height: screenWidth * 0.025),
+
+                                      // Quick info dan Tap indicator - sejajar
+                                      Row(
+                                        mainAxisAlignment:
+                                            MainAxisAlignment.spaceBetween,
+                                        children: [
+                                          Container(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: screenWidth * 0.025,
+                                              vertical: screenWidth * 0.01,
+                                            ),
+                                            decoration: BoxDecoration(
+                                              color: _getTimeStatusColor(
+                                                      jadwal.tanggal)
+                                                  .withOpacity(0.15),
+                                              borderRadius:
+                                                  BorderRadius.circular(20),
+                                            ),
+                                            child: Text(
+                                              '${_formatTime(jadwal.jam_mulai)} WIB',
+                                              style: TextStyle(
+                                                fontSize: screenWidth * 0.03,
+                                                color: _getTimeStatusColor(
+                                                    jadwal.tanggal),
+                                                fontWeight: FontWeight.w600,
+                                              ),
+                                            ),
+                                          ),
+                                          Row(
+                                            children: [
+                                              Text(
+                                                'Ketuk untuk detail lengkap',
+                                                style: TextStyle(
+                                                  fontSize: screenWidth * 0.03,
+                                                  color: _getTimeStatusColor(
+                                                      jadwal.tanggal),
+                                                  fontWeight: FontWeight.w500,
+                                                ),
+                                              ),
+                                              SizedBox(
+                                                  width: screenWidth * 0.015),
+                                              Icon(
+                                                Icons.arrow_forward_ios,
+                                                size: screenWidth * 0.024,
+                                                color: _getTimeStatusColor(
+                                                    jadwal.tanggal),
+                                              ),
+                                            ],
+                                          ),
+                                        ],
+                                      ),
+                                    ],
                                   ),
                                 ),
-                                SizedBox(width: screenWidth * 0.015),
-                                Icon(
-                                  Icons.arrow_forward_ios,
-                                  size: screenWidth * 0.024,
-                                  color: _getTimeStatusColor(jadwal.tanggal),
-                                ),
-                              ],
+                              ),
                             ),
-                          ],
-                        ),
-                      ],
+                          );
+                        },
+                      ),
                     ),
-                  ),
-                ),
-              ),
-            );
-          },
-        ),
-      ),
     );
   }
 
@@ -396,7 +414,8 @@ class _NotificationPageState extends State<NotificationPage> {
       context: context,
       builder: (BuildContext context) {
         return Dialog(
-          shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
+          shape:
+              RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
           child: Container(
             padding: const EdgeInsets.all(24),
             decoration: BoxDecoration(
@@ -471,7 +490,7 @@ class _NotificationPageState extends State<NotificationPage> {
                       const SizedBox(height: 16),
                       _buildDetailRow(
                         'Lokasi',
-                        jadwal.lokasi,
+                        jadwal.posyandu!.nama,
                       ),
                       const SizedBox(height: 16),
                       _buildDetailRow(
@@ -481,14 +500,16 @@ class _NotificationPageState extends State<NotificationPage> {
                       const SizedBox(height: 16),
                       _buildDetailRow(
                         'Tanggal',
-                        DateFormat('dd MMMM yyyy', 'id_ID').format(DateTime.parse(jadwal.tanggal)),
+                        DateFormat('dd MMMM yyyy', 'id_ID')
+                            .format(DateTime.parse(jadwal.tanggal)),
                       ),
                       const SizedBox(height: 16),
                       _buildDetailRow(
                         'Jam',
                         '${_formatTime(jadwal.jam_mulai)} - ${_formatTime(jadwal.jam_selesai)} WIB',
                       ),
-                      if (jadwal.keterangan != null && jadwal.keterangan!.isNotEmpty) ...[
+                      if (jadwal.keterangan != null &&
+                          jadwal.keterangan!.isNotEmpty) ...[
                         const SizedBox(height: 16),
                         _buildDetailRow(
                           'Keterangan',

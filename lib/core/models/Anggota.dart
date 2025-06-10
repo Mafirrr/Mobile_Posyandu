@@ -8,9 +8,9 @@ class Anggota {
   int id;
   String nik;
   String nama;
-  String no_jkn;
-  String faskes_tk1;
-  String faskes_rujukan;
+  String? no_jkn;
+  String? faskes_tk1;
+  String? faskes_rujukan;
   String tanggal_lahir;
   String tempat_lahir;
   String pekerjaan;

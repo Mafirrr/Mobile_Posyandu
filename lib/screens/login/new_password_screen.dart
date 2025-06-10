@@ -152,7 +152,7 @@ class _NewPasswordScreenState extends State<NewPasswordScreen> {
                             _errorMessage = null;
                           });
                           bool success = await authViewModel.changePassword(
-                              widget.identifier, password, widget.otp);
+                              widget.identifier, password);
 
                           if (success) {
                             Navigator.pushReplacement(

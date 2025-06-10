@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:posyandu_mob/core/models/Posyandu.dart';
 
 part 'Jadwal.g.dart';
 
@@ -9,9 +10,11 @@ class Jadwal {
   final String judul;
   final String tanggal;
   final String? keterangan;
-  final String lokasi;
+  final int lokasi;
   final String jam_mulai;
   final String jam_selesai;
+  @JsonKey(name: "posyandu")
+  Posyandu? posyandu;
 
   Jadwal({
     required this.id,
@@ -22,6 +25,7 @@ class Jadwal {
     required this.lokasi,
     required this.jam_mulai,
     required this.jam_selesai,
+    this.posyandu
   });
 
   factory Jadwal.fromJson(Map<String, dynamic> json) => _$JadwalFromJson(json);

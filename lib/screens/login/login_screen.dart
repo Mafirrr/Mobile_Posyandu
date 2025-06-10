@@ -25,24 +25,14 @@ class _LoginScreenState extends State<LoginScreen> {
   String? alert;
   String? input;
 
-  Future<void> _checkInput(String value) async {
-    final emailRegex = RegExp(r'^[\w-\.]+@([\w-]+\.)+[\w-]{2,4}$');
-
-    setState(() {
-      input = emailRegex.hasMatch(value) ? "Email" : "NIK";
-    });
-  }
-
   Future<String> checkRole() async {
     dynamic user = await UserDatabase().readUser();
-    dynamic petugas = await UserDatabase().readPetugas();
+    String role = '';
 
-    if (user == null) {
-      if (petugas != null) {
-        return 'petugas';
-      }
+    if (user != null) {
+      role = user.role;
     }
-    return 'anggota';
+    return role;
   }
 
   @override
@@ -166,8 +156,6 @@ class _LoginScreenState extends State<LoginScreen> {
                             text: "Masuk",
                             isLoading: authViewModel.isLoading,
                             onPressed: () async {
-                              await _checkInput(_nikController.text.trim());
-
                               if (_formKey.currentState!.validate()) {
                                 bool success = await authViewModel.login(
                                   _nikController.text.trim(),
@@ -188,7 +176,8 @@ class _LoginScreenState extends State<LoginScreen> {
                                     Navigator.pushReplacement(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => DrawerkaderScreen(
+                                        builder: (context) =>
+                                            const DrawerkaderScreen(
                                           initialScreen: DashboardPe(),
                                         ),
                                       ),

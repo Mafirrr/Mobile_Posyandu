@@ -4,7 +4,6 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Anggota.dart';
-import 'package:posyandu_mob/core/models/Petugas.dart';
 
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
@@ -48,21 +47,14 @@ class AuthService {
         String token = data['token'];
 
         dynamic user;
-        if (role == "petugas") {
-          user = Petugas.fromJson(data['user']);
-        } else {
-          user = Anggota.fromJson(data['user']);
-        }
+
+        user = Anggota.fromJson(data['user']);
 
         if (user != null) {
-          if (role == "petugas") {
-            await _savePetugas(user, role, token);
-          } else {
-            await _saveUser(user, role, token);
-            String? fcmToken = await FirebaseMessaging.instance.getToken();
-            if (fcmToken != null) {
-              await updateFcmToken(fcmToken, token);
-            }
+          await _saveUser(user, role, token);
+          String? fcmToken = await FirebaseMessaging.instance.getToken();
+          if (fcmToken != null) {
+            await updateFcmToken(fcmToken, token);
           }
 
           return user;
@@ -114,10 +106,6 @@ class AuthService {
     await UserDatabase().create(user, role, token);
   }
 
-  Future<void> _savePetugas(Petugas user, String role, String token) async {
-    await UserDatabase().createPetugas(user, role, token);
-  }
-
   Future<void> updateFcmToken(String fcmToken, String authToken) async {
     try {
       final response = await _api.dio.post(
@@ -158,14 +146,15 @@ class AuthService {
     }
   }
 
-  Future<Response> verifyOtp(String email, String otp) async {
+  Future<Response> verifyOtp(String identifer, String otp, int id) async {
     try {
       _api.setToken();
+
       final response = await _api.dio.post(
         "/verify-otp",
         data: {
-          "email": email,
           "otp": otp,
+          "user_id": id,
         },
       );
 

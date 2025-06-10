@@ -75,9 +75,9 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
       setState(() {
         namaController.text = _anggota!.nama;
         nikController.text = _anggota!.nik;
-        jknController.text = _anggota!.no_jkn;
-        tk1Controller.text = _anggota!.faskes_tk1;
-        rujukanController.text = _anggota!.faskes_rujukan;
+        jknController.text = _anggota!.no_jkn!;
+        tk1Controller.text = _anggota!.faskes_tk1!;
+        rujukanController.text = _anggota!.faskes_rujukan!;
         telpController.text = _anggota!.no_telepon ?? '';
         tempatLahirController.text = _anggota!.tempat_lahir;
         alamatController.text = _anggota!.alamat;

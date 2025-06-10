@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
+import 'package:posyandu_mob/core/services/AnggotaService.dart';
 import 'package:posyandu_mob/core/viewmodel/jadwalKader_viewmodel.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_tanggal.dart';
@@ -24,11 +26,16 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
 
   final JadwalkaderViewmodel _viewModel = JadwalkaderViewmodel();
   late Future<void> _loadFuture;
+  int _selectedId = 0;
 
   @override
   void initState() {
     super.initState();
     _loadFuture = _viewModel.loadJadwal();
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+    return await AnggotaService().fetchSuggestion(nama);
   }
 
   void _simpanJadwal() async {
@@ -37,7 +44,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
         id: 0,
         judul: _judulController.text,
         tanggal: _tanggalController.text,
-        lokasi: _lokasiController.text,
+        lokasi: _selectedId,
         jam_mulai: _jamMulaiController.text,
         jam_selesai: _jamSelesaiController.text,
         keterangan: null,
@@ -72,7 +79,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
 
   void _editJadwal(Jadwal item) {
     final judulController = TextEditingController(text: item.judul);
-    final lokasiController = TextEditingController(text: item.lokasi);
+    final lokasiController = TextEditingController(text: item.posyandu!.nama);
     final jamMulaiController = TextEditingController(text: item.jam_mulai);
     final jamSelesaiController = TextEditingController(text: item.jam_selesai);
     final tanggalController = TextEditingController(text: item.tanggal);
@@ -103,13 +110,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                       value!.isEmpty ? 'Judul wajib diisi' : null,
                 ),
                 SizedBox(height: 8),
-                CustomTextField(
-                  controller: lokasiController,
-                  label: 'Lokasi',
-                  fontSize: 12,
-                  validator: (value) =>
-                      value!.isEmpty ? 'Lokasi wajib diisi' : null,
-                ),
+                _buildSuggestion(lokasiController),
                 SizedBox(height: 8),
                 Row(
                   children: [
@@ -198,7 +199,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                   id: item.id,
                   judul: judulController.text,
                   tanggal: tanggalController.text,
-                  lokasi: lokasiController.text,
+                  lokasi: _selectedId,
                   jam_mulai: jamMulaiController.text,
                   jam_selesai: jamSelesaiController.text,
                   keterangan: item.keterangan,
@@ -262,13 +263,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                         value!.isEmpty ? 'Judul wajib diisi' : null,
                   ),
                   SizedBox(height: 6),
-                  CustomTextField(
-                    controller: _lokasiController,
-                    label: 'Lokasi',
-                    fontSize: 12,
-                    validator: (value) =>
-                        value!.isEmpty ? 'Lokasi wajib diisi' : null,
-                  ),
+                  _buildSuggestion(_lokasiController),
                   SizedBox(height: 6),
                   Row(
                     children: [
@@ -287,21 +282,21 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                           child: IgnorePointer(
                             child: TextFormField(
                               controller: _jamMulaiController,
-                              decoration: InputDecoration(
+                              decoration: const InputDecoration(
                                 labelText: 'Jam Mulai',
                                 border: OutlineInputBorder(),
                                 isDense: true,
                                 contentPadding: EdgeInsets.symmetric(
                                     vertical: 12, horizontal: 12),
                               ),
-                              style: TextStyle(fontSize: 12),
+                              style: const TextStyle(fontSize: 12),
                               validator: (value) =>
                                   value!.isEmpty ? 'Wajib diisi' : null,
                             ),
                           ),
                         ),
                       ),
-                      SizedBox(width: 12),
+                      const SizedBox(width: 12),
                       Expanded(
                         child: InkWell(
                           onTap: () async {
@@ -435,7 +430,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                                         fontSize: 13,
                                         color: Colors.black)),
                                 SizedBox(height: 2),
-                                Text("Lokasi: ${item.lokasi}",
+                                Text("Lokasi: ${item.posyandu!.nama}",
                                     style: TextStyle(
                                         fontSize: 11, color: Colors.black87)),
                                 Text(
@@ -535,6 +530,45 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
             )
           ],
         ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestion(TextEditingController controller) {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: controller,
+      suggestionsCallback: fetchSuggestion,
+      builder: (context, controller, focusNode) {
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Posyandu',
+            border: OutlineInputBorder(),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Lokasi wajib diisi';
+            }
+            if (_selectedId == 0) {
+              return 'Silakan pilih dari daftar saran';
+            }
+            return null;
+          },
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _lokasiController.text = suggestion['nama'];
+        _selectedId = suggestion['id'];
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama Posyandu tidak ditemukan"),
       ),
     );
   }

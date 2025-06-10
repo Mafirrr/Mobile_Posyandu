@@ -23,20 +23,18 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
   void _lupaPassword(String input) async {
     if (input.isEmpty) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(
-            content: Text("Harap masukkan email atau nomor telepon.")),
+        const SnackBar(content: Text("Harap masukkan nomor telepon.")),
       );
       return;
     }
 
-    final emailRegex = RegExp(r"^[\w\.-]+@[\w\.-]+\.\w{2,}$");
     final phoneRegex = RegExp(r"^\+?\d{10,15}$");
 
     try {
       setState(() {
         isLoading = true;
       });
-      if (!(emailRegex.hasMatch(input) || phoneRegex.hasMatch(input))) {
+      if (!phoneRegex.hasMatch(input)) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
               content: Text("Format email atau nomor telepon tidak valid.")),
@@ -44,16 +42,13 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
         return;
       }
 
+      print(input);
       final response = await authService.changePassword(input);
 
       if (response != null && response.statusCode == 200) {
         final identifer = response.data['identifier'];
 
-        if (emailRegex.hasMatch(identifer)) {
-          await sendOtpToEmail(identifer);
-        } else if (phoneRegex.hasMatch(identifer)) {
-          await sendOtp(identifer);
-        }
+        await sendOtp(identifer);
 
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(content: Text("Kode OTP telah dikirim.")),
@@ -75,18 +70,20 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
     }
   }
 
-  Future<void> sendOtpToEmail(String email) async {
+  Future<void> sendOtp(String noTelp) async {
     try {
-      final response = await authService.sendOtpToEmail(email);
+      final response = await authService.sendOtpToEmail(noTelp);
 
       if (response.statusCode == 200) {
+        final data = response.data;
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
             builder: (context) => VerifikasiKodeScreen(
               verificationId: '',
-              identifer: email,
-              tipe: "email",
+              identifer: noTelp,
+              user_id: data['user_id'],
+              tipe: "nomor",
             ),
           ),
         );
@@ -97,35 +94,6 @@ class _LupaPasswordScreenState extends State<LupaPasswordScreen> {
         const SnackBar(content: Text("Terjadi kesalahan. Silakan coba lagi.")),
       );
     }
-  }
-
-  Future<void> sendOtp(String noTelp) async {
-    authService.sendOtp(
-      phoneNumber: noTelp,
-      onVerificationCompleted: (PhoneAuthCredential credential) async {
-        await FirebaseAuth.instance.signInWithCredential(credential);
-      },
-      onVerificationFailed: (FirebaseAuthException e) {
-        throw ("Verifikasi gagal: ${e.message}");
-      },
-      onCodeSent: (String verId, int? forceResendingToken) {
-        setState(() {
-          verificationId = verId;
-        });
-        Navigator.pushReplacement(
-          context,
-          MaterialPageRoute(
-              builder: (context) => VerifikasiKodeScreen(
-                    verificationId: verId,
-                    identifer: noTelp,
-                    tipe: "nomor",
-                  )),
-        );
-      },
-      onCodeAutoRetrievalTimeout: (String verId) {
-        verificationId = verId;
-      },
-    );
   }
 
   @override

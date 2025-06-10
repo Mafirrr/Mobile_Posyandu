@@ -159,7 +159,7 @@ class _Trimestr3State extends State<Trimestr3> {
   }
 
   Future<void> _getID() async {
-    dynamic user = await UserDatabase().readPetugas();
+    dynamic user = await UserDatabase().readUser();
     if (user != null) {
       setState(() {
         petugas_id = user.petugas.id;
@@ -185,7 +185,7 @@ class _Trimestr3State extends State<Trimestr3> {
         tanggalPemeriksaan:
             DateTime.tryParse(_tanggalPeriksaController.text.trim()) ??
                 DateTime.now(),
-        tempatPemeriksaan: _tempatPeriksaController.text.trim(),
+        tempatPemeriksaan: int.parse(_tempatPeriksaController.text.trim()),
       );
 
       final trimester3Data = Trimester3(

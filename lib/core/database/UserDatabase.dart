@@ -72,19 +72,6 @@ class UserDatabase {
     }
   }
 
-  Future<PetugasWithRole?> readPetugas() async {
-    final db = await instance.database;
-    final result = await db.query('petugas', limit: 1);
-    if (result.isNotEmpty) {
-      Petugas petugas = Petugas.fromJson(result.first);
-      String role = result.first['role'].toString();
-      String token = result.first['token'].toString();
-      return PetugasWithRole(petugas: petugas, role: role, token: token);
-    } else {
-      return null;
-    }
-  }
-
   Future<int> update(Anggota anggota) async {
     final db = await instance.database;
     return db.update(
@@ -142,7 +129,6 @@ class UserDatabase {
     final db = await instance.database;
     final tables = [
       'user',
-      'petugas',
       'keluarga',
       'kehamilan',
       'pemeriksaan_kehamilan',

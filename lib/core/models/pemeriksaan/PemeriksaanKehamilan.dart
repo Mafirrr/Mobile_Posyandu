@@ -13,7 +13,7 @@ class PemeriksaanKehamilan {
   @JsonKey(name: "tanggal_pemeriksaan")
   DateTime tanggalPemeriksaan;
   @JsonKey(name: "tempat_pemeriksaan")
-  String tempatPemeriksaan;
+  int? tempatPemeriksaan;
   @JsonKey(name: "jenis_pemeriksaan")
   String jenisPemeriksaan;
 

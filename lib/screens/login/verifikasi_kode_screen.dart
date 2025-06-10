@@ -1,19 +1,20 @@
 import 'dart:async';
-
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:posyandu_mob/core/services/auth_service.dart';
 import 'package:posyandu_mob/screens/login/password_reset_screen.dart';
+import 'package:posyandu_mob/screens/profil/InformasiPribadiScreen.dart';
 import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_text.dart';
 
 class VerifikasiKodeScreen extends StatefulWidget {
   final String verificationId, identifer, tipe;
+  final int user_id;
   const VerifikasiKodeScreen(
       {super.key,
       required this.verificationId,
       required this.identifer,
-      required this.tipe});
+      required this.tipe,
+      required this.user_id});
 
   @override
   State<VerifikasiKodeScreen> createState() => _VerifikasiKodeScreenState();
@@ -47,23 +48,8 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
 
   Future<void> handleResend(String identifier) async {
     try {
-      if (widget.tipe == "email") {
-        await authService.sendOtpToEmail(identifier);
-        showSnack("Kode OTP telah dikirim ulang ke email.");
-      } else {
-        authService.sendOtp(
-          phoneNumber: identifier,
-          onVerificationCompleted: (_) {},
-          onVerificationFailed: (e) =>
-              showSnack("Verifikasi gagal: ${e.message}"),
-          onCodeSent: (verId, _) {
-            setState(() => verification = verId);
-            showSnack("OTP dikirim ulang ke nomor.");
-          },
-          onCodeAutoRetrievalTimeout: (verId) =>
-              setState(() => verification = verId),
-        );
-      }
+      await authService.sendOtpToEmail(identifier);
+      showSnack("Kode OTP telah dikirim ulang ke email.");
     } catch (_) {
       showSnack("Gagal mengirim ulang OTP.");
     }
@@ -77,64 +63,30 @@ class _VerifikasiKodeScreenState extends State<VerifikasiKodeScreen> {
     setState(() {
       isLoading = true;
     });
+    try {
+      print(mergedText);
+      final response = await authService.verifyOtp(
+          widget.identifer, mergedText!, widget.user_id);
 
-    if (widget.tipe == "email") {
-      try {
-        final response =
-            await authService.verifyOtp(widget.identifer, mergedText!);
-
-        if (response.statusCode == 200) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PasswordResetScreen(
-                identifier: widget.identifer,
-                otp: mergedText!,
-              ),
+      if (response.statusCode == 200) {
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (context) => PasswordResetScreen(
+              identifier: widget.identifer,
+              otp: mergedText!,
             ),
-          );
-        } else {
-          showSnack("OTP salah atau kadaluarsa.");
-        }
-      } catch (e) {
-        showSnack("Gagal verifikasi OTP email.");
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
+          ),
+        );
+      } else {
+        showSnack("OTP salah atau kadaluarsa.");
       }
-    } else if (widget.tipe == "nomor") {
-      if (verification.isEmpty) {
-        verification = widget.verificationId;
-      }
-
-      final credential = PhoneAuthProvider.credential(
-        verificationId: verification,
-        smsCode: mergedText!,
-      );
-
-      try {
-        final userCredential =
-            await FirebaseAuth.instance.signInWithCredential(credential);
-
-        if (userCredential.user != null) {
-          Navigator.pushReplacement(
-            context,
-            MaterialPageRoute(
-              builder: (context) => PasswordResetScreen(
-                identifier: widget.identifer,
-                otp: '',
-              ),
-            ),
-          );
-        }
-      } catch (e) {
-        showSnack("OTP Firebase salah, coba lagi.");
-      } finally {
-        setState(() {
-          isLoading = false;
-        });
-      }
+    } catch (e) {
+      showSnack("Gagal verifikasi OTP email.");
+    } finally {
+      setState(() {
+        isLoading = false;
+      });
     }
   }
 

@@ -199,9 +199,6 @@ class ProfilService {
     if (userData?.anggota.id != null) {
       return userData!.anggota.id;
     }
-
-    final petugasData = await _db.readPetugas();
-    return petugasData?.petugas.id;
   }
 
   Future<String?> checkRole() async {
@@ -209,8 +206,5 @@ class ProfilService {
     if (userData?.role != null) {
       return userData!.role;
     }
-
-    final petugasData = await _db.readPetugas();
-    return petugasData?.role;
   }
 }

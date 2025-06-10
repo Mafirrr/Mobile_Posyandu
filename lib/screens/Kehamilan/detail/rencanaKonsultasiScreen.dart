@@ -4,8 +4,7 @@ import 'package:posyandu_mob/core/models/pemeriksaan/RencanaKonsultasi.dart';
 class RencanaKonsultasiScreen extends StatelessWidget {
   final RencanaKonsultasi data;
 
-  const RencanaKonsultasiScreen({Key? key, required this.data})
-      : super(key: key);
+  const RencanaKonsultasiScreen({super.key, required this.data});
 
   String displayValue(dynamic value) {
     if (value == null) return '-';

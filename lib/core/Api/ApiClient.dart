@@ -8,7 +8,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: "https://webfw23.myhost.id/gol_bws4/api",
+      baseUrl: "http://192.168.112.168:8000/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
@@ -23,9 +23,6 @@ class ApiClient {
 
     if (user != null && user.token.isNotEmpty) {
       dio.options.headers["Authorization"] = "Bearer ${user.token}";
-    } else {
-      final user = await UserDatabase().readPetugas();
-      dio.options.headers["Authorization"] = "Bearer ${user!.token}";
     }
   }
 

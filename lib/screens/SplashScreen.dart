@@ -95,12 +95,6 @@ class _SplashScreenState extends State<SplashScreen>
         role = user.role;
         isLoggedIn = true;
       });
-    } else {
-      dynamic user = await UserDatabase().readPetugas();
-      setState(() {
-        role = user.role;
-        isLoggedIn = true;
-      });
     }
     return false;
   }
@@ -133,8 +127,8 @@ class _SplashScreenState extends State<SplashScreen>
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => DrawerkaderScreen(
-              initialScreen: const DashboardPe(),
+            builder: (context) => const DrawerkaderScreen(
+              initialScreen: DashboardPe(),
             ),
           ),
         );

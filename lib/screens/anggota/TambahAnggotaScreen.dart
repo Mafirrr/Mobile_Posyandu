@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart'; // Untuk input formatter
+import 'package:flutter_typeahead/flutter_typeahead.dart';
+import 'package:posyandu_mob/core/services/AnggotaService.dart';
 import 'package:provider/provider.dart';
 import 'package:posyandu_mob/core/viewmodel/Anggota_viewmodel.dart';
 
@@ -17,6 +19,7 @@ class TambahAnggotaScreen extends StatefulWidget {
 class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   final _formKey = GlobalKey<FormState>();
 
+  late TextEditingController _posyanduController;
   late TextEditingController _namaController;
   late TextEditingController _nikController;
   late TextEditingController _noJknController;
@@ -39,6 +42,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
     'O-'
   ];
   String? _selectedGolonganDarah;
+  int? _selectedId;
 
   @override
   void initState() {
@@ -46,6 +50,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
 
     _namaController =
         TextEditingController(text: widget.anggota?['nama'] ?? '');
+    _posyanduController = TextEditingController(
+      text: widget.anggota?['posyandu']?['nama'] ?? '',
+    );
+    _selectedId = widget.anggota?['posyandu_id'];
     _nikController = TextEditingController(text: widget.anggota?['nik'] ?? '');
     _noJknController =
         TextEditingController(text: widget.anggota?['no_jkn'] ?? '');
@@ -69,6 +77,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   @override
   void dispose() {
     _namaController.dispose();
+    _posyanduController.dispose();
     _nikController.dispose();
     _noJknController.dispose();
     _faskesTk1Controller.dispose();
@@ -97,6 +106,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
     }
   }
 
+  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+    return await AnggotaService().fetchSuggestion(nama);
+  }
+
   void _saveAnggota() async {
     if (_formKey.currentState!.validate()) {
       final viewModel = context.read<AnggotaViewModel>();
@@ -112,6 +125,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
         'pekerjaan': _pekerjaanController.text.trim(),
         'alamat': _alamatController.text.trim(),
         'no_telepon': _noTeleponController.text.trim(),
+        'posyandu_id': _selectedId,
         'golongan_darah': _selectedGolonganDarah,
         'status': 'aktif',
       };
@@ -160,7 +174,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
               // Nama
               TextFormField(
                 controller: _namaController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'Nama',
                   border: OutlineInputBorder(),
                 ),
@@ -168,12 +182,12 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                     ? 'Nama tidak boleh kosong'
                     : null,
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // NIK
               TextFormField(
                 controller: _nikController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'NIK',
                   border: OutlineInputBorder(),
                 ),
@@ -189,12 +203,12 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // No JKN
               TextFormField(
                 controller: _noJknController,
-                decoration: InputDecoration(
+                decoration: const InputDecoration(
                   labelText: 'No JKN',
                   border: OutlineInputBorder(),
                 ),
@@ -207,7 +221,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
 
               // Faskes TK1
               TextFormField(
@@ -307,7 +321,10 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
                   return null;
                 },
               ),
-              SizedBox(height: 16),
+              const SizedBox(height: 16),
+
+              _buildSuggestion(),
+              const SizedBox(height: 16),
 
               // Golongan Darah Dropdown
               DropdownButtonFormField<String>(
@@ -348,6 +365,36 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
             ],
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSuggestion() {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: _posyanduController,
+      suggestionsCallback: fetchSuggestion,
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Posyandu',
+            border: OutlineInputBorder(),
+          ),
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _posyanduController.text = suggestion['nama'];
+        _selectedId = suggestion['id'];
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama Posyandu tidak ditemukan"),
       ),
     );
   }

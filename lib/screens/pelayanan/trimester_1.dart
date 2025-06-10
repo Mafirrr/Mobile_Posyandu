@@ -135,7 +135,7 @@ class _Trimester1State extends State<Trimester1> {
   }
 
   Future<void> _getID() async {
-    dynamic user = await UserDatabase().readPetugas();
+    dynamic user = await UserDatabase().readUser();
     if (user != null) {
       setState(() {
         petugas_id = user.petugas.id;
@@ -182,7 +182,7 @@ class _Trimester1State extends State<Trimester1> {
         tanggalPemeriksaan:
             DateTime.tryParse(_tanggalPeriksaController.text.trim()) ??
                 DateTime.now(),
-        tempatPemeriksaan: _tempatPeriksaController.text.trim(),
+        tempatPemeriksaan: int.parse(_tempatPeriksaController.text.trim()),
       );
 
       final trimester1Data = Trimestr1(
@@ -1704,7 +1704,6 @@ class _Trimester1State extends State<Trimester1> {
       onSelected: (suggestion) {
         _namaController.text = suggestion['nama'];
         _selectedId = suggestion['id'];
-        print("Nama: ${suggestion['nama']}, ID: $_selectedId");
       },
       emptyBuilder: (context) => const Padding(
         padding: EdgeInsets.all(8),

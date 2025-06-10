@@ -59,12 +59,11 @@ class AuthViewModel extends ChangeNotifier {
     notifyListeners();
   }
 
-  Future<bool> changePassword(
-      String identifier, String password, String otp) async {
+  Future<bool> changePassword(String identifier, String password) async {
     _setLoading(true);
     try {
       final response = await _authService.resetPass(
-          identifier: identifier, password: password, otp: otp);
+          identifier: identifier, password: password);
 
       if (response.statusCode == 200) {
         return true;

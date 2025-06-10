@@ -12,9 +12,12 @@ Jadwal _$JadwalFromJson(Map<String, dynamic> json) => Jadwal(
       judul: json['judul'] as String,
       tanggal: json['tanggal'] as String,
       keterangan: json['keterangan'] as String?,
-      lokasi: json['lokasi'] as String,
+      lokasi: (json['lokasi'] as num).toInt(),
       jam_mulai: json['jam_mulai'] as String,
       jam_selesai: json['jam_selesai'] as String,
+      posyandu: json['posyandu'] == null
+          ? null
+          : Posyandu.fromJson(json['posyandu'] as Map<String, dynamic>),
     );
 
 Map<String, dynamic> _$JadwalToJson(Jadwal instance) => <String, dynamic>{
@@ -26,4 +29,5 @@ Map<String, dynamic> _$JadwalToJson(Jadwal instance) => <String, dynamic>{
       'lokasi': instance.lokasi,
       'jam_mulai': instance.jam_mulai,
       'jam_selesai': instance.jam_selesai,
+      'posyandu': instance.posyandu,
     };

@@ -482,7 +482,9 @@ class _DashboardPageState extends State<DashboardPage> {
                                         children: [
                                           Text(
                                             jadwalPemeriksaan.isNotEmpty
-                                                ? jadwalPemeriksaan[0].lokasi
+                                                ? jadwalPemeriksaan[0]
+                                                    .posyandu!
+                                                    .nama
                                                 : 'Lokasi tidak tersedia',
                                             style:
                                                 TextStyle(color: Colors.grey),

@@ -31,27 +31,15 @@ class DatabaseProvider {
         id INTEGER PRIMARY KEY,
         nik TEXT NOT NULL,
         nama TEXT NOT NULL,
-        no_jkn TEXT NOT NULL,
-        faskes_tk1 TEXT NOT NULL,
-        faskes_rujukan TEXT NOT NULL,
-        tanggal_lahir TEXT NOT NULL,
+        no_jkn TEXT,
+        faskes_tk1 TEXT,
+        faskes_rujukan TEXT,
+        tanggal_lahir TEXT,
         tempat_lahir TEXT NOT NULL,
         pekerjaan TEXT NOT NULL,
         alamat TEXT NOT NULL,
         no_telepon TEXT,
         golongan_darah TEXT,
-        role TEXT DEFAULT 'Anggota',
-        token Text
-      )
-    ''');
-
-    await db.execute('''
-      CREATE TABLE petugas (
-        id INTEGER PRIMARY KEY,
-        nip TEXT,
-        nama TEXT,
-        no_telepon TEXT,
-        email TEXT,
         role TEXT DEFAULT 'Anggota',
         token Text
       )

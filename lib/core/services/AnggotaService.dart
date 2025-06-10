@@ -1,3 +1,5 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
 
@@ -42,5 +44,30 @@ class AnggotaService {
   Future<void> delete(String id) async {
     await _apiClient.setToken();
     await _apiClient.dio.delete('/anggota/$id');
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+    try {
+      await _apiClient.setToken();
+      final response = await _apiClient.dio.get('/posyandu');
+
+      if (response.statusCode == 200) {
+        final List data = response.data is String
+            ? json.decode(response.data)
+            : response.data;
+
+        return data
+            .map<Map<String, dynamic>>((item) => {
+                  'id': item['id'],
+                  'nama': item['nama'],
+                })
+            .toList();
+      } else {
+        throw Exception('Gagal memuat nama');
+      }
+    } on DioException catch (e) {
+      print("Dio error: ${e.response?.data ?? e.message}");
+      return [];
+    }
   }
 }

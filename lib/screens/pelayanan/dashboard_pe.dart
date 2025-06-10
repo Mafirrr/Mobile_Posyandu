@@ -559,7 +559,7 @@ class _DashboardPeState extends State<DashboardPe> {
               Container(
                 constraints: BoxConstraints(maxWidth: isTablet ? 150 : 120),
                 child: Text(
-                  item.tempatPemeriksaan,
+                  "${item.tempatPemeriksaan}",
                   overflow: TextOverflow.ellipsis,
                   maxLines: 2,
                 ),
