@@ -208,7 +208,7 @@ class _DashboardPeState extends State<DashboardPe> {
                     (e) => FlSpot(e.key.toDouble(), e.value.toDouble()),
                   )
                   .toList(),
-              isCurved: true,
+              isCurved: false,
               barWidth: isTablet ? 4 : 3,
               color: Colors.blue,
               gradient: LinearGradient(
