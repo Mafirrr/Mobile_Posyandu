@@ -116,7 +116,10 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                     controller: namaController, label: 'Nama Lengkap'),
                 const SizedBox(height: 12),
                 CustomTextField(
-                    controller: nikController, label: 'NIK', readOnly: true),
+                  controller: nikController,
+                  label: 'NIK',
+                  readOnly: nikController != null,
+                ),
                 const SizedBox(height: 12),
                 CustomTextField(
                     controller: tempatLahirController, label: 'Tempat Lahir'),
