@@ -199,22 +199,26 @@ class _ProfileScreenState extends State<ProfilScreen> {
                               _StatCard(
                                 icon: Icons.monitor_weight,
                                 label: 'Berat Badan',
-                                value: '$bb kg',
+                                value: bb != null ? '$bb kg' : '-',
                               ),
                               _StatCard(
                                 icon: Icons.favorite,
                                 label: 'Tekanan Darah',
-                                value: '$sistol/$diastol mmHg',
+                                value: (sistol != null && diastol != null)
+                                    ? '$sistol/$diastol mmHg'
+                                    : '-',
                               ),
                               _StatCard(
                                 icon: Icons.accessibility_new,
                                 label: 'Lingkar Lengan',
-                                value: '$lila cm',
+                                value: lila != null ? '$lila cm' : '-',
                               ),
                               _StatCard(
                                 icon: Icons.height,
                                 label: 'Tinggi Rahim',
-                                value: '$tinggi_rahim',
+                                value: tinggi_rahim != null
+                                    ? '$tinggi_rahim'
+                                    : '-',
                               ),
                             ],
                           ),
