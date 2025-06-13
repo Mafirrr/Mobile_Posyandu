@@ -208,12 +208,26 @@ class _DashboardPageState extends State<DashboardPage> {
 
   Future<void> fetchJadwal() async {
     try {
-      List<Jadwal> fetchedJadwal = await JadwalService().fetchJadwal();
-      setState(() {
-        jadwalPemeriksaan = fetchedJadwal;
-      });
+      dynamic user = await UserDatabase().readUser();
+
+      if (user != null && user.anggota != null) {
+        String anggotaId = user.anggota.id.toString();
+
+        List<Jadwal> fetchedJadwal = await JadwalService().fetchJadwal(anggotaId);
+        setState(() {
+          jadwalPemeriksaan = fetchedJadwal;
+        });
+      } else {
+        print("User atau anggota tidak ditemukan");
+        setState(() {
+          jadwalPemeriksaan = [];
+        });
+      }
     } catch (e) {
       print("Error fetching jadwal: $e");
+      setState(() {
+        jadwalPemeriksaan = [];
+      });
     }
   }
 

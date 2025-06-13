@@ -8,7 +8,7 @@ class ApiClient {
 
   ApiClient._internal() {
     dio = Dio(BaseOptions(
-      baseUrl: "http://192.168.112.168:8000/api",
+      baseUrl: "http://192.168.187.87/Website_Posyandu/public/api",
       connectTimeout: const Duration(seconds: 10),
       receiveTimeout: const Duration(seconds: 10),
       headers: {
