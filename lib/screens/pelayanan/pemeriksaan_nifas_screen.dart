@@ -1,4 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
+import 'package:posyandu_mob/core/services/AnggotaService.dart';
+import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
+import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
+import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
+import 'package:flutter_typeahead/flutter_typeahead.dart';
 
 class PemeriksaanNifasScreen extends StatefulWidget {
   @override
@@ -10,6 +18,7 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
   final TextEditingController _tanggalController = TextEditingController();
   final TextEditingController _tempatPeriksaController =
       TextEditingController();
+  final TextEditingController _namaController = TextEditingController();
   final TextEditingController _periksaPayudaraController =
       TextEditingController();
   final TextEditingController _periksaPendarahanController =
@@ -25,10 +34,22 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
 
   String? selectedKF;
   String? selectedPosyandu;
+  int? petugas_id;
+  int? _selectedId;
+  int? _selectedIdLokasi;
+  PemeriksaanService service = PemeriksaanService();
 
-  List<String> keadaanIbu = [];
-  List<String> keadaanBayi = [];
-  List<String> masalahNifas = [];
+  String? keadaanIbu;
+  String? keadaanBayi;
+  String? masalahNifas;
+
+  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+    return await PemeriksaanService().fetchSuggestion(nama);
+  }
+
+  Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
+    return await AnggotaService().fetchSuggestion(nama);
+  }
 
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
@@ -85,21 +106,86 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
     );
   }
 
+  Future<void> _getID() async {
+    dynamic user = await UserDatabase().readUser();
+    if (user != null) {
+      setState(() {
+        petugas_id = user.anggota.id;
+      });
+    }
+  }
+
   void _saveData() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => isLoading = true);
 
     await Future.delayed(const Duration(seconds: 1)); // simulasi loading/simpan
+    try {
+      await _getID();
 
-    setState(() => isLoading = false);
-    ScaffoldMessenger.of(context).showSnackBar(
-      const SnackBar(content: Text("Data nifas berhasil disimpan")),
-    );
+      final pemeriksaan = PemeriksaanKehamilan(
+        jenisPemeriksaan: "nifas",
+        kehamilanId: _selectedId,
+        petugasId: petugas_id,
+        tanggalPemeriksaan:
+            DateTime.tryParse(_tanggalController.text.trim()) ?? DateTime.now(),
+        tempatPemeriksaan: _selectedIdLokasi,
+      );
+
+      final nifas = Nifas(
+        bagianKf: selectedKF,
+        periksaPayudara: _periksaPayudaraController.text.trim(),
+        periksaPendarahan: _periksaPendarahanController.text.trim(),
+        periksaJalanLahir: _periksaJalanLahirController.text.trim(),
+        vitaminA: _vitaminAController.text.trim(),
+        kbPascaMelahirkan: _kbController.text.trim(),
+        skriningKesehatanJiwa: _skriningJiwaController.text.trim(),
+        konseling: _konselingController.text.trim(),
+        tataLaksanaKasus: _tataLaksanaController.text.trim(),
+        kesimpulan: _kesimpulanController.text.trim(),
+        kesimpulanBayi: keadaanBayi,
+        kesimpulanIbu: keadaanIbu,
+        masalahNifas: masalahNifas,
+      );
+
+      final response = await service.pemeriksaanNifas(pemeriksaan, nifas);
+
+      if (response.statusCode == 200) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Data pemeriksaan berhasil disimpan')),
+        );
+        Navigator.pushReplacement(
+          context,
+          MaterialPageRoute(
+            builder: (_) => const DrawerkaderScreen(
+              initialScreen: PemeriksaanScreen(),
+            ),
+          ),
+        );
+      } else {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+              content: Text(
+                  'Gagal menyimpan data: ${response.statusCode ?? 'Unknown error'}')),
+        );
+      }
+    } catch (e) {
+      print('Terjadi kesalahan: $e');
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text('Terjadi kesalahan: $e')),
+      );
+    } finally {
+      setState(() => isLoading = false);
+    }
   }
 
   Widget _buildCheckboxGroup(
-      String title, List<String> options, List<String> selectedList) {
+    String title,
+    List<String> options,
+    String? selectedValue,
+    Function(String?) onChanged,
+  ) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
@@ -111,21 +197,19 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
             return CheckboxListTile(
               contentPadding: EdgeInsets.zero,
               title: Text(item),
-              value: selectedList.contains(item),
+              value: selectedValue == item,
               onChanged: (value) {
-                setState(() {
-                  if (value == true) {
-                    selectedList.add(item);
-                  } else {
-                    selectedList.remove(item);
-                  }
-                });
+                if (value == true) {
+                  onChanged(item);
+                } else {
+                  onChanged(null);
+                }
               },
               controlAffinity: ListTileControlAffinity.leading,
               dense: true,
             );
           }).toList(),
-        )
+        ),
       ],
     );
   }
@@ -189,6 +273,75 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
     );
   }
 
+  Widget _buildSuggestion() {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: _namaController,
+      suggestionsCallback: fetchSuggestion,
+      builder: (context, controller, focusNode) {
+        return TextField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Nama',
+            border: OutlineInputBorder(),
+          ),
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _namaController.text = suggestion['nama'];
+        _selectedId = suggestion['id'];
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama tidak ditemukan"),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionLokasi(TextEditingController controller) {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: controller,
+      suggestionsCallback: fetchSuggestionLokasi,
+      builder: (context, controller, focusNode) {
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Posyandu',
+            border: OutlineInputBorder(),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Lokasi wajib diisi';
+            }
+            if (_selectedId == 0) {
+              return 'Silakan pilih dari daftar saran';
+            }
+            return null;
+          },
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _tempatPeriksaController.text = suggestion['nama'];
+        _selectedIdLokasi = suggestion['id'];
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama Posyandu tidak ditemukan"),
+      ),
+    );
+  }
+
   void _submit() {
     if (_formKey.currentState!.validate()) {
       ScaffoldMessenger.of(context).showSnackBar(
@@ -221,6 +374,8 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
                 ],
               ),
               const SizedBox(height: 12),
+              _buildSuggestion(),
+              const SizedBox(height: 10),
               _buildDropdown(
                   "Bagian KF", ['KF1', 'KF2', 'KF3', 'KF4', 'KF5'], selectedKF,
                   (val) {
@@ -229,10 +384,8 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
               const SizedBox(height: 10),
               _buildDateField("Tanggal Pemeriksaan", _tanggalController,
                   () => _selectDate(context)),
-              _buildDropdown("Posyandu", ['Posyandu Mawar', 'Posyandu Melati'],
-                  selectedPosyandu, (val) {
-                setState(() => selectedPosyandu = val);
-              }),
+              _buildSuggestionLokasi(_tempatPeriksaController),
+              const SizedBox(height: 10),
               _buildTextField(
                   "Periksa Payudara (ASI)", _periksaPayudaraController),
               _buildTextField(
@@ -248,17 +401,37 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
                   maxLines: 2),
               const SizedBox(height: 10),
               _buildCheckboxGroup(
-                  "Keadaan Ibu", ["Sehat", "Sakit", "Meninggal"], keadaanIbu),
+                "Keadaan Ibu",
+                ["Sehat", "Sakit", "Meninggal"],
+                keadaanIbu,
+                (value) {
+                  setState(() {
+                    keadaanIbu = value;
+                  });
+                },
+              ),
               const SizedBox(height: 10),
               _buildCheckboxGroup(
-                  "Keadaan Bayi",
-                  ["Sehat", "Sakit", "Kelainan Bawaan", "Meninggal"],
-                  keadaanBayi),
+                "Keadaan Bayi",
+                ["Sehat", "Sakit", "Kelainan Bawaan", "Meninggal"],
+                keadaanBayi,
+                (value) {
+                  setState(() {
+                    keadaanBayi = value;
+                  });
+                },
+              ),
               const SizedBox(height: 10),
               _buildCheckboxGroup(
-                  "Masalah Nifas",
-                  ["Pendarahan", "Infeksi", "Hipertensi", "Lainnya"],
-                  masalahNifas),
+                "Masalah Nifas",
+                ["Pendarahan", "Infeksi", "Hipertensi", "Lainnya"],
+                masalahNifas,
+                (value) {
+                  setState(() {
+                    masalahNifas = value;
+                  });
+                },
+              ),
               const SizedBox(height: 10),
               _buildTextField("Kesimpulan", _kesimpulanController, maxLines: 2),
               const SizedBox(height: 20),

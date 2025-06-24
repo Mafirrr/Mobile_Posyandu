@@ -4,7 +4,6 @@ import 'package:posyandu_mob/core/models/Kehamilan.dart';
 import 'package:posyandu_mob/core/models/Petugas.dart';
 import 'package:posyandu_mob/core/models/User.dart';
 import 'package:posyandu_mob/core/models/dataAnggota.dart';
-import 'package:posyandu_mob/core/models/petugasWithRole.dart';
 import 'package:sqflite/sqflite.dart';
 
 class UserDatabase {
@@ -143,6 +142,7 @@ class UserDatabase {
       'lab_trimester_3',
       'usg_trimester_3',
       'trimester_3',
+      'pemeriksaan_nifas',
       'rencana_konsultasi'
     ];
 

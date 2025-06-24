@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
+import 'package:posyandu_mob/core/services/AnggotaService.dart';
 import 'package:posyandu_mob/core/services/pemeriksaanService.dart';
 import 'package:posyandu_mob/screens/navigation/drawerKader_screen.dart';
 import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_screen.dart';
@@ -50,6 +51,7 @@ class _Trimester2State extends State<Trimester2> {
   }
 
   int? _selectedId;
+  int? _selectedIdLokasi;
   int? petugas_id;
   bool isLoading = false;
   PemeriksaanService service = PemeriksaanService();
@@ -58,11 +60,15 @@ class _Trimester2State extends State<Trimester2> {
     return await PemeriksaanService().fetchSuggestion(nama);
   }
 
+  Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
+    return await AnggotaService().fetchSuggestion(nama);
+  }
+
   Future<void> _getID() async {
     dynamic user = await UserDatabase().readUser();
     if (user != null) {
       setState(() {
-        petugas_id = user.petugas.id;
+        petugas_id = user.anggota.id;
       });
     }
   }
@@ -77,11 +83,11 @@ class _Trimester2State extends State<Trimester2> {
       final pemeriksaan = PemeriksaanKehamilan(
         jenisPemeriksaan: "trimester2",
         kehamilanId: _selectedId,
-        petugasId: petugas_id,
+        kaderId: petugas_id,
         tanggalPemeriksaan:
             DateTime.tryParse(_tanggalPeriksaController.text.trim()) ??
                 DateTime.now(),
-        tempatPemeriksaan: int.parse(_tempatPeriksaController.text.trim()),
+        tempatPemeriksaan: _selectedIdLokasi,
       );
 
       final pemeriksaanRutin = PemeriksaanRutin(
@@ -195,7 +201,8 @@ class _Trimester2State extends State<Trimester2> {
               const SizedBox(height: 12),
               _buildDateField("Tanggal Periksa", _tanggalPeriksaController,
                   () => _selectDate(context)),
-              _buildTextField("Tempat Periksa", _tempatPeriksaController),
+              _buildSuggestionLokasi(_tempatPeriksaController),
+              const SizedBox(height: 12),
               _buildTextFieldWithSuffix(
                   "Timbang BB", "Kg", _beratBadanController),
               _buildTextFieldWithSuffix(
@@ -320,6 +327,45 @@ class _Trimester2State extends State<Trimester2> {
       emptyBuilder: (context) => const Padding(
         padding: EdgeInsets.all(8),
         child: Text("Nama tidak ditemukan"),
+      ),
+    );
+  }
+
+  Widget _buildSuggestionLokasi(TextEditingController controller) {
+    return TypeAheadField<Map<String, dynamic>>(
+      controller: controller,
+      suggestionsCallback: fetchSuggestionLokasi,
+      builder: (context, controller, focusNode) {
+        return TextFormField(
+          controller: controller,
+          focusNode: focusNode,
+          decoration: const InputDecoration(
+            labelText: 'Cari Posyandu',
+            border: OutlineInputBorder(),
+          ),
+          validator: (value) {
+            if (value == null || value.isEmpty) {
+              return 'Lokasi wajib diisi';
+            }
+            if (_selectedId == 0) {
+              return 'Silakan pilih dari daftar saran';
+            }
+            return null;
+          },
+        );
+      },
+      itemBuilder: (context, suggestion) {
+        return ListTile(
+          title: Text(suggestion['nama']),
+        );
+      },
+      onSelected: (suggestion) {
+        _tempatPeriksaController.text = suggestion['nama'];
+        _selectedIdLokasi = suggestion['id'];
+      },
+      emptyBuilder: (context) => const Padding(
+        padding: EdgeInsets.all(8),
+        child: Text("Nama Posyandu tidak ditemukan"),
       ),
     );
   }

@@ -10,6 +10,8 @@ class PemeriksaanKehamilan {
   int? kehamilanId;
   @JsonKey(name: "petugas_id")
   int? petugasId;
+  @JsonKey(name: "kader_id")
+  int? kaderId;
   @JsonKey(name: "tanggal_pemeriksaan")
   DateTime tanggalPemeriksaan;
   @JsonKey(name: "tempat_pemeriksaan")
@@ -20,7 +22,8 @@ class PemeriksaanKehamilan {
   PemeriksaanKehamilan({
     this.id,
     required this.kehamilanId,
-    required this.petugasId,
+    this.petugasId,
+    this.kaderId,
     required this.tanggalPemeriksaan,
     required this.tempatPemeriksaan,
     required this.jenisPemeriksaan,

@@ -2,6 +2,7 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
@@ -62,6 +63,24 @@ class PemeriksaanService {
         data: {
           "pemeriksaan_kehamilan": pemeriksaan.toJson(),
           "trimester2": trimester2.toJson(),
+        },
+      );
+
+      return response;
+    } on DioException catch (e) {
+      throw Exception('Gagal kirim data: ${e.response?.data ?? e.message}');
+    }
+  }
+
+  Future<Response> pemeriksaanNifas(
+      PemeriksaanKehamilan pemeriksaan, Nifas nifas) async {
+    try {
+      await _api.setToken();
+      final response = await _api.dio.post(
+        '/pemeriksaan-kehamilan',
+        data: {
+          "pemeriksaan_kehamilan": pemeriksaan.toJson(),
+          "nifas": nifas.toJson(),
         },
       );
 

@@ -1,4 +1,5 @@
 import 'package:json_annotation/json_annotation.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanKehamilan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanRutin.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
@@ -20,11 +21,15 @@ class Pemeriksaan {
   @JsonKey(name: "trimester3")
   List<Trimester3> trimester3;
 
+  @JsonKey(name: 'nifas')
+  List<Nifas> nifas;
+
   Pemeriksaan({
     required this.pemeriksaan,
     required this.trimester1,
     required this.trimester2,
     required this.trimester3,
+    required this.nifas,
   });
 
   factory Pemeriksaan.fromJson(Map<String, dynamic> json) =>

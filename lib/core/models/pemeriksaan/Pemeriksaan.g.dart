@@ -19,6 +19,9 @@ Pemeriksaan _$PemeriksaanFromJson(Map<String, dynamic> json) => Pemeriksaan(
       trimester3: (json['trimester3'] as List<dynamic>)
           .map((e) => Trimester3.fromJson(e as Map<String, dynamic>))
           .toList(),
+      nifas: (json['nifas'] as List<dynamic>)
+          .map((e) => Nifas.fromJson(e as Map<String, dynamic>))
+          .toList(),
     );
 
 Map<String, dynamic> _$PemeriksaanToJson(Pemeriksaan instance) =>
@@ -27,4 +30,5 @@ Map<String, dynamic> _$PemeriksaanToJson(Pemeriksaan instance) =>
       'trimester1': instance.trimester1,
       'trimester2': instance.trimester2,
       'trimester3': instance.trimester3,
+      'nifas': instance.nifas,
     };

@@ -108,11 +108,10 @@ class _LoginScreenState extends State<LoginScreen> {
                         ),
                         CustomTextField(
                           controller: _nikController,
-                          label: "NIK atau Email",
+                          label: "NIK",
                           keyboardType: TextInputType.text,
-                          validator: (value) => (value == null || value.isEmpty)
-                              ? "NIK atau Email harus diisi"
-                              : null,
+                          validator: (value) =>
+                              (value == null || value.isEmpty) ? "NIK" : null,
                         ),
                         const SizedBox(height: 14),
                         CustomTextField(
@@ -192,7 +191,7 @@ class _LoginScreenState extends State<LoginScreen> {
                                   }
                                 } else {
                                   setState(() {
-                                    alert = "$input atau Password salah!";
+                                    alert = "NIK atau Password salah!";
                                   });
                                 }
                               }

@@ -47,30 +47,30 @@ class _DashboardPageState extends State<DashboardPage> {
     }
   }
 
-  Future<void> _loadKehamilanData() async {
-    try {
-      final pemeriksaanService = KehamilanService();
+  // Future<void> _loadKehamilanData() async {
+  //   try {
+  //     final pemeriksaanService = KehamilanService();
 
-      List<Kehamilan> localData = await UserDatabase().getAllKehamilan();
-      if (localData.isNotEmpty) {
-        setState(() {
-          kehamilanData = localData;
-          isLoading = false;
-        });
-      } else {
-        List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
-        setState(() {
-          kehamilanData = remoteData;
-          isLoading = false;
-        });
-      }
-    } catch (e) {
-      setState(() {
-        isLoading = false;
-      });
-      debugPrint("Error load kehamilan data: $e");
-    }
-  }
+  //     List<Kehamilan> localData = await UserDatabase().getAllKehamilan();
+  //     if (localData.isNotEmpty) {
+  //       setState(() {
+  //         kehamilanData = localData;
+  //         isLoading = false;
+  //       });
+  //     } else {
+  //       List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
+  //       setState(() {
+  //         kehamilanData = remoteData;
+  //         isLoading = false;
+  //       });
+  //     }
+  //   } catch (e) {
+  //     setState(() {
+  //       isLoading = false;
+  //     });
+  //     debugPrint("Error load kehamilan data: $e");
+  //   }
+  // }
 
   Future<void> _checkImage() async {
     final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
@@ -173,7 +173,7 @@ class _DashboardPageState extends State<DashboardPage> {
     _checkImage();
     fetchArtikels();
     fetchJadwal();
-    _loadKehamilanData();
+    // _loadKehamilanData();
   }
 
   Future<void> _getUser() async {
@@ -213,7 +213,8 @@ class _DashboardPageState extends State<DashboardPage> {
       if (user != null && user.anggota != null) {
         String anggotaId = user.anggota.id.toString();
 
-        List<Jadwal> fetchedJadwal = await JadwalService().fetchJadwal(anggotaId);
+        List<Jadwal> fetchedJadwal =
+            await JadwalService().fetchJadwal(anggotaId);
         setState(() {
           jadwalPemeriksaan = fetchedJadwal;
         });

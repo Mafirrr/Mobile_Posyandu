@@ -102,6 +102,27 @@ class DatabaseProvider {
 ''');
 
     await db.execute('''
+  CREATE TABLE pemeriksaan_nifas (
+    id INTEGER PRIMARY KEY,
+    pemeriksaan_id INTEGER UNIQUE,
+    bagian_kf TEXT,
+    periksa_payudara TEXT,
+    periksa_pendarahan TEXT,
+    periksa_jalan_lahir TEXT,
+    vitamin_a TEXT,
+    kb_pasca_melahirkan TEXT,
+    skrining_kesehatan_jiwa TEXT,
+    konseling TEXT,
+    tata_laksana_kasus TEXT,
+    kesimpulan_ibu TEXT,
+    kesimpulan_bayi TEXT,
+    masalah_nifas TEXT,
+    kesimpulan TEXT,
+    created_at TEXT
+  )
+''');
+
+    await db.execute('''
   CREATE TABLE pemeriksaan_rutin (
     id INTEGER PRIMARY KEY,
     pemeriksaan_id INTEGER UNIQUE,
@@ -151,6 +172,7 @@ class DatabaseProvider {
   id INTEGER PRIMARY KEY,
   kehamilan_id INTEGER,
   petugas_id INTEGER,
+  kader_id INTEGER,
   tanggal_pemeriksaan Text,
   tempat_pemeriksaan Text,
   jenis_pemeriksaan Text

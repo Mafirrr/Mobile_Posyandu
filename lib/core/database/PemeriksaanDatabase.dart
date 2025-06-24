@@ -1,6 +1,7 @@
 import 'package:posyandu_mob/core/database/DatabaseProvider.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester1.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/LabTrimester3.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Pemeriksaan.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanAwal.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/PemeriksaanFisik.dart';
@@ -33,6 +34,10 @@ class Pemeriksaandatabase {
 
     for (var item in hasil.trimester3) {
       await _insertTrimester3(item);
+    }
+
+    for (var item in hasil.nifas) {
+      await _insertNifas(item);
     }
     return hasil;
   }
@@ -116,6 +121,15 @@ class Pemeriksaandatabase {
     );
   }
 
+  Future<int> _insertNifas(Nifas nifas) async {
+    final db = await instance.database;
+    return await db.insert(
+      'pemeriksaan_nifas',
+      nifas.toJson(),
+      conflictAlgorithm: ConflictAlgorithm.replace,
+    );
+  }
+
   Future<int> _insertTrimester3(Trimester3 trimester3) async {
     final db = await instance.database;
 
@@ -180,12 +194,14 @@ class Pemeriksaandatabase {
       final trimester1 = await getTrimester1(id);
       final trimester2 = await getTrimester2(id);
       final trimester3 = await getTrimester3(id);
+      final nifas = await getNifas(id);
 
       list.add(Pemeriksaan(
         pemeriksaan: [PemeriksaanKehamilan.fromJson(row)],
         trimester1: trimester1,
         trimester2: trimester2,
         trimester3: trimester3,
+        nifas: nifas,
       ));
     }
 
@@ -242,6 +258,17 @@ class Pemeriksaandatabase {
         orderBy: 'created_at DESC');
 
     return rows.map((e) => PemeriksaanRutin.fromJson(e)).toList();
+  }
+
+  Future<List<Nifas>> getNifas(int pemeriksaanId) async {
+    final db = await instance.database;
+
+    final rows = await db.query('pemeriksaan_nifas',
+        where: 'pemeriksaan_id = ?',
+        whereArgs: [pemeriksaanId],
+        orderBy: 'created_at DESC');
+
+    return rows.map((e) => Nifas.fromJson(e)).toList();
   }
 
   Future<List<Trimester3>> getTrimester3(int pemeriksaanId) async {
