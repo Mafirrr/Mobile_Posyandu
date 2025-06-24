@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:posyandu_mob/screens/pelayanan/trimester_1.dart';
 import 'package:posyandu_mob/screens/pelayanan/trimester_2.dart';
 import 'package:posyandu_mob/screens/pelayanan/trimestr_3.dart';
+import 'package:posyandu_mob/screens/pelayanan/pemeriksaan_nifas_screen.dart';
 
 class PemeriksaanScreen extends StatefulWidget {
   const PemeriksaanScreen({super.key});
@@ -20,7 +21,7 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: 3, vsync: this);
+    _tabController = TabController(length: 4, vsync: this);
   }
 
   @override
@@ -49,6 +50,7 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
                 Tab(text: 'Trimester 1'),
                 Tab(text: 'Trimester 2'),
                 Tab(text: 'Trimester 3'),
+                Tab(text: 'Nifas'),
               ],
             ),
           ),
@@ -60,6 +62,7 @@ class _PemeriksaanScreenState extends State<PemeriksaanScreen>
           const Trimester1(),
           Trimester2(),
           const Trimestr3(),
+          PemeriksaanNifasScreen(),
         ],
       ),
     );
