@@ -1,7 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
 
 class DetailNifasScreen extends StatelessWidget {
-  const DetailNifasScreen({Key? key}) : super(key: key);
+  final Nifas data;
+  const DetailNifasScreen({Key? key, required this.data}) : super(key: key);
 
   Widget _buildItem(String label, String value) {
     return Padding(
@@ -38,19 +40,20 @@ class DetailNifasScreen extends StatelessWidget {
               const Text("Detail Pemeriksaan Nifas",
                   style: TextStyle(fontSize: 16, fontWeight: FontWeight.bold)),
               const Divider(height: 20, thickness: 1),
-              _buildItem("Bagian KF", "KF2"),
-              _buildItem("Periksa Payudara (ASI)", "Normal"),
-              _buildItem("Periksa Pendarahan", "Tidak Ada"),
-              _buildItem("Periksa Jalan Lahir", "Bersih"),
-              _buildItem("Vitamin A", "Diberikan"),
-              _buildItem("KB Pasca Melahirkan", "Pil"),
-              _buildItem("Skrining Kesehatan Jiwa", "Normal"),
-              _buildItem("Konseling", "Ibu mendapat edukasi ASI"),
-              _buildItem("Tata Laksana Kasus", "Tidak ada tindakan khusus"),
-              _buildItem("Kesimpulan", "Ibu dan bayi sehat"),
-              _buildItem("Keadaan Ibu", "Sehat"),
-              _buildItem("Keadaan Bayi", "Sehat"),
-              _buildItem("Masalah Nifas", "-"),
+              _buildItem("Bagian KF", data.bagianKf!),
+              _buildItem("Periksa Payudara (ASI)", data.periksaPayudara ?? "-"),
+              _buildItem("Periksa Pendarahan", data.periksaPendarahan ?? "-"),
+              _buildItem("Periksa Jalan Lahir", data.periksaJalanLahir ?? "-"),
+              _buildItem("Vitamin A", data.vitaminA ?? "-"),
+              _buildItem("KB Pasca Melahirkan", data.kbPascaMelahirkan ?? "-"),
+              _buildItem(
+                  "Skrining Kesehatan Jiwa", data.skriningKesehatanJiwa ?? "-"),
+              _buildItem("Konseling", data.konseling ?? "-"),
+              _buildItem("Tata Laksana Kasus", data.tataLaksanaKasus ?? "-"),
+              _buildItem("Kesimpulan", data.kesimpulan ?? "-"),
+              _buildItem("Keadaan Ibu", data.kesimpulanIbu ?? "-"),
+              _buildItem("Keadaan Bayi", data.kesimpulanBayi ?? "-"),
+              _buildItem("Masalah Nifas", data.masalahNifas ?? "-"),
             ],
           ),
         ),

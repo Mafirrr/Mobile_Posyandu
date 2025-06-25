@@ -341,6 +341,15 @@ class Pemeriksaandatabase {
     return result.map((e) => PemeriksaanRutin.fromJson(e)).toList();
   }
 
+  Future<List<Nifas>> getNifasByIds(List<int> ids) async {
+    final db = await instance.database;
+    if (ids.isEmpty) return [];
+    final idsString = ids.join(', ');
+    final result = await db.rawQuery(
+        'SELECT * FROM pemeriksaan_nifas WHERE pemeriksaan_id IN ($idsString)');
+    return result.map((e) => Nifas.fromJson(e)).toList();
+  }
+
   Future<List<Trimester3>> getTrimester3ByIds(List<int> pemeriksaanIds) async {
     final db = await instance.database;
     if (pemeriksaanIds.isEmpty) return [];

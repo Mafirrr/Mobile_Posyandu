@@ -49,7 +49,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
   int? tri1;
   List<int> tri2 = [];
   List<int> tri3 = [];
-  int? nifasId;
+  List<int> nifasId = [];
   List<Map<String, dynamic>> dataList = [];
   bool isLoading = true;
 
@@ -59,7 +59,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
     int? id1;
     List<int> id2 = [];
     List<int> id3 = [];
-    int? nifas;
+    List<int> nifas = [];
 
     dataList = await _db.getAllDetailPemeriksaan(widget.id);
 
@@ -74,7 +74,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
       } else if (jenisTrimester == 'trimester3' || jenisTrimester == '3') {
         id3.add(id);
       } else if (jenisTrimester == 'nifas') {
-        nifas = id;
+        nifas.add(id);
       }
     }
 
@@ -194,12 +194,14 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
                                 ),
                               );
                       } else {
-                        return nifasId == null
+                        return nifasId.isEmpty
                             ? const Center(
                                 child: Text('Data Nifas belum tersedia'))
                             : Padding(
                                 padding: const EdgeInsets.all(16.0),
-                                child: NifasScreen(),
+                                child: NifasScreen(
+                                  pemeriksaanIds: nifasId,
+                                ),
                               );
                       }
                     },
