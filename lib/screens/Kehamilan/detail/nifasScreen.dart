@@ -61,7 +61,6 @@ class _NifasScreenState extends State<NifasScreen> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text("Daftar Pemeriksaan Nifas")),
       body: SafeArea(
         child: SingleChildScrollView(
           padding: const EdgeInsets.all(12),
