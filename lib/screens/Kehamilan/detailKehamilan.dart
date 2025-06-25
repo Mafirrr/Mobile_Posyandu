@@ -12,9 +12,11 @@ import 'package:posyandu_mob/core/models/pemeriksaan/Trimester3.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/Trimestr1.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester1.dart';
 import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester3.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Nifas.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/Trimester2Screen.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/Trimester3Screen.dart';
 import 'package:posyandu_mob/screens/Kehamilan/detail/trimester1.dart';
+import 'package:posyandu_mob/screens/Kehamilan/detail/nifasScreen.dart';
 
 class DetailPemeriksaan extends StatefulWidget {
   final String label;
@@ -40,12 +42,14 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
   UsgTrimester3? usgTrimester3;
   RencanaKonsultasi? rencanaKonsultasi;
   SkriningKesehatan? skriningKesehatan;
+  Nifas? nifas;
 
   final _db = Pemeriksaandatabase();
   dynamic local;
   int? tri1;
   List<int> tri2 = [];
   List<int> tri3 = [];
+  int? nifasId;
   List<Map<String, dynamic>> dataList = [];
   bool isLoading = true;
 
@@ -55,6 +59,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
     int? id1;
     List<int> id2 = [];
     List<int> id3 = [];
+    int? nifas;
 
     dataList = await _db.getAllDetailPemeriksaan(widget.id);
 
@@ -68,6 +73,8 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
         id2.add(id);
       } else if (jenisTrimester == 'trimester3' || jenisTrimester == '3') {
         id3.add(id);
+      } else if (jenisTrimester == 'nifas') {
+        nifas = id;
       }
     }
 
@@ -75,6 +82,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
       tri1 = id1;
       tri2 = id2;
       tri3 = id3;
+      nifasId = nifas;
       isLoading = false;
     });
 
@@ -122,7 +130,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
                 Padding(
                   padding: const EdgeInsets.symmetric(horizontal: 16.0),
                   child: Row(
-                    children: List.generate(3, (index) {
+                    children: List.generate(4, (index) {
                       return Expanded(
                         child: Padding(
                           padding: const EdgeInsets.symmetric(horizontal: 4.0),
@@ -145,7 +153,8 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
                                 shape: RoundedRectangleBorder(
                                   borderRadius: BorderRadius.circular(8.0),
                                 )),
-                            child: Text('Trimester ${index + 1}'),
+                            child: Text(
+                                index < 3 ? 'Trimester ${index + 1}' : 'Nifas'),
                           ),
                         ),
                       );
@@ -174,7 +183,7 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
                                   pemeriksaanIds: tri2,
                                 ),
                               );
-                      } else {
+                      } else if (selectedTrimester == 2) {
                         return tri3.isEmpty
                             ? const Center(
                                 child: Text('Data Trimester 3 belum tersedia'))
@@ -183,6 +192,14 @@ class _DetailPemeriksaanState extends State<DetailPemeriksaan> {
                                 child: Trimester3Screen(
                                   pemeriksaanIds: tri3,
                                 ),
+                              );
+                      } else {
+                        return nifasId == null
+                            ? const Center(
+                                child: Text('Data Nifas belum tersedia'))
+                            : Padding(
+                                padding: const EdgeInsets.all(16.0),
+                                child: NifasScreen(),
                               );
                       }
                     },
