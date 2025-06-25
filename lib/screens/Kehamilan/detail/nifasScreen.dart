@@ -69,55 +69,72 @@ class _NifasScreenState extends State<NifasScreen> {
             children: pemeriksaanList.map((item) {
               return Container(
                 margin: const EdgeInsets.only(bottom: 12),
+                padding: const EdgeInsets.all(12),
                 decoration: BoxDecoration(
                   color: const Color(0xFFE6EEFF),
                   borderRadius: BorderRadius.circular(12),
                 ),
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    ListTile(
-                      title: Text(
-                        formatTanggalIndonesia(item.createdAt!),
-                        style: const TextStyle(fontWeight: FontWeight.w600),
-                      ),
-                      subtitle: Text("ID Pemeriksaan: ${item.id}"),
-                      trailing: Container(
-                        decoration: BoxDecoration(
-                          color: const Color(0xFF4D81E7),
-                          borderRadius: BorderRadius.circular(8),
-                        ),
-                        child: IconButton(
-                          icon: const Icon(
-                            Icons.keyboard_arrow_down,
-                            color: Colors.white,
+                    Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                formatTanggalIndonesia(item.createdAt!),
+                                style: const TextStyle(
+                                  fontWeight: FontWeight.w600,
+                                  fontSize: 16,
+                                ),
+                              ),
+                              Text("ID Pemeriksaan: ${item.id}"),
+                            ],
                           ),
-                          onPressed: () {},
                         ),
-                      ),
+                        Container(
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF4D81E7),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: IconButton(
+                            icon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: Colors.white,
+                            ),
+                            onPressed: () {
+                              setState(() {
+                                expandedMap[item.id!] =
+                                    !(expandedMap[item.id!] ?? false);
+                              });
+                            },
+                          ),
+                        ),
+                      ],
                     ),
-                    Padding(
-                      padding: const EdgeInsets.symmetric(
-                          horizontal: 12, vertical: 8),
-                      child: ElevatedButton.icon(
-                        style: ElevatedButton.styleFrom(
+                    const SizedBox(height: 8),
+                    Align(
+                      alignment: Alignment.centerRight,
+                      child: TextButton.icon(
+                        style: TextButton.styleFrom(
                           backgroundColor: const Color(0xFF4D81E7),
                           shape: RoundedRectangleBorder(
                             borderRadius: BorderRadius.circular(10),
                           ),
                         ),
-                        icon: const Icon(Icons.visibility),
-                        label: const Text('Lihat Detail'),
+                        icon: const Icon(Icons.visibility, color: Colors.white),
+                        label: const Text(
+                          'Lihat Detail',
+                          style: TextStyle(color: Colors.white),
+                        ),
                         onPressed: () {
-                          setState(() {
-                            expandedMap[item.id!] =
-                                !(expandedMap[item.id!] ?? false);
-                          });
                           Navigator.push(
                             context,
                             MaterialPageRoute(
-                              builder: (_) => DetailNifasScreen(
-                                data: item,
-                              ),
+                              builder: (_) => DetailNifasScreen(data: item),
                             ),
                           );
                         },
