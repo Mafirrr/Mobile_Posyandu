@@ -390,6 +390,22 @@ class Pemeriksaandatabase {
     return list;
   }
 
+  Future<UsgTrimester1?> getPemeriksaanUsg1() async {
+    final db = await instance.database;
+
+    final result = await db.rawQuery('''
+    SELECT * FROM usg_trimester_1 
+    ORDER BY id DESC 
+    LIMIT 1
+    ''');
+
+    if (result.isNotEmpty) {
+      return UsgTrimester1.fromJson(result.first);
+    } else {
+      return null;
+    }
+  }
+
   Future<PemeriksaanRutin?> getPemeriksaanRutin() async {
     final db = await instance.database;
 

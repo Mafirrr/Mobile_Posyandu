@@ -12,6 +12,13 @@ class AnggotaService {
     return response.data;
   }
 
+  Future<String> getNomor() async {
+    await _apiClient.setToken();
+    final response = await _apiClient.dio.get('/konsultasi');
+
+    return response.data['nomor_telepon'];
+  }
+
   Future<dynamic> getById(String id) async {
     await _apiClient.setToken();
     final response = await _apiClient.dio.get('/anggota/$id');

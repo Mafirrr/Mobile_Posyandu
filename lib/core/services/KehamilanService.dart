@@ -9,7 +9,7 @@ class KehamilanService {
 
   Future<List<Kehamilan>> dataKehamilan() async {
     try {
-      _api.clearToken();
+      _api.setToken();
       int? id = await getID();
       final response = await _api.dio.get('/kehamilan/$id');
 
@@ -47,7 +47,7 @@ class KehamilanService {
 
   Future<void> _fetchAndSavePemeriksaan(int kehamilanId, int id) async {
     try {
-      _api.clearToken();
+      _api.setToken();
       final response = await _api.dio.get('/kehamilan/$id', queryParameters: {
         'detail': kehamilanId,
       });

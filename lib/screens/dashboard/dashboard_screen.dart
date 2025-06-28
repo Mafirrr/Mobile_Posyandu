@@ -3,8 +3,11 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:path_provider/path_provider.dart';
+import 'package:posyandu_mob/core/database/PemeriksaanDatabase.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
 import 'package:posyandu_mob/core/models/Kehamilan.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/Trimestr1.dart';
+import 'package:posyandu_mob/core/models/pemeriksaan/UsgTrimester1.dart';
 import 'package:posyandu_mob/core/services/KehamilanService.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
 import 'package:posyandu_mob/screens/dashboard/EdukasiCard.dart';
@@ -17,7 +20,9 @@ import 'notification_page.dart';
 import 'grafik_bb.dart';
 
 class DashboardPage extends StatefulWidget {
-  const DashboardPage({super.key});
+  final int minggu;
+  final int hari;
+  const DashboardPage({super.key, required this.hari, required this.minggu});
 
   @override
   _DashboardPageState createState() => _DashboardPageState();
@@ -26,6 +31,7 @@ class DashboardPage extends StatefulWidget {
 class _DashboardPageState extends State<DashboardPage> {
   final ScrollController _scrollController = ScrollController();
   final PageController _pageController = PageController();
+  final _db = Pemeriksaandatabase();
   List<Artikel> highlightArtikels = [];
   List<Artikel> allArtikels = [];
   List<Artikel> artikels = [];
@@ -46,31 +52,6 @@ class _DashboardPageState extends State<DashboardPage> {
       return jam;
     }
   }
-
-  // Future<void> _loadKehamilanData() async {
-  //   try {
-  //     final pemeriksaanService = KehamilanService();
-
-  //     List<Kehamilan> localData = await UserDatabase().getAllKehamilan();
-  //     if (localData.isNotEmpty) {
-  //       setState(() {
-  //         kehamilanData = localData;
-  //         isLoading = false;
-  //       });
-  //     } else {
-  //       List<Kehamilan> remoteData = await pemeriksaanService.dataKehamilan();
-  //       setState(() {
-  //         kehamilanData = remoteData;
-  //         isLoading = false;
-  //       });
-  //     }
-  //   } catch (e) {
-  //     setState(() {
-  //       isLoading = false;
-  //     });
-  //     debugPrint("Error load kehamilan data: $e");
-  //   }
-  // }
 
   Future<void> _checkImage() async {
     final authProvider = Provider.of<ProfilViewModel>(context, listen: false);
@@ -173,7 +154,6 @@ class _DashboardPageState extends State<DashboardPage> {
     _checkImage();
     fetchArtikels();
     fetchJadwal();
-    // _loadKehamilanData();
   }
 
   Future<void> _getUser() async {
@@ -398,8 +378,8 @@ class _DashboardPageState extends State<DashboardPage> {
                           Expanded(
                             child: Column(
                               crossAxisAlignment: CrossAxisAlignment.start,
-                              children: const [
-                                Text(
+                              children: [
+                                const Text(
                                   'Informasi Kehamilan',
                                   style: TextStyle(
                                     fontSize: 16,
@@ -407,10 +387,10 @@ class _DashboardPageState extends State<DashboardPage> {
                                     color: Color(0xff5B37B7),
                                   ),
                                 ),
-                                SizedBox(height: 4),
+                                const SizedBox(height: 4),
                                 Text(
-                                  'Saat ini usia kehamilan Anda diperkirakan sekitar 20 minggu',
-                                  style: TextStyle(
+                                  'Saat ini usia kehamilan Anda diperkirakan sekitar ${widget.minggu} minggu ${widget.hari} hari',
+                                  style: const TextStyle(
                                     fontSize: 14,
                                     color: Colors.black87,
                                   ),

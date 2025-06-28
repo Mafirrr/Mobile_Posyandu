@@ -6,6 +6,7 @@ class DashboardService {
   final _api = ApiClient();
 
   Future<GrafikPemeriksaan?> fetchGrafik() async {
+    await _api.setToken();
     final response = await _api.dio.get('/dashboard/grafik');
     if (response.statusCode == 200) {
       return GrafikPemeriksaan.fromJson(response.data);
@@ -17,6 +18,7 @@ class DashboardService {
     required Map<int, String> namaIbuMap,
     required Map<int, String> waktuMap,
   }) async {
+    await _api.setToken();
     final response = await _api.dio.get('/dashboard/riwayat');
     if (response.statusCode == 200 && response.data['data'] != null) {
       final List<dynamic> data = response.data['data'];

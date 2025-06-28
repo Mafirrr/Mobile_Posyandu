@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:font_awesome_flutter/font_awesome_flutter.dart';
+import 'package:posyandu_mob/core/services/AnggotaService.dart';
+import 'package:url_launcher/url_launcher.dart';
 
 class PemantauanScreen extends StatefulWidget {
   final int mingguKehamilan;
@@ -25,6 +27,33 @@ class _PemantauanScreenState extends State<PemantauanScreen> {
     'Diare berulang',
     'Pemeriksaan kehamilan',
   ];
+
+  void _kirimPesanWhatsApp() async {
+    final nomorBidan = await AnggotaService().getNomor();
+    final keluhan = <String>[];
+
+    for (int i = 0; i < kategoriPemantauan.length; i++) {
+      if (checklist[i]) {
+        keluhan.add('- ${kategoriPemantauan[i]}');
+      }
+    }
+
+    final pesan = '''
+      Halo Bidan, saya ingin melaporkan beberapa keluhan pada minggu ke-${widget.mingguKehamilan} kehamilan:
+      ${keluhan.join('\n')}
+      ''';
+
+    final url = Uri.parse(
+        'https://wa.me/$nomorBidan?text=${Uri.encodeComponent(pesan)}');
+
+    if (await canLaunchUrl(url)) {
+      await launchUrl(url, mode: LaunchMode.externalApplication);
+    } else {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(content: Text('Tidak dapat membuka WhatsApp')),
+      );
+    }
+  }
 
   late List<bool> checklist;
 
@@ -74,7 +103,9 @@ class _PemantauanScreenState extends State<PemantauanScreen> {
                 width: double.infinity,
                 margin: const EdgeInsets.only(top: 16),
                 child: ElevatedButton.icon(
-                  onPressed: () {},
+                  onPressed: () {
+                    _kirimPesanWhatsApp();
+                  },
                   icon: const FaIcon(
                     FontAwesomeIcons.whatsapp,
                     color: Colors.white,

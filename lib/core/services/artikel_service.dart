@@ -4,7 +4,7 @@ import '../models/Artikel.dart';
 class ArtikelService {
   final _api = ApiClient();
   Future<List<Artikel>> fetchArtikel() async {
-    _api.clearToken();
+    _api.setToken();
     final response = await _api.dio.get('/artikel');
 
     if (response.statusCode == 200) {

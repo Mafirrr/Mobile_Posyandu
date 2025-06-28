@@ -127,7 +127,7 @@ class AuthService {
 
   Future<Response> sendOtpToEmail(String email) async {
     try {
-      _api.setToken();
+      _api.clearToken();
       final response = await _api.dio.post(
         "/send-otp",
         data: {
@@ -148,7 +148,7 @@ class AuthService {
 
   Future<Response> verifyOtp(String identifer, String otp, int id) async {
     try {
-      _api.setToken();
+      _api.clearToken();
 
       final response = await _api.dio.post(
         "/verify-otp",
@@ -175,7 +175,7 @@ class AuthService {
     String? otp,
   }) async {
     try {
-      _api.setToken();
+      _api.clearToken();
       final response = await _api.dio.post(
         "/resetPass",
         data: {

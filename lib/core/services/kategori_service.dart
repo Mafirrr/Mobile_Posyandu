@@ -5,7 +5,7 @@ class KategoriService {
   final _api = ApiClient();
 
   Future<List<Kategori>> fetchKategori() async {
-    _api.clearToken();
+    _api.setToken();
     final response = await _api.dio.get('/kategori');
 
     if (response.statusCode == 200) {
