@@ -3,6 +3,7 @@ import 'package:posyandu_mob/screens/Edukasi/Edukasi.dart';
 import 'package:posyandu_mob/screens/Kehamilan/listKehamilan.dart';
 import 'package:posyandu_mob/screens/profil/ProfilScreen.dart';
 import 'package:posyandu_mob/screens/dashboard/dashboard_screen.dart';
+import 'package:posyandu_mob/screens/pemantauan/pemantauan_screen.dart';
 
 class NavAnggotaScreen extends StatefulWidget {
   const NavAnggotaScreen({super.key});
@@ -31,6 +32,8 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
       case 2:
         return const EdukasiHomePage();
       case 3:
+        return const PemantauanScreen(mingguKehamilan: 4);
+      case 4:
         return const ProfilScreen();
       default:
         return const Center(child: Text("Page Not Found"));
@@ -47,7 +50,8 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
           _buildNavItem(Icons.home, "Beranda", 0),
           _buildNavItem(Icons.medication, "Pemeriksaan", 1),
           _buildNavItem(Icons.article, "Edukasi", 2),
-          _buildNavItem(Icons.person, "Profil", 3),
+          _buildNavItem(Icons.monitor_heart, "Pantau", 3),
+          _buildNavItem(Icons.person, "Profil", 4),
         ],
         currentIndex: _selectedIndex,
         unselectedItemColor: Colors.grey,
@@ -55,6 +59,7 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
         onTap: _onItemTapped,
         showSelectedLabels: false,
         showUnselectedLabels: false,
+        type: BottomNavigationBarType.fixed,
       ),
     );
   }
