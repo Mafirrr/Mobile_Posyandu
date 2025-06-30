@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:posyandu_mob/core/database/UserDatabase.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/models/dataAnggota.dart';
 import 'package:posyandu_mob/core/services/profil_service.dart';
 import 'package:posyandu_mob/core/viewmodel/profile_viewmodel.dart';
@@ -33,6 +34,7 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
   final ProfilService _profilService = ProfilService();
   DataAnggota? _anggota;
   DateTime? tanggal_lahir;
+  int? id;
 
   Future<int?> getID() async {
     dynamic userData = await userDatabase.readUser();
@@ -118,7 +120,7 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                 CustomTextField(
                   controller: nikController,
                   label: 'NIK',
-                  readOnly: nikController != null,
+                  readOnly: nikController.text != '',
                 ),
                 const SizedBox(height: 12),
                 CustomTextField(
@@ -156,17 +158,19 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                 ),
                 const SizedBox(height: 8),
                 CustomTextField(
-                    controller: jknController, label: 'No JKN', readOnly: true),
+                    controller: jknController,
+                    label: 'No JKN',
+                    readOnly: jknController.text != ''),
                 const SizedBox(height: 12),
                 CustomTextField(
                     controller: tk1Controller,
                     label: 'Faskes TK1',
-                    readOnly: true),
+                    readOnly: tk1Controller.text != ''),
                 const SizedBox(height: 12),
                 CustomTextField(
                     controller: rujukanController,
                     label: 'Faskes Rujukan',
-                    readOnly: true),
+                    readOnly: rujukanController.text != ''),
                 const SizedBox(height: 20),
                 const Text(
                   "Lainnya",
@@ -184,25 +188,15 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                       text: 'Simpan',
                       isLoading: viewModel.isLoading,
                       onPressed: () async {
+                        String inputTanggal =
+                            tanggalLahirController.text.trim();
                         try {
-                          String inputTanggal =
-                              tanggalLahirController.text.trim();
-                          final RegExp yyyyMMddFormat =
-                              RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                          late String finalTanggal;
-
-                          if (yyyyMMddFormat.hasMatch(inputTanggal)) {
-                            finalTanggal = inputTanggal;
-                          } else {
-                            final parsedDate = DateFormat('dd MMM yyyy')
-                                .parseStrict(inputTanggal);
-                            finalTanggal =
-                                DateFormat('yyyy-MM-dd').format(parsedDate);
-                          }
+                          final parsedDate = DateTime.parse(inputTanggal);
+                          final finalTanggal =
+                              DateFormat('yyyy-MM-dd').format(parsedDate);
 
                           final updatedAnggota = DataAnggota(
-                            id: _anggota!.id,
-                            anggotaId: _anggota!.anggotaId,
+                            anggotaId: await getID() ?? 0,
                             nama: namaController.text,
                             nik: nikController.text,
                             noJkn: jknController.text,
@@ -219,14 +213,14 @@ class _DataKeluargaScreenState extends State<DataKeluargaScreen> {
                               await viewModel.updateKeluarga(updatedAnggota);
                           if (success) {
                             _showSnackbar('Profil berhasil diperbarui');
-                            Navigator.pop(
-                            context, true);
+                            Navigator.pop(context, true);
                           } else {
                             _showSnackbar('Gagal memperbarui profil');
                           }
                         } catch (e) {
                           _showSnackbar(
                               'Tanggal tidak valid: ${tanggalLahirController.text}');
+                          print(e);
                         }
                       },
                     ),

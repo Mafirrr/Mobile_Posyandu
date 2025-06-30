@@ -61,7 +61,7 @@ class _Trimester2State extends State<Trimester2> {
   }
 
   Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    return await AnggotaService().fetchSuggestion();
   }
 
   Future<void> _getID() async {

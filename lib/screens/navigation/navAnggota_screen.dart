@@ -39,8 +39,8 @@ class _NavAnggotaScreenState extends State<NavAnggotaScreen> {
 
   @override
   void initState() {
-    _umurKehamilan();
     super.initState();
+    _umurKehamilan();
   }
 
   Future<void> _umurKehamilan() async {

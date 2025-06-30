@@ -1,10 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_typeahead/flutter_typeahead.dart';
 import 'package:intl/intl.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
 import 'package:posyandu_mob/core/models/Jadwal.dart';
+import 'package:posyandu_mob/core/models/Posyandu.dart';
 import 'package:posyandu_mob/core/services/AnggotaService.dart';
 import 'package:posyandu_mob/core/viewmodel/jadwalKader_viewmodel.dart';
-import 'package:posyandu_mob/widgets/custom_button.dart';
 import 'package:posyandu_mob/widgets/custom_tanggal.dart';
 import 'package:posyandu_mob/widgets/custom_textfield.dart';
 
@@ -26,16 +27,36 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
 
   final JadwalkaderViewmodel _viewModel = JadwalkaderViewmodel();
   late Future<void> _loadFuture;
-  int _selectedId = 0;
+  List<Map<String, dynamic>> _posyanduList = [];
+  int? _selectedPosyanduId;
+
+  List<int> _anggotaIds = [];
+  List<Anggota> anggotaList = [];
+  List<Posyandu> posyanduList = [];
+
+  Future<void> _loadAnggota() async {
+    anggotaList = await AnggotaService().getAnggota();
+    posyanduList = await AnggotaService().getPosyandu();
+    setState(() {});
+  }
+
+  Future<void> _loadPosyandu() async {
+    try {
+      final data = await AnggotaService().fetchSuggestion();
+      setState(() {
+        _posyanduList = data;
+      });
+    } catch (e) {
+      // tangani error
+    }
+  }
 
   @override
   void initState() {
     super.initState();
     _loadFuture = _viewModel.loadJadwal();
-  }
-
-  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    _loadAnggota();
+    _loadPosyandu();
   }
 
   void _simpanJadwal() async {
@@ -44,9 +65,10 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
         id: 0,
         judul: _judulController.text,
         tanggal: _tanggalController.text,
-        lokasi: _selectedId,
+        lokasi: _selectedPosyanduId!,
         jam_mulai: _jamMulaiController.text,
         jam_selesai: _jamSelesaiController.text,
+        yangMenghadiri: _anggotaIds,
         keterangan: null,
         anggota_id: null,
       );
@@ -62,6 +84,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
 
         setState(() {
           _tanggal = null;
+          _anggotaIds = [];
+          _selectedPosyanduId = null;
           _loadFuture = _viewModel.loadJadwal();
         });
 
@@ -80,10 +104,13 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
   void _editJadwal(Jadwal item) {
     final judulController = TextEditingController(text: item.judul);
     final lokasiController = TextEditingController(text: item.posyandu!.nama);
+    _selectedPosyanduId = item.lokasi;
     final jamMulaiController = TextEditingController(text: item.jam_mulai);
     final jamSelesaiController = TextEditingController(text: item.jam_selesai);
     final tanggalController = TextEditingController(text: item.tanggal);
     DateTime? selectedDate = DateTime.tryParse(item.tanggal);
+    _anggotaIds =
+        (item.yangMenghadiri as List<dynamic>).map((e) => e as int).toList();
     String formatTimeTo24Hour(TimeOfDay time) {
       final hour = time.hour.toString().padLeft(2, '0');
       final minute = time.minute.toString().padLeft(2, '0');
@@ -101,6 +128,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
             key: editFormKey,
             child: Column(
               mainAxisSize: MainAxisSize.min,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 CustomTextField(
                   controller: judulController,
@@ -110,7 +138,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                       value!.isEmpty ? 'Judul wajib diisi' : null,
                 ),
                 SizedBox(height: 8),
-                _buildSuggestion(lokasiController),
+                _buildDropdownPosyandu(lokasiController),
                 SizedBox(height: 8),
                 Row(
                   children: [
@@ -183,13 +211,27 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                         DateFormat('yyyy-MM-dd').format(date);
                   },
                 ),
+                ElevatedButton(
+                  onPressed: _showPilihAnggotaDialog,
+                  child: Text(
+                    _anggotaIds.isEmpty
+                        ? 'Pilih Anggota yang Menghadiri'
+                        : '${_anggotaIds.length} Anggota Terpilih',
+                  ),
+                ),
               ],
             ),
           ),
         ),
         actions: [
           TextButton(
-              onPressed: () => Navigator.pop(context),
+              onPressed: () {
+                setState(() {
+                  _anggotaIds = [];
+                  _selectedPosyanduId = null;
+                });
+                Navigator.pop(context);
+              },
               child: Text('Batal', style: TextStyle(fontSize: 12))),
           ElevatedButton(
             onPressed: () async {
@@ -199,9 +241,10 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                   id: item.id,
                   judul: judulController.text,
                   tanggal: tanggalController.text,
-                  lokasi: _selectedId,
+                  lokasi: _selectedPosyanduId!,
                   jam_mulai: jamMulaiController.text,
                   jam_selesai: jamSelesaiController.text,
+                  yangMenghadiri: _anggotaIds,
                   keterangan: item.keterangan,
                   anggota_id: item.anggota_id,
                 );
@@ -263,7 +306,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                         value!.isEmpty ? 'Judul wajib diisi' : null,
                   ),
                   SizedBox(height: 6),
-                  _buildSuggestion(_lokasiController),
+                  _buildDropdownPosyandu(_lokasiController),
                   SizedBox(height: 6),
                   Row(
                     children: [
@@ -342,7 +385,16 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                       });
                     },
                   ),
-                  SizedBox(height: 12),
+                  const SizedBox(height: 12),
+                  ElevatedButton(
+                    onPressed: _showPilihAnggotaDialog,
+                    child: Text(
+                      _anggotaIds.isEmpty
+                          ? 'Pilih Anggota yang Menghadiri'
+                          : '${_anggotaIds.length} Anggota Terpilih',
+                    ),
+                  ),
+                  const SizedBox(height: 12),
                   SizedBox(
                     width: double.infinity,
                     height: 42,
@@ -366,8 +418,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                 ],
               ),
             ),
-            SizedBox(height: 20),
-            Text(
+            const SizedBox(height: 20),
+            const Text(
               'Daftar Jadwal',
               style: TextStyle(
                 fontSize: 16,
@@ -375,12 +427,12 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                 color: Colors.black87,
               ),
             ),
-            SizedBox(height: 12),
+            const SizedBox(height: 12),
             FutureBuilder<void>(
               future: _loadFuture,
               builder: (context, snapshot) {
                 if (snapshot.connectionState == ConnectionState.waiting) {
-                  return Center(
+                  return const Center(
                       child: SizedBox(
                           width: 20,
                           height: 20,
@@ -425,20 +477,20 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                               crossAxisAlignment: CrossAxisAlignment.start,
                               children: [
                                 Text(item.judul,
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 13,
                                         color: Colors.black)),
-                                SizedBox(height: 2),
+                                const SizedBox(height: 2),
                                 Text("Lokasi: ${item.posyandu!.nama}",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 11, color: Colors.black87)),
                                 Text(
                                     "Jam: ${item.jam_mulai} - ${item.jam_selesai}",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 11, color: Colors.black87)),
                                 Text("Tanggal: $tanggal",
-                                    style: TextStyle(
+                                    style: const TextStyle(
                                         fontSize: 11, color: Colors.black87)),
                               ],
                             ),
@@ -492,7 +544,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                                       });
                                       ScaffoldMessenger.of(context)
                                           .showSnackBar(
-                                        SnackBar(
+                                        const SnackBar(
                                             content: Text(
                                                 'Jadwal berhasil dihapus')),
                                       );
@@ -534,42 +586,153 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
     );
   }
 
-  Widget _buildSuggestion(TextEditingController controller) {
-    return TypeAheadField<Map<String, dynamic>>(
-      controller: controller,
-      suggestionsCallback: fetchSuggestion,
-      builder: (context, controller, focusNode) {
-        return TextFormField(
-          controller: controller,
-          focusNode: focusNode,
-          decoration: const InputDecoration(
-            labelText: 'Cari Posyandu',
-            border: OutlineInputBorder(),
-          ),
-          validator: (value) {
-            if (value == null || value.isEmpty) {
-              return 'Lokasi wajib diisi';
-            }
-            if (_selectedId == 0) {
-              return 'Silakan pilih dari daftar saran';
-            }
-            return null;
+  Future<void> _showPilihAnggotaDialog() async {
+    List<int> selectedIds = List.from(_anggotaIds);
+    String selectedFilter = "semua";
+    String keyword = "";
+
+    final result = await showDialog<List<int>>(
+      context: context,
+      builder: (context) {
+        return StatefulBuilder(
+          builder: (context, setState) {
+            final filteredAnggota = anggotaList.where((anggota) {
+              final cocokPosyandu = selectedFilter == "semua" ||
+                  anggota.posyandu_id.toString() == selectedFilter;
+              final cocokNamaNIK =
+                  anggota.nama.toLowerCase().contains(keyword.toLowerCase()) ||
+                      anggota.nik.toLowerCase().contains(keyword.toLowerCase());
+              return cocokPosyandu && cocokNamaNIK;
+            }).toList();
+
+            return AlertDialog(
+              title: const Text("Pilih Anggota"),
+              content: SingleChildScrollView(
+                child: Column(
+                  children: [
+                    DropdownButton<String>(
+                      value: selectedFilter,
+                      isExpanded: true,
+                      items: [
+                        const DropdownMenuItem(
+                            value: "semua", child: Text("Semua Posyandu")),
+                        ...posyanduList.map((p) => DropdownMenuItem(
+                              value: p.id.toString(),
+                              child: Text(p.nama),
+                            )),
+                      ],
+                      onChanged: (value) {
+                        setState(() {
+                          selectedFilter = value!;
+                        });
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    TextField(
+                      decoration: const InputDecoration(
+                        hintText: "Cari Nama atau NIK...",
+                        prefixIcon: Icon(Icons.search),
+                        border: OutlineInputBorder(),
+                        isDense: true,
+                      ),
+                      onChanged: (value) {
+                        setState(() => keyword = value);
+                      },
+                    ),
+                    const SizedBox(height: 8),
+                    Row(
+                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                      children: [
+                        ElevatedButton(
+                          onPressed: () {
+                            setState(() {
+                              for (var anggota in filteredAnggota) {
+                                if (!selectedIds.contains(anggota.id)) {
+                                  selectedIds.add(anggota.id);
+                                }
+                              }
+                            });
+                          },
+                          child: const Text("Pilih Semua"),
+                        ),
+                        OutlinedButton(
+                          onPressed: () {
+                            setState(() {
+                              selectedIds.removeWhere((id) =>
+                                  filteredAnggota.any((a) => a.id == id));
+                            });
+                          },
+                          child: const Text("Batal Pilih"),
+                        ),
+                      ],
+                    ),
+                    const Divider(),
+                    ...filteredAnggota.map((anggota) {
+                      final isChecked = selectedIds.contains(anggota.id);
+                      return CheckboxListTile(
+                        value: isChecked,
+                        title: Text("${anggota.nama} (${anggota.nik})"),
+                        onChanged: (val) {
+                          setState(() {
+                            if (val == true) {
+                              selectedIds.add(anggota.id);
+                            } else {
+                              selectedIds.remove(anggota.id);
+                            }
+                          });
+                        },
+                      );
+                    }).toList(),
+                  ],
+                ),
+              ),
+              actions: [
+                TextButton(
+                  onPressed: () {
+                    _anggotaIds = [];
+                    Navigator.pop(context);
+                  },
+                  child: const Text("Batal"),
+                ),
+                ElevatedButton(
+                  onPressed: () {
+                    Navigator.pop(context, selectedIds); // kirim keluar
+                  },
+                  child: const Text("Simpan"),
+                ),
+              ],
+            );
           },
         );
       },
-      itemBuilder: (context, suggestion) {
-        return ListTile(
-          title: Text(suggestion['nama']),
-        );
-      },
-      onSelected: (suggestion) {
-        _lokasiController.text = suggestion['nama'];
-        _selectedId = suggestion['id'];
-      },
-      emptyBuilder: (context) => const Padding(
-        padding: EdgeInsets.all(8),
-        child: Text("Nama Posyandu tidak ditemukan"),
+    );
+
+    setState(() {
+      _anggotaIds = result ?? [];
+    });
+  }
+
+  Widget _buildDropdownPosyandu(TextEditingController controller) {
+    return DropdownButtonFormField<int>(
+      decoration: const InputDecoration(
+        labelText: 'Pilih Posyandu',
+        border: OutlineInputBorder(),
       ),
+      value: _selectedPosyanduId,
+      items: _posyanduList.map((posyandu) {
+        return DropdownMenuItem<int>(
+          value: posyandu['id'],
+          child: Text(posyandu['nama']),
+        );
+      }).toList(),
+      onChanged: (val) {
+        setState(() {
+          _selectedPosyanduId = val;
+          controller.text =
+              _posyanduList.firstWhere((p) => p['id'] == val)['nama'];
+        });
+      },
+      validator: (val) => val == null ? 'Lokasi wajib dipilih' : null,
     );
   }
 }

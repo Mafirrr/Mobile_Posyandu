@@ -2,6 +2,8 @@ import 'dart:convert';
 
 import 'package:dio/dio.dart';
 import 'package:posyandu_mob/core/Api/ApiClient.dart';
+import 'package:posyandu_mob/core/models/Anggota.dart';
+import 'package:posyandu_mob/core/models/Posyandu.dart';
 
 class AnggotaService {
   final ApiClient _apiClient = ApiClient();
@@ -17,6 +19,26 @@ class AnggotaService {
     final response = await _apiClient.dio.get('/konsultasi');
 
     return response.data['nomor_telepon'];
+  }
+
+  Future<List<Anggota>> getAnggota() async {
+    await _apiClient.setToken();
+    final response = await _apiClient.dio.get('/kehamilan');
+
+    final List data = response.data['anggota']; // ⬅️ Ambil bagian anggota saja
+
+    return data
+        .where((json) => json['role'] == 'ibu_hamil') // Filter hanya ibu hamil
+        .map((json) => Anggota.fromJson(json))
+        .toList();
+  }
+
+  Future<List<Posyandu>> getPosyandu() async {
+    await _apiClient.setToken();
+    final response = await _apiClient.dio.get('/kehamilan');
+
+    final List data = response.data['posyandu'];
+    return data.map((json) => Posyandu.fromJson(json)).toList();
   }
 
   Future<dynamic> getById(String id) async {
@@ -53,7 +75,7 @@ class AnggotaService {
     await _apiClient.dio.delete('/anggota/$id');
   }
 
-  Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
+  Future<List<Map<String, dynamic>>> fetchSuggestion() async {
     try {
       await _apiClient.setToken();
       final response = await _apiClient.dio.get('/posyandu');

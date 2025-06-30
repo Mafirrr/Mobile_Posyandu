@@ -19,6 +19,7 @@ Anggota _$AnggotaFromJson(Map<String, dynamic> json) => Anggota(
       alamat: json['alamat'] as String,
       no_telepon: json['no_telepon'] as String?,
       golongan_darah: json['golongan_darah'] as String?,
+      posyandu_id: (json['posyandu_id'] as num?)?.toInt(),
     );
 
 Map<String, dynamic> _$AnggotaToJson(Anggota instance) => <String, dynamic>{
@@ -34,4 +35,5 @@ Map<String, dynamic> _$AnggotaToJson(Anggota instance) => <String, dynamic>{
       'alamat': instance.alamat,
       'no_telepon': instance.no_telepon,
       'golongan_darah': instance.golongan_darah,
+      'posyandu_id': instance.posyandu_id,
     };

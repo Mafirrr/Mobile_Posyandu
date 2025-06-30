@@ -39,6 +39,7 @@ class DatabaseProvider {
         pekerjaan TEXT NOT NULL,
         alamat TEXT NOT NULL,
         no_telepon TEXT,
+        posyandu_id INTEGER,
         golongan_darah TEXT,
         role TEXT DEFAULT 'Anggota',
         token Text

@@ -107,7 +107,7 @@ class _TambahAnggotaScreenState extends State<TambahAnggotaScreen> {
   }
 
   Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    return await AnggotaService().fetchSuggestion();
   }
 
   void _saveAnggota() async {

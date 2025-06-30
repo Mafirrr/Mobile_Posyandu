@@ -116,6 +116,54 @@ class _Trimester1State extends State<Trimester1> {
     }
   }
 
+  @override
+  void initState() {
+    super.initState();
+
+    _hphtController.addListener(() {
+      if (_hphtController.text.isNotEmpty) {
+        try {
+          final hphtDate = DateFormat('dd-MM-yyyy').parse(_hphtController.text);
+
+          final now = DateTime.now();
+          final umurKehamilanMinggu = now.difference(hphtDate).inDays ~/ 7;
+          _umurHphtController.text = umurKehamilanMinggu.toString();
+
+          final hpl = hphtDate.add(Duration(days: 280));
+          _hplBerdasarHphtController.text =
+              DateFormat('dd-MM-yyyy').format(hpl);
+        } catch (e) {
+          _umurHphtController.clear();
+          _hplBerdasarHphtController.clear();
+        }
+      } else {
+        _umurHphtController.clear();
+        _hplBerdasarHphtController.clear();
+      }
+    });
+
+    _umurUsgController.addListener(() {
+      if (_umurUsgController.text.isNotEmpty) {
+        try {
+          final usiaMinggu = int.tryParse(_umurUsgController.text);
+          if (usiaMinggu != null && usiaMinggu > 0) {
+            final now = DateTime.now();
+            final perkiraanHPHT = now.subtract(Duration(days: usiaMinggu * 7));
+            final hplUsg = perkiraanHPHT.add(Duration(days: 280));
+            _hplBerdasarUsgController.text =
+                DateFormat('dd-MM-yyyy').format(hplUsg);
+          } else {
+            _hplBerdasarUsgController.clear();
+          }
+        } catch (e) {
+          _hplBerdasarUsgController.clear();
+        }
+      } else {
+        _hplBerdasarUsgController.clear();
+      }
+    });
+  }
+
   Future<void> _selectDate(BuildContext context) async {
     final DateTime? picked = await showDatePicker(
       context: context,
@@ -132,12 +180,28 @@ class _Trimester1State extends State<Trimester1> {
     }
   }
 
+  Future<void> _selectDateUsg(
+      BuildContext context, TextEditingController controller) async {
+    final DateTime? picked = await showDatePicker(
+      context: context,
+      initialDate: DateTime.now(),
+      firstDate: DateTime(2020),
+      lastDate: DateTime(2100),
+      helpText: 'Pilih Tanggal Pemeriksaan',
+    );
+    if (picked != null) {
+      setState(() {
+        controller.text = DateFormat('dd-MM-yyyy').format(picked);
+      });
+    }
+  }
+
   Future<List<Map<String, dynamic>>> fetchSuggestion(String nama) async {
     return await PemeriksaanService().fetchSuggestion(nama);
   }
 
   Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    return await AnggotaService().fetchSuggestion();
   }
 
   Future<void> _getID() async {
@@ -264,7 +328,10 @@ class _Trimester1State extends State<Trimester1> {
           crl: int.parse(_crlController.text.trim()),
           crlHari: int.parse(_crlHariController.text.trim()),
           crlMinggu: int.parse(_crlMingguController.text.trim()),
-          letakProdukKehamilan: _letakProdukController.text.trim(),
+          letakProdukKehamilan: _letakProdukController.text
+              .trim()
+              .toLowerCase()
+              .replaceAll(' ', '_'),
           pulsasiJantung: _pulsasiController.text.trim(),
           kecurigaanTemuanAbnormal: _kecurigaanController.text.trim(),
           keterangan: _alasanController.text.trim(),
@@ -1130,17 +1197,18 @@ class _Trimester1State extends State<Trimester1> {
   Widget usgTrimester1InputView() {
     return Column(
       children: [
-        buildInputFieldVertical("HPHT", _hphtController),
+        _buildDateField("HPHT", _hphtController,
+            () => _selectDateUsg(context, _hphtController)),
         buildDropdownFieldVertical(
             "Keteraturan Haid", ["Teratur", "Tidak Teratur"], _haidController),
         _buildInputFieldNumber(
             "Umur Kehamilan Berdasarkan HPHT (minggu)", _umurHphtController),
         _buildInputFieldNumber(
             "Umur Kehamilan Berdasarkan USG (minggu)", _umurUsgController),
-        buildInputFieldVertical(
-            "HPL Berdasarkan HPHT", _hplBerdasarHphtController),
-        buildInputFieldVertical(
-            "HPL Berdasarkan USG", _hplBerdasarUsgController),
+        _buildDateField("HPL Berdasarkan HPHT", _hplBerdasarHphtController,
+            () => _selectDateUsg(context, _hplBerdasarHphtController)),
+        _buildDateField("HPL Berdasarkan USG", _hplBerdasarUsgController,
+            () => _selectDateUsg(context, _hplBerdasarUsgController)),
         buildDropdownFieldVertical(
             "Jumlah GS", ["Tunggal", "Kembar"], _jumlahGSController),
         buildDropdownFieldVertical(
@@ -1151,8 +1219,10 @@ class _Trimester1State extends State<Trimester1> {
         _buildInputFieldNumber("CRL (cm)", _crlController),
         _buildInputFieldNumber("CRL Hari", _crlHariController),
         _buildInputFieldNumber("CRL Minggu", _crlMingguController),
-        buildDropdownFieldVertical("Letak Produk Kehamilan",
-            ["Intrauterin", "Ekstrauterin"], _letakProdukController),
+        buildDropdownFieldVertical(
+            "Letak Produk Kehamilan",
+            ["Intrauterin", "Extrauterin", "Tidak dapat ditemukan"],
+            _letakProdukController),
         buildDropdownFieldVertical(
             "Pulsasi Jantung", ["Tampak", "Tidak Tampak"], _pulsasiController),
         buildDropdownFieldVertical("Kecurigaan Temuan Abnormal",

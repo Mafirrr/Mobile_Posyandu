@@ -161,7 +161,7 @@ class _Trimestr3State extends State<Trimestr3> {
   }
 
   Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    return await AnggotaService().fetchSuggestion();
   }
 
   Future<void> _getID() async {

@@ -33,7 +33,7 @@ final TextEditingController tk1Controller = TextEditingController();
 final TextEditingController rujukanController = TextEditingController();
 final TextEditingController telpController = TextEditingController();
 final TextEditingController tempatLahirController = TextEditingController();
-final TextEditingController TanggalLahirController = TextEditingController();
+final TextEditingController tanggalLahirController = TextEditingController();
 final TextEditingController alamatController = TextEditingController();
 final TextEditingController pekerjaanController = TextEditingController();
 
@@ -85,7 +85,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
         selectedGolDarah = _anggota!.golongan_darah ?? '';
 
         final original = _anggota!.tanggal_lahir;
-        TanggalLahirController.text = original;
+        tanggalLahirController.text = original;
         final parsed = DateTime.tryParse(original);
         if (parsed != null) {
           tanggal_lahir = parsed;
@@ -266,12 +266,12 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                       controller: tempatLahirController, label: 'Tempat Lahir'),
                   const SizedBox(height: 16),
                   CustomDatePicker(
-                    controller: TanggalLahirController,
+                    controller: tanggalLahirController,
                     hintText: "Tanggal Lahir",
                     value: tanggal_lahir,
                     onDateSelected: (selectedDate) {
                       setState(() {
-                        TanggalLahirController.text =
+                        tanggalLahirController.text =
                             DateFormat('yyyy-MM-dd').format(selectedDate);
                       });
                     },
@@ -292,21 +292,12 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                       text: 'Simpan',
                       isLoading: viewModel.isLoading,
                       onPressed: () async {
+                        String inputTanggal =
+                            tanggalLahirController.text.trim();
                         try {
-                          String inputTanggal =
-                              TanggalLahirController.text.trim();
-                          final RegExp yyyyMMddFormat =
-                              RegExp(r'^\d{4}-\d{2}-\d{2}$');
-                          late String finalTanggal;
-
-                          if (yyyyMMddFormat.hasMatch(inputTanggal)) {
-                            finalTanggal = inputTanggal;
-                          } else {
-                            final parsedDate = DateFormat('dd MMM yyyy')
-                                .parseStrict(inputTanggal);
-                            finalTanggal =
-                                DateFormat('yyyy-MM-dd').format(parsedDate);
-                          }
+                          final parsedDate = DateTime.parse(inputTanggal);
+                          final finalTanggal =
+                              DateFormat('yyyy-MM-dd').format(parsedDate);
 
                           final updatedAnggota = Anggota(
                             id: _anggota!.id,
@@ -333,7 +324,7 @@ class _InformasiPribadiScreenState extends State<InformasiPribadiScreen> {
                           }
                         } catch (e) {
                           _showSnackbar(
-                              'Tanggal tidak valid: ${TanggalLahirController.text}');
+                              'Tanggal tidak valid: ${tanggalLahirController.text}');
                         }
                       },
                     ),

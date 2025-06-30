@@ -18,6 +18,8 @@ Jadwal _$JadwalFromJson(Map<String, dynamic> json) => Jadwal(
       posyandu: json['posyandu'] == null
           ? null
           : Posyandu.fromJson(json['posyandu'] as Map<String, dynamic>),
+      yangMenghadiri: const StringListToIntListConverter()
+          .fromJson(json['yang_menghadiri'] as List?),
     );
 
 Map<String, dynamic> _$JadwalToJson(Jadwal instance) => <String, dynamic>{
@@ -30,4 +32,6 @@ Map<String, dynamic> _$JadwalToJson(Jadwal instance) => <String, dynamic>{
       'jam_mulai': instance.jam_mulai,
       'jam_selesai': instance.jam_selesai,
       'posyandu': instance.posyandu,
+      'yang_menghadiri':
+          const StringListToIntListConverter().toJson(instance.yangMenghadiri),
     };

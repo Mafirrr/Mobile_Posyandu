@@ -13,8 +13,13 @@ class Jadwal {
   final int lokasi;
   final String jam_mulai;
   final String jam_selesai;
+
   @JsonKey(name: "posyandu")
   Posyandu? posyandu;
+
+  @JsonKey(name: "yang_menghadiri")
+  @StringListToIntListConverter()
+  final List<int>? yangMenghadiri;
 
   Jadwal({
     required this.id,
@@ -25,9 +30,29 @@ class Jadwal {
     required this.lokasi,
     required this.jam_mulai,
     required this.jam_selesai,
-    this.posyandu
+    this.posyandu,
+    this.yangMenghadiri,
   });
 
   factory Jadwal.fromJson(Map<String, dynamic> json) => _$JadwalFromJson(json);
   Map<String, dynamic> toJson() => _$JadwalToJson(this);
+}
+
+class StringListToIntListConverter
+    implements JsonConverter<List<int>?, List<dynamic>?> {
+  const StringListToIntListConverter();
+
+  @override
+  List<int>? fromJson(List<dynamic>? jsonList) {
+    if (jsonList == null) return null;
+    return jsonList
+        .map((e) => int.tryParse(e.toString()))
+        .whereType<int>()
+        .toList();
+  }
+
+  @override
+  List<dynamic>? toJson(List<int>? object) {
+    return object;
+  }
 }

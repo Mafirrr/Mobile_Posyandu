@@ -5,7 +5,7 @@ part 'dataAnggota.g.dart';
 @JsonSerializable()
 class DataAnggota {
   @JsonKey(name: "id")
-  int id;
+  int? id;
   @JsonKey(name: "anggota_id")
   int anggotaId;
   @JsonKey(name: "nik")
@@ -28,11 +28,9 @@ class DataAnggota {
   String alamat;
   @JsonKey(name: "no_telepon")
   String? noTelepon;
-@JsonKey(name: "golongan_Darah")
-  String? golonganDarah;
 
   DataAnggota({
-    required this.id,
+    this.id,
     required this.anggotaId,
     required this.nik,
     required this.nama,
@@ -44,7 +42,6 @@ class DataAnggota {
     required this.pekerjaan,
     required this.alamat,
     this.noTelepon,
-    this.golonganDarah,
   });
 
   factory DataAnggota.fromJson(Map<String, dynamic> json) =>

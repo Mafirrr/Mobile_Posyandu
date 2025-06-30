@@ -48,7 +48,7 @@ class _PemeriksaanNifasScreenState extends State<PemeriksaanNifasScreen> {
   }
 
   Future<List<Map<String, dynamic>>> fetchSuggestionLokasi(String nama) async {
-    return await AnggotaService().fetchSuggestion(nama);
+    return await AnggotaService().fetchSuggestion();
   }
 
   Future<void> _selectDate(BuildContext context) async {
