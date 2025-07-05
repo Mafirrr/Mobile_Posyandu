@@ -409,7 +409,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                   Align(
                     alignment: Alignment.centerLeft,
                     child: ElevatedButton(
-                      onPressed: _showPilihAnggotaDialog,
+                      onPressed: () => _showPilihAnggotaDialog('Add'),
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.blue,
