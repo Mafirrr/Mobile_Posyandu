@@ -144,13 +144,13 @@ class _DrawerkaderScreenState extends State<DrawerkaderScreen> {
                     });
                     Navigator.of(context).pop();
                   }),
-                  drawerItem(Icons.person, "Bidan", () {
-                    setState(() {
-                      _currentScreen = const PetugasScreen();
-                      _title = "Data Bidan";
-                    });
-                    Navigator.of(context).pop();
-                  }),
+                  // drawerItem(Icons.person, "Bidan", () {
+                  //   setState(() {
+                  //     _currentScreen = const PetugasScreen();
+                  //     _title = "Data Bidan";
+                  //   });
+                  //   Navigator.of(context).pop();
+                  // }),
                   sectionTitle("Pelayanan Posyandu"),
                   drawerItem(Icons.calendar_month, "Jadwal Posyandu", () {
                     setState(() {

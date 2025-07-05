@@ -386,12 +386,26 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                     },
                   ),
                   const SizedBox(height: 12),
-                  ElevatedButton(
-                    onPressed: _showPilihAnggotaDialog,
-                    child: Text(
-                      _anggotaIds.isEmpty
-                          ? 'Pilih Anggota yang Menghadiri'
-                          : '${_anggotaIds.length} Anggota Terpilih',
+                  Align(
+                    alignment: Alignment.centerLeft,
+                    child: ElevatedButton(
+                      onPressed: _showPilihAnggotaDialog,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: Colors.blue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(4.0),
+                          side: BorderSide(color: Colors.blue),
+                        ),
+                        padding: const EdgeInsets.symmetric(
+                            horizontal: 16, vertical: 12),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        _anggotaIds.isEmpty
+                            ? 'Pilih Anggota yang Menghadiri'
+                            : '${_anggotaIds.length} Anggota Terpilih',
+                      ),
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -606,16 +620,25 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
             }).toList();
 
             return AlertDialog(
-              title: const Text("Pilih Anggota"),
+              title: const Text(
+                "Pilih Anggota",
+                style: TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              ),
               content: SingleChildScrollView(
                 child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Dropdown filter Posyandu
                     DropdownButton<String>(
                       value: selectedFilter,
                       isExpanded: true,
+                      underline: const SizedBox(),
+                      style: const TextStyle(fontSize: 14, color: Colors.black),
                       items: [
                         const DropdownMenuItem(
-                            value: "semua", child: Text("Semua Posyandu")),
+                          value: "semua",
+                          child: Text("Semua Posyandu"),
+                        ),
                         ...posyanduList.map((p) => DropdownMenuItem(
                               value: p.id.toString(),
                               child: Text(p.nama),
@@ -628,22 +651,30 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                       },
                     ),
                     const SizedBox(height: 8),
+
+                    // Search bar
                     TextField(
-                      decoration: const InputDecoration(
-                        hintText: "Cari Nama atau NIK...",
-                        prefixIcon: Icon(Icons.search),
-                        border: OutlineInputBorder(),
+                      decoration: InputDecoration(
+                        hintText: "Cari Nama / NIK",
+                        prefixIcon: const Icon(Icons.search, size: 20),
+                        contentPadding: const EdgeInsets.symmetric(
+                            vertical: 8, horizontal: 12),
+                        border: OutlineInputBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                         isDense: true,
                       ),
+                      style: const TextStyle(fontSize: 14),
                       onChanged: (value) {
                         setState(() => keyword = value);
                       },
                     ),
                     const SizedBox(height: 8),
+
+                    // Aksi Pilih semua / batal
                     Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
                       children: [
-                        ElevatedButton(
+                        TextButton(
                           onPressed: () {
                             setState(() {
                               for (var anggota in filteredAnggota) {
@@ -655,7 +686,8 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                           },
                           child: const Text("Pilih Semua"),
                         ),
-                        OutlinedButton(
+                        const SizedBox(width: 8),
+                        TextButton(
                           onPressed: () {
                             setState(() {
                               selectedIds.removeWhere((id) =>
@@ -666,21 +698,33 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                         ),
                       ],
                     ),
-                    const Divider(),
+                    const Divider(height: 16),
+
+                    // Daftar anggota
                     ...filteredAnggota.map((anggota) {
                       final isChecked = selectedIds.contains(anggota.id);
-                      return CheckboxListTile(
-                        value: isChecked,
-                        title: Text("${anggota.nama} (${anggota.nik})"),
-                        onChanged: (val) {
-                          setState(() {
-                            if (val == true) {
-                              selectedIds.add(anggota.id);
-                            } else {
-                              selectedIds.remove(anggota.id);
-                            }
-                          });
-                        },
+                      return Row(
+                        children: [
+                          Checkbox(
+                            value: isChecked,
+                            onChanged: (val) {
+                              setState(() {
+                                if (val == true) {
+                                  selectedIds.add(anggota.id);
+                                } else {
+                                  selectedIds.remove(anggota.id);
+                                }
+                              });
+                            },
+                          ),
+                          Expanded(
+                            child: Text(
+                              "${anggota.nama} (${anggota.nik})",
+                              style: const TextStyle(fontSize: 14),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
                       );
                     }).toList(),
                   ],
@@ -696,10 +740,19 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                 ),
                 ElevatedButton(
                   onPressed: () {
-                    Navigator.pop(context, selectedIds); // kirim keluar
+                    Navigator.pop(context, selectedIds);
                   },
+                  style: ElevatedButton.styleFrom(
+                    backgroundColor: Colors.blue,
+                    foregroundColor: Colors.white,
+                    padding:
+                        const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(6),
+                    ),
+                  ),
                   child: const Text("Simpan"),
-                ),
+                )
               ],
             );
           },

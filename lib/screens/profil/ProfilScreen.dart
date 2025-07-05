@@ -244,19 +244,19 @@ class _ProfileScreenState extends State<ProfilScreen> {
                                 _openEditPage();
                               },
                             ),
-                            ProfileMenuCard(
-                              title: "Data Keluarga",
-                              subtitle: "Kelola informasi anggota keluarga",
-                              icon: Icons.family_restroom,
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                      builder: (context) =>
-                                          DataKeluargaScreen()),
-                                );
-                              },
-                            ),
+                            // ProfileMenuCard(
+                            //   title: "Data Keluarga",
+                            //   subtitle: "Kelola informasi anggota keluarga",
+                            //   icon: Icons.family_restroom,
+                            //   onTap: () {
+                            //     Navigator.push(
+                            //       context,
+                            //       MaterialPageRoute(
+                            //           builder: (context) =>
+                            //               DataKeluargaScreen()),
+                            //     );
+                            //   },
+                            // ),
                             ProfileMenuCard(
                               title: "Ganti Password",
                               subtitle: "Perbarui kata sandi akun Anda",
