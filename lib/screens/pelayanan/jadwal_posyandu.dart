@@ -60,6 +60,26 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
   }
 
   void _simpanJadwal() async {
+    if (_anggotaIds.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Silakan pilih anggota terlebih dahulu")),
+      );
+      return;
+    }
+
+    if (_selectedPosyanduId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Silakan pilih posyandu")),
+      );
+      return;
+    }
+
+    if (_tanggal == null || _tanggalController.text.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(content: Text("Tanggal wajib dipilih")),
+      );
+      return;
+    }
     if (_formKey.currentState!.validate() && _tanggal != null) {
       final jadwalBaru = Jadwal(
         id: 0,
@@ -212,7 +232,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
                   },
                 ),
                 ElevatedButton(
-                  onPressed: _showPilihAnggotaDialog,
+                  onPressed: () => _showPilihAnggotaDialog('edit'),
                   child: Text(
                     _anggotaIds.isEmpty
                         ? 'Pilih Anggota yang Menghadiri'
@@ -600,7 +620,7 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
     );
   }
 
-  Future<void> _showPilihAnggotaDialog() async {
+  Future<void> _showPilihAnggotaDialog(String type) async {
     List<int> selectedIds = List.from(_anggotaIds);
     String selectedFilter = "semua";
     String keyword = "";
@@ -733,7 +753,9 @@ class _JadwalPosyanduViewState extends State<JadwalPosyanduView> {
               actions: [
                 TextButton(
                   onPressed: () {
-                    _anggotaIds = [];
+                    if (type == 'add') {
+                      _anggotaIds = [];
+                    }
                     Navigator.pop(context);
                   },
                   child: const Text("Batal"),
